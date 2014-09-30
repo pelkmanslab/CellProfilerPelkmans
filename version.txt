@@ -1,0 +1,55 @@
+Version 1.0.4553
+ - GenePix format TIF files are now supported
+ - MeasureImageGranularity now correctly stores granularity data
+ - IdentifySecondary and FilterByObjectMeasurement now export locations of [0 0] when there are no initial objects
+ - Fixed bug with MeasureTexture not being able to measure 'Image' correctly
+
+Version 1.0.4532
+ - CalculateStatistics now returns correct results with only 1 data point (image) per dose
+ - SaveImages can now automatically number images when there are more then 100 cycles
+ - Several various bug fixes
+
+Version 1.0.4303
+ - Added MeasureImageSlope and Combine modules
+ - Histogram data tool overhauled
+ - New thresholding options in IdentifyPrimAutomatic
+ - Updated FindEdges Module
+ - ZVI file format is now supported
+ - Many feature names have been shortened to ease transition in to database
+
+Version 1.0.3775
+ - Windows menu now shows all CellProfiler windows
+ - Added module MaskImage
+ - Changed smoothing method to use gaussian filter instead of binary
+ - MeasureTexture uses ScaleOfTexture for objects
+ - MeasureObjectNeighbors records closest 2 objects and their vectors and percent of neighbors touching each object
+ - ExportToDatabase creates MySQL tables with FLOAT NOT NULL to improve speed
+ - ExportData can export labels created by ClassifyObjects
+ - Added help menu for Modules
+ - Several various bug fixes
+
+Version 1.0.3544
+ - Added new help section "Getting Started"
+ - Added help on Batch Processing
+ - CreateBatchScripts is now CreateBatchFiles
+ - CreateBatchFiles can produce files for CPCluster, which allows users to do cluster analysis without MatLab licenses
+ - WriteSQLFiles is now ExportToDatabase
+ - ExportToDatabase can export SQL files for MySQL and Oracle
+ - ShowDataOnImage can now show text labels added with LoadText or AddData
+ - ClassifyObjects can now label bins, which can be seen with ShowDataOnImage
+
+Version 1.0.3443
+ - Added meander mode for tiling images
+ - Rotate correctly states that a positive angle gives counterclockwise rotation
+ - MergeBatchOutput now looks in Default Output Folder
+ - Timer functionality is improved
+ - Added ExportToExcel module (same function as ExportData)
+ - WriteSQLFiles now creates a correct SQL file to setup and import all CSV files
+ - LoadImages and LoadSingleImage always display correct filenames
+ - Pipelines should no longer become corrupt. If the error occurs, a warning tells the user to report to mrl@wi.mit.edu
+ - Several various bug fixes
+
+Version 1.0.3215
+ - ClassifyObjects can now handle no objects
+ - MeasureCorrelation white background has been changed to CP colors
+ - CPhistbins can now handle data sets with zeroes
