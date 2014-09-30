@@ -1,3 +1,6 @@
+Version P 
+ - Branched off to the version maintained by pelkmans lab.
+
 Version 1.0.4553
  - GenePix format TIF files are now supported
  - MeasureImageGranularity now correctly stores granularity data
