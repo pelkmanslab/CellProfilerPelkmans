@@ -306,7 +306,8 @@ AnalyzeSubDir = char(handles.Settings.VariableValues{CurrentModuleNum,13});
 %inputtypeVAR13 = popupmenu
 
 %textVAR14 = Enter the path name to the folder where the images to be loaded are located (starting with "./../"). Type period (.) for default image folder.
-AlternativeImageFolder = char(handles.Settings.VariableValues{CurrentModuleNum,14});
+%defaultVAR14 = .
+Pathname = char(handles.Settings.VariableValues{CurrentModuleNum,14});
 
 %%%VariableRevisionNumber = 1
 
@@ -355,11 +356,11 @@ if SetBeingAnalyzed == 1
     end
 
     %%% Get the pathname and check that it exists
-    if strncmp(AlternativeImageFolder,'.',1)
-        if length(AlternativeImageFolder) == 1
+    if strncmp(Pathname,'.',1)
+        if length(Pathname) == 1
             Pathname = handles.Current.DefaultImageDirectory;
         else
-            Pathname = fullfile(handles.Current.DefaultImageDirectory,AlternativeImageFolder(2:end));
+            Pathname = fullfile(handles.Current.DefaultImageDirectory,Pathname(2:end));
             fprintf(['=================================================' ...
                      '=================================================' ...
                      '=================================================' ...
@@ -369,7 +370,7 @@ if SetBeingAnalyzed == 1
                      '=================================================' ...
                      '\n'],mfilename,Pathname);        
         end
-    else strcmp(AlternativeImageFolder,'Pre')
+    elseif strcmp(Pathname,'Pre')
         if ~isempty(strfind(handles.Current.DefaultImageDirectory,'TIFF'))
             pos = strfind(handles.Current.DefaultImageDirectory,'TIFF');
             cycleNum = str2double(handles.Current.DefaultImageDirectory(pos-2));
