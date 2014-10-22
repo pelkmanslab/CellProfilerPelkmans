@@ -1,0 +1,85 @@
+#!/usr/bin/python
+'''
+ A wrapper around CellProfilerPelkmans. Can start GUI or process single image.
+
+ This code is distributed under the GNU General Public License.
+ See the accompanying file LICENSE for details.
+
+ Authors:
+   Yauhen Yakimovich <yauhen.yakimovich@uzh.ch>
+
+ Copyright 2014 Pelkmans group https://www.pelkmanslab.org
+'''
+import os
+import argparse
+from subprocess import (PIPE, Popen)
+
+
+ROOT = os.path.dirname(os.path.abspath(__file__))
+
+
+def get_user_path():
+    user_path = [ROOT]
+    sibling_ibrainshared = os.path.join(os.path.dirname(ROOT), 'iBRAINShared')
+    if os.path.exists(sibling_ibrainshared):
+        user_path.append(sibling_ibrainshared)
+    user_path = ':'.join(user_path)
+
+
+def invoke(command, _in=None):
+    '''
+    Invoke command as a new system process and return its output.
+    '''
+    process = Popen(command, stdin=PIPE, stdout=PIPE, shell=True,
+                    executable='/bin/bash')
+    if _in is not None:
+        process.stdin.write(_in)
+    return process.stdout.read()
+
+
+MATLAB_CALL = invoke('which matlab').strip()
+MATLAB_USER_PATH = get_user_path()
+MATLAB_HEADLESS = '-singleCompThread -nodisplay -nodesktop'
+MATLAB_GUI = '-desktop'
+
+
+class CellProfilerLauncher(object):
+
+    def __init__(self, args):
+        self.args = args
+
+    @staticmethod
+    def bake_matlab_code(code, params):
+        if not 'matlab_call' in params:
+            params['matlab_call'] = MATLAB_CALL
+        wrapped_code = '%(matlab_call)s <<ENDOFMATLAB\n'
+        wrapped_code += '''path('%(user_path)s', path());
+path(cellpro.getrecpath('%(user_path)s'), path());'''
+        wrapped_code += code
+        wrapped_code += '\nENDOFMATLAB\n'
+        return wrapped_code % params
+
+    def launch_as_gui(self):
+        # Launch it as GUI
+        command = '%(matlab_call)s %(gui)s -r "cellpro.launchGUI()" ' % {
+            'matlab_call': MATLAB_CALL,
+            'gui': MATLAB_GUI,
+        }
+        #print command
+        invoke(command)
+
+    def run(self):
+        pass
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='CellProfilerPelkmans')
+    parser.add_argument('action', choices=['gui'])
+    args = parser.parse_args()
+
+    laucher = CellProfilerLauncher(args)
+    if args.action == 'gui':
+        laucher.launch_as_gui()
+    else:
+        print 'Unknown action specified.'
+        parser.print_help()
