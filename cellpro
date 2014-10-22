@@ -1,14 +1,14 @@
 #!/usr/bin/python
 '''
- A wrapper around CellProfilerPelkmans. Can start GUI or process single image.
+A wrapper around CellProfilerPelkmans. Can start GUI or process single image.
 
- This code is distributed under the GNU General Public License.
- See the accompanying file LICENSE for details.
+This code is distributed under the GNU General Public License.
+See the accompanying file LICENSE for details.
 
- Authors:
-   Yauhen Yakimovich <yauhen.yakimovich@uzh.ch>
+Authors:
+    Yauhen Yakimovich <yauhen.yakimovich@uzh.ch>
 
- Copyright 2014 Pelkmans group https://www.pelkmanslab.org
+Copyright 2014 Pelkmans group https://www.pelkmanslab.org
 '''
 import os
 import argparse
@@ -68,18 +68,41 @@ path(cellpro.getrecpath('%(user_path)s'), path());'''
         #print command
         invoke(command)
 
+    @property
+    def input_path(self):
+        self.args.input_path
+
+    def precluster(self):
+        code = self.bake_matlab_code('''
+PreCluster_with_pipeline()
+''' % {
+            'matlab_call': MATLAB_CALL + ' ' + MATLAB_HEADLESS,
+            'user_path': MATLAB_USER_PATH,
+        })
+        print code
+
     def run(self):
-        pass
+        '''
+        Here we actually don't call CellProfiler() GUI function. Instead we
+        rely on a number of functions that have been used to run the
+        CellProfiler code in the cluster as a part of canonical iBRAIN.
+        '''
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='CellProfilerPelkmans')
-    parser.add_argument('action', choices=['gui'])
+    parser.add_argument('-i', '--input-path',
+                        help='Input or TIFF (images) folder')
+    parser.add_argument('-o', '--output-path',
+                        help='Output or BATCH (data) folder')
+    parser.add_argument('action', choices=['gui', 'run'])
     args = parser.parse_args()
 
-    laucher = CellProfilerLauncher(args)
+    launcher = CellProfilerLauncher(args)
     if args.action == 'gui':
-        laucher.launch_as_gui()
+        launcher.launch_as_gui()
+    elif args.action == 'run':
+        launcher.run()
     else:
         print 'Unknown action specified.'
         parser.print_help()
