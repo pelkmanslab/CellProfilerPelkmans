@@ -262,7 +262,7 @@ Author: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.
 
 #### AlignImage_MPcycle
 
-[Markus](https://www.pelkmanslab.org/?page_id=402)
+Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
 #### AlignOjbects_MPcycle
