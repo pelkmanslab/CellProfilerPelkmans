@@ -28,6 +28,9 @@ Standard modules:
 * ExandOrShrink
 * IdentifyPrimAutomatic
 * IdentifyPrimLoG
+* IdentifyPrimManual
+* IdentifySecondary
+* IdentifyTertiareSubregion
 
 For documentation on standard modules see [manual](http://cellprofiler.org/linked_files/Documentation/cp1_manual_9717.pdf)
 
@@ -40,6 +43,7 @@ Custom modules:
 * LoadCP3DStack
 * ImageProjectionCP3D
 * IdentifyPrimLoGCP3D
+* RelateCP3D
 * LoadSpotCorrection
 * SplitOrSpliceMovies (? Mat)
 * DynamicObjectFiler (? Mat)
@@ -50,6 +54,15 @@ Custom modules:
 * TopImageProjection
 * SegmentationVolume3D
 * DiscardObjectBySize (from DiscardSinglePixelObjects)
+* IdentifySpots2D
+* IdentifyPrimaryIterative
+* IdentifySecondaryIterative
+* JoinObjectSegmentation
+* MergeAndRelateChildren (check with related modules)
+* PropagateObjects
+* SeparateObjects
+* ShrinkObjectsSafely
+* BorderNeighborAnalysis
 * 
 
 For documentation on custom modules see below. More details can be found in the actual Matlab functions.
@@ -84,7 +97,17 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
+#### RelateCP3D
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
 #### LoadSpotCorrection
+
+Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+#### IdentifySpots2D
 
 Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
@@ -129,7 +152,44 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 Note: Renamed standard module (DiscardSinglePixelObject)
 
 
+#### IdentifyPrimaryIterative
 
+Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
+
+
+#### IdentifySecondaryIterative
+
+Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+#### JoinObjectSegmentation
+
+Authors: [Nico](https://www.pelkmanslab.org/?page_id=360)
+
+
+#### MergeAndRelateChildren
+
+Author: [Mat](https://www.pelkmanslab.org/?page_id=350)
+
+
+#### PropagateObjects
+
+Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
+
+
+#### SeparateObjects
+
+Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
+
+
+#### ShrinkObjectsSafely
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+#### BorderNeighborAnalysis
+
+Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 ## CP subfunctions
 
