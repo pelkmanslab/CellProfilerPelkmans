@@ -1,7 +1,7 @@
 function handles = SaveSegmentedCells_MPcycle(handles)
 
 % Help for the SaveSegmentedCells module:
-% Category: Other
+% Category: MPcycle
 %
 % SHORT DESCRIPTION:
 % Identifies objects (e.g. cell edges) using "seed" objects identified by

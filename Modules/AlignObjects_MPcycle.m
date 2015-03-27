@@ -1,7 +1,7 @@
 function handles = AlignObjects_MPcycle(handles)
 
 % Help for the ALIGNOBJECTS_MPCYCLE module:
-% Category: Other
+% Category: MPcycle
 %
 % SHORT DESCRIPTION: 
 % Loads shift descriptors (structure stored as .json file) from iBRAIN's

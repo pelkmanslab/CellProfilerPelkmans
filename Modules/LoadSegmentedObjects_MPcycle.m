@@ -1,7 +1,7 @@
 function handles = LoadSegmentedObjects_MPcycle(handles)
 
 % Help for the LOADSEGMENTEDOBJECTS_MPCYCLE module:
-% Category: Other
+% Category: MPcycle
 %
 % SHORT DESCRIPTION:
 % Loads object segmentations from a user defined SEGMENTATION directory. To
