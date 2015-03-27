@@ -4,7 +4,7 @@ CellProfilerPelkmans
 A fork of [CellProfiler1.0](http://cellprofiler.org/previousReleases.shtml) maintained by members of [Pelkmans Lab](https://www.pelkmanslab.org).
 
 Major differences to the original version:
-*
+* gui was refreshed;
 
 
 ## CP Modules
