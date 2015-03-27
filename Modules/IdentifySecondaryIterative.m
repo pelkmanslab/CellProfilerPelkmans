@@ -13,27 +13,28 @@ function handles = IdentifySecondaryIterative(handles)
 % does not need a lot of human supervision (and thus greatly reduces
 % working time). However, since this modulce can take up to 30 min on a
 % single image, you might not want to use it, if you do not have access to
-% massive parallel computing facilities. 
+% massive parallel computing facilities.
 %
 % This module identifies secondary objects by sequential watershedding.
 % This allows to combine the advantage of a high threshold correction
 % factor (correct allocation of pixels to cells within crowded regions)
 % with the advantage of a low threshold correction factor (detection of
-% cellular periphery in sparese regions).
+% cellular periphery in sparse regions).
 %
 % To prevent false positives, if very few primary objects are present,
-% limits for threshold can be used. Reference threshold boundaries are
-% displayed when using the module locally (note that more digits are shown
-% than in standard module to allow finer grained settings for cv7k images
-% (where dim pixels might already be separateble from background)
+% limits for threshold can be used. 
 %
-% In addition to standard IdentifySeondary module , this module is not
-% affected by the presence of small false positive nuclei, that were
-% filtered out by the DiscardSinglePixel... module (which is frequent in
-% pipelines with confocal images)
 %
-% HOW TO USE IT
-% a) change IdentifySecondary module 
+% SUGGESTION TO FIND MINIMAL BACKGROUND - ROBUST CAMERA / IMAGING
+% CONDITIONS
+% If using sCMOS cameras, the intensity value, which corresponds to
+% background signal from the chip is ~100 greyscale values. Distinctive
+% cell-specific signal from the cell outline stain can usually be detected
+% at ~125 greyscale values. The minimal background value thus corresponds
+% to 0.0019 (125/2^16)
+%
+% SUGGESTION TO FIND MINIMAL BACKGROUND - VIA IDENTIFYSECONDARY
+% a) change IdentifySecondary module
 % go to the code of the intial IdentifySecondary module and look for
 % 'Threshold:  %0.3f               %0.1f%% of image consists of objects'
 % change it to
@@ -42,11 +43,11 @@ function handles = IdentifySecondaryIterative(handles)
 % of the chosen threshold.
 %
 % b) Get lowest threshold, which does not yet recognize background as
-% cells. 
+% cells.
 % Make a CP pipeline with several IdentifySecondary modules. In each one
 % select a different threshold correction value. Use OTSU GLOBAL and
 % WATERSHEDDING
-% Now start the pipeline. Of all modules, which do not recognize the 
+% Now start the pipeline. Of all modules, which do not recognize the
 % background, use the one with the smallest threshold correction value
 % (for us this is frequently around 0.5). Then manually write down the
 % exact threshold value of this module. It will be displayed in the
@@ -58,51 +59,40 @@ function handles = IdentifySecondaryIterative(handles)
 % representative of your assay. Usually spreading cells do require a much
 % lower threshold value than cells in crowded environemnts.
 %
-% c) Now make a new CP pipeline with the IdentifySecondaryIterative module.
-% THRESHOLD CORRECTION FACTORS. IN DESCENDING RANKING. Should indicate many
+% SETTING UP THE IDENTIFYSECONDARYITERATIVE MODULE
+% 
+% THRESHOLD CORRECTION FACTORS. IN DESCENDING RANKING. 
+% Should indicate many
 % different thresholds. It starts with the most stringent and starts with
 % the lowest. The lowest one should be so low that it would recognize the
 % background as an object.
-% 
+%
 % Note that you do not care about:
 % x the number of thresholds. The more, the better. Use supercomputing.
 % Applying around 20 different ones usually gives very robust results. You
-% can not select too many thresholds. You can save days of manual work by 
-% not selecting (a single) individual threshold(s). 
-% x the specific value of the lowest threshold: The lowest value has to be 
-% lower than the lowest threshold correction, which you tested previously. 
+% can not select too many thresholds. You can save days of manual work by
+% not selecting (a single) individual threshold(s).
+% x the specific value of the lowest threshold: The lowest value has to be
+% lower than the lowest threshold correction, which you tested previously.
 % It should be a threshold value that recognizes the background. The
 % separation from the background will be done by a later option. If the
 % last threshold corrction value is too high, the periphery of spreading
 % cells might be missed.
 %
-% An example for the range would be 1.1 1.05 1 0.95 0.9 0.85 0.8 0.75 0.7 
+% An example for the range would be 1.1 1.05 1 0.95 0.9 0.85 0.8 0.75 0.7
 % 0.6 0.58 0.55 0.50 0.45 0.4 0.35 0.3 0.25
 %
 % Usually the best gain in segmentation quality per threshold is achived
 % with threshold correction factors close to the threshold correction
 % factor, which you would choose in the normal IdentifySecondary module
 %
-% d) Select LOWER AND UPPER BONDS ON THRESHOLD. 
+% LOWER AND UPPER BONDS ON THRESHOLD.
 % These values correspond to the minimal and maximal values that a
 % threshold is allowed to have. They have the format
-% SmallestThreshold,HighestThreshold 
+% SmallestThreshold,HighestThreshold
 % For SmallestThreshold you should use the value obtained in c). Leaving
 % the maximal value at 1 has worked fine for us all the time. Setting a
 % minimal value will prevent recognition of the background as an object
-%
-% e) Go to a vending machine, get some Swiss chocolate and have a 
-% small break. Later check, if segmentation has worked.
-%
-% f) If everything is fine, run on parallel computing.
-% Consider to plan around 1min per tested threshold. Since this module will
-% be slow it usually determines the amount of image cycles, which can be
-% processed in one batch. Batch sizes should be small enough to allow jobs
-% to finish within the time that your parallel computing facility grants to 
-% individual jobs. On the other hand, you can seriously slow down
-% file systems (such as lustre) if the amount of output files 
-% exceeds 100.000 files and you would have parallel jobs requesting the 
-% listing of this directory.
 %
 % THRESHOLD SELECTION METHOD
 % NOTE THAT this module was only tested with the Otsu Global method. Other
@@ -114,7 +104,9 @@ function handles = IdentifySecondaryIterative(handles)
 %
 % How it works>
 % This is a heavily adjusted version of the orignal IdentifySecondary module
-% It also has lower memory requiremnts.
+% It also has lower memory requiremnts and fixes some bugs of the original
+% module (shrinkage of nuclei, expansion of surrounding objects discarded by
+% DiscardSinglePixel)
 %
 % 0) Obtain masks with proper foreground objects.
 %
@@ -131,7 +123,12 @@ function handles = IdentifySecondaryIterative(handles)
 % separated into multiple fragments (which in most cases would be
 % biologically meaningless). Thus all fragments except the one, which
 % includes the primary object, are set to background
-% [TS]
+%
+% Authors:
+%   Nico Battich
+%   Thomas Stoeger
+%   Lucas Pelkmans
+%
 %
 % $Revision: 1808 $
 
@@ -157,7 +154,7 @@ SecondaryObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 ImageName = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 %inputtypeVAR03 = popupmenu
 
-%textVAR04 = Select an automatic thresholding method or enter an absolute threshold in the range [0,1]. To choose a binary image, select "Other" and type its name.  Choosing 'All' will use the Otsu Global method to calculate a single threshold for the entire image group. The other methods calculate a threshold for each image individually. Set interactively will allow you to manually adjust the threshold during the first cycle to determine what will work well.
+%textVAR04 = Select an automatic thresholding method. 
 %choiceVAR04 = Otsu Global
 iThreshold = char(handles.Settings.VariableValues{CurrentModuleNum,4});
 %inputtypeVAR04 = popupmenu custom
@@ -167,10 +164,10 @@ iThreshold = char(handles.Settings.VariableValues{CurrentModuleNum,4});
 iThresholdCorrection = char(handles.Settings.VariableValues{CurrentModuleNum,5});
 
 %textVAR06 = Lower and upper bounds on threshold, in the range [0,1].
-%defaultVAR06 = 0.00300,1
+%defaultVAR06 = 0.0019,1
 ThresholdRange = char(handles.Settings.VariableValues{CurrentModuleNum,6});
 
-%textVAR07 = For MoG thresholding, what is the approximate percentage of image covered by objects?
+%textVAR07 = What is the approximate percentage of image covered by objects?
 %choiceVAR07 = 10%
 %choiceVAR07 = 20%
 %choiceVAR07 = 30%
@@ -234,7 +231,7 @@ MinimumThreshold = str2double(ThresholdRange(1:index-1));
 MaximumThreshold = str2double(ThresholdRange(index+1:end));
 
 % Create vector containing the thresholds that should be tested
-[isSafe iThresholdCorrection]= inputVectorsForEvalCP3D(iThresholdCorrection,false);
+[isSafe, iThresholdCorrection]= inputVectorsForEvalCP3D(iThresholdCorrection,false);
 if isSafe == false
     error(['Image processing was canceled in the ', ModuleName, ' module because input of threshold contained forbidden characters'])
 else
@@ -248,21 +245,21 @@ end
 %%%%%%%%%%%%%%%%%%%%%%
 drawnow
 numThresholdsToTest = length(ThresholdCorrection);
-ThresholdArray = cell(numThresholdsToTest,1); % [modified by TS to include multiple thrsholds]
+ThresholdArray = cell(numThresholdsToTest,1); % [modified by PLab to include multiple thrsholds]
 
 %obtain first threshold via CPthreshold. note that this will also create a
 %threshold measuremnt, this measuremnt will not be produced for sequential
 %thresholds to prevent over/writing and conflicts that arise if
 %numThreshold>=3
 if GetThreshold
-    % [TS] force to use minimal treshold value of 0 and maximum of 1, to ensure
+    % [PLab] force to use minimal treshold value of 0 and maximum of 1, to ensure
     % equal thresholding for all tested tresholds
     [handles,ThresholdArray{1}] = CPthreshold(handles,iThreshold,pObject,'0','1',ThresholdCorrection(1),OrigImage,ImageName,ModuleName,SecondaryObjectName);
 else
     ThresholdArray{1} = 0; % should never be used
 end
 
-%%%% [TS] start modification for obtaining multiple thresholds  %%%%%%%%%%%%%%%%%
+%%%% [PLab] start modification for obtaining multiple thresholds  %%%%%%%%%%%%%%%%%
 if numThresholdsToTest>1
     for k=2:numThresholdsToTest
         %%% STEP 1a: Marks at least some of the background
@@ -275,13 +272,19 @@ if numThresholdsToTest>1
     end
 end
 
+% Check input
+if ThresholdArray{end}>ThresholdArray{1} 
+   warning('To take advantage of the interative segmentation, you must specify the threshold correction values in descending order!') 
+end
+
 % now fix thresholds outside of range. Could be made nicer by direcly
 % calling a function for fixing thresholds for CP standard case (k=1) and
-% [TS] modification for k>=2
+% [PLab] modification for k>=2
 for k=1:numThresholdsToTest
     % note that CP adresses the threshold in such a way that it could be
-    % either a number or a matrix.-> the internally generated threshold
+    % either a number or a matrix.-> the threshold generated by CP
     % might be either of it. The following lines should support both.
+    % Though only Otsu Glbal has been tested (2015-Feb-2) 
     reconstituteThresholdImage = ThresholdArray{k};
     bnSomethingOutsidRange = false;
     
@@ -302,10 +305,10 @@ for k=1:numThresholdsToTest
     end
 end
 
-%%%% [TS] end modification for obtaining multiple thresholds  %%%%%%%%%%%%%%%%%
+%%%% [PLab] end modification for obtaining multiple thresholds  %%%%%%%%%%%%%%%%%
 
 
-%%%% [TS] Start modification> DISMISS only border  %%%%%%%%%%%%%%%%%%%%%%
+%%%% [PLab] Start modification> DISMISS only border  %%%%%%%%%%%%%%%%%%%%%%
 %%% Preliminary objects, which were not identified as object proper, still
 %%% serve as seeds for allocating pixels to secondary object. While this
 %%% makes sense for nuclei, which were discared in the primary module due to
@@ -327,8 +330,10 @@ EditedPrimaryBinaryImage = im2bw(EditedPrimaryLabelMatrixImage,.5);
 R= PrelimPrimaryLabelMatrixImage([1 end],:);
 C= PrelimPrimaryLabelMatrixImage(:,[1 end]);
 BoderObjIDs = unique([R C']);
-while any(BoderObjIDs==0)
-    BoderObjIDs = BoderObjIDs(2:end);
+isBackground = BoderObjIDs == 0;
+
+if any(isBackground)
+    BoderObjIDs = BoderObjIDs(~isBackground);
 end
 clear R; clear C;
 
@@ -340,13 +345,13 @@ f =     ismember(PrelimPrimaryLabelMatrixImage,BoderObjIDs) | ... % objects at b
 PrelimPrimaryBinaryImage(f) = true;
 
 
-%%%% [TS] End modification> DISMISS only border  %%%%%%%%%%%%%%%%%%%%%
+%%%% [PLab] End modification> DISMISS only border  %%%%%%%%%%%%%%%%%%%%%
 
 
 
 
-%%%% [TS] %%%%%%%%%%%%% Start of SHARED code for precalculations %%%%%%%%%%%
-% note that fragments of original function were replaced by TS to prevent
+%%%% [PLab] %%%%%%%%%%%%% Start of SHARED code for precalculations %%%%%%%%%%%
+% note that fragments of original function were replaced by PLab to prevent
 % redundant calculations
 
 drawnow
@@ -375,12 +380,12 @@ I2 = imfilter(OrigImage, filter2);
 %%% The Sobel operator results in negative values, so the absolute values
 %%% are calculated to prevent errors in future steps.
 AbsSobeledImage = abs(I1) + abs(I2);
-clear I1; clear I2;                  %%% [NB] hack. save memory
+clear I1; clear I2;                  %%% [PLab] hack. save memory
 
-%%%% [TS] %%%%%%%%%%%%% End of SHARED code for precalculations %%%%%%%%%%%
+%%%% [PLab] %%%%%%%%%%%%% End of SHARED code for precalculations %%%%%%%%%%%
 
 
-%%%%%% [TS] %%%%%%%%%%%%%%%  ITERATION CODE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% [PLab] %%%%%%%%%%%%%%%  ITERATION CODE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % intialize output
 
 cellFinalLabelMatrixImage = cell(numThresholdsToTest,1);
@@ -401,7 +406,7 @@ for k=1:numThresholdsToTest
     
     %%% Inverts the image.
     InvertedThresholdedOrigImage = imcomplement(ThresholdedOrigImage);
-    clear ThresholdedOrigImage;             %%% [NB] hack. save memory.
+    clear ThresholdedOrigImage;             %%% [PLab] hack. save memory.
     
     %%% STEP 3: Produce the marker image which will be used for the first
     %%% watershed.
@@ -411,7 +416,7 @@ for k=1:numThresholdsToTest
     %%% Overlays the PrimaryObjectOutlines to maintain distinctions between each
     %%% primary object and the background.
     BinaryMarkerImage = BinaryMarkerImagePre;
-    clear BinaryMarkerImagePre;             %%% [NB] hack. save memory.
+    clear BinaryMarkerImagePre;             %%% [PLab] hack. save memory.
     BinaryMarkerImage(PrimaryObjectOutlines == 1) = 0;
     
     
@@ -420,23 +425,23 @@ for k=1:numThresholdsToTest
     
     %%% Overlays the foreground and background markers
     Overlaid = imimposemin(AbsSobeledImage, BinaryMarkerImage);
-    clear BinaryMarkerImage;  %%% [NB] hack. save memory.
+    clear BinaryMarkerImage;  %%% [PLab] hack. save memory.
     
     %%% Perform the watershed on the marked absolute-value Sobel Image.
     BlackWatershedLinesPre = watershed(Overlaid);
-    clear Overlaid;                 %%% [NB] hack. save memory.
+    clear Overlaid;                 %%% [PLab] hack. save memory.
     
     %%% Bug workaround (see step 9).
-    %%% [NB, WATERSHED BUG IN VERSION 2011A OR HIGHER HAS BEEN FIXED. SO CHECK VERSION FIRST]
-    if verLessThan('matlab', '7.12.0') && ~isunix
+    %%% [PLab, WATERSHED BUG IN VERSION 2011A (Windows only) OR HIGHER HAS BEEN FIXED. SO CHECK VERSION FIRST]
+    if verLessThan('matlab', '7.12.0') && ispc()
         BlackWatershedLinesPre2 = im2bw(BlackWatershedLinesPre,.5);
         BlackWatershedLines = bwlabel(BlackWatershedLinesPre2);
-        %%% [NB] hack. save memory.
+        %%% [PLab] hack. save memory.
         clear BlackWatershedLinesPre2 BlackWatershedLinesPre;
     else
         %%% [BS, QUICK AND DIRTY HACK FROM PEKLMANS]
         BlackWatershedLines = double(BlackWatershedLinesPre);
-        %%% [NB] hack. save memory.
+        %%% [PLab] hack. save memory.
         clear BlackWatershedLinesPre;
         %%% END OF BS-HACK BUGFIX FOR VERSION 2011 AND LATER?
     end
@@ -448,14 +453,14 @@ for k=1:numThresholdsToTest
     %%% lines = 0 and each distinct object is assigned a number starting at 1.
     %%% This image is converted to a binary image where all the objects = 1.
     SecondaryObjects1 = im2bw(BlackWatershedLines,.5);
-    %%% [NB] hack. save memory.
+    %%% [PLab] hack. save memory.
     clear BlackWatershedLines;
     %%% Identifies objects in the binary image using bwlabel.
     %%% Note: Matlab suggests that in some circumstances bwlabeln is faster
     %%% than bwlabel, even for 2D images.  I found that in this case it is
     %%% about 10 times slower.
     LabelMatrixImage1 = bwlabel(SecondaryObjects1,4);
-    %%% [NB] hack. save memory.
+    %%% [PLab] hack. save memory.
     clear SecondaryObjects1;
     drawnow
     
@@ -483,7 +488,7 @@ for k=1:numThresholdsToTest
     map = [0 full(max(sparse(area_locations, area_labels, PrelimPrimaryBinaryImage(area_locations))))];
     
     ActualObjectsBinaryImage = map(LabelMatrixImage1 + 1);
-    clear area_labels area_locations map;              %%% [NB] hack. save memory.
+    clear area_labels area_locations map;              %%% [PLab] hack. save memory.
     
     
     %%% STEP 8: Produce the marker image which will be used for the second
@@ -505,19 +510,19 @@ for k=1:numThresholdsToTest
     %%% Subtracts the PrelimPrimaryBinaryImage from the DilatedPrimaryBinaryImage,
     %%% which leaves the PrimaryObjectOutlines.
     ActualObjectOutlines = DilatedActualObjectsBinaryImage - ActualObjectsBinaryImage;
-    %%% [NB] hack. save memory.
+    %%% [PLab] hack. save memory.
     clear DilatedActualObjectsBinaryImage;
     %%% Produces the marker image which will be used for the watershed. The
     %%% foreground markers are taken from the ActualObjectsBinaryImage; the
     %%% background markers are taken from the same image as used in the first
     %%% round of watershedding: InvertedThresholdedOrigImage.
     BinaryMarkerImagePre2 = ActualObjectsBinaryImage | InvertedThresholdedOrigImage;
-    %%% [NB] hack. save memory.
+    %%% [PLab] hack. save memory.
     clear InvertedThresholdedOrigImage ActualObjectsBinaryImage;
     %%% Overlays the ActualObjectOutlines to maintain distinctions between each
     %%% secondary object and the background.
     BinaryMarkerImage2 = BinaryMarkerImagePre2;
-    %%% [NB] hack. save memory.
+    %%% [PLab] hack. save memory.
     clear BinaryMarkerImagePre2;
     
     BinaryMarkerImage2(ActualObjectOutlines == 1) = 0;
@@ -532,12 +537,12 @@ for k=1:numThresholdsToTest
     %%% InvertedOrigImage, so there are black secondary object markers on top
     %%% of each dark secondary object, with black background.
     MarkedInvertedOrigImage = imimposemin(InvertedOrigImage, BinaryMarkerImage2);
-    %%% [NB] hack. save memory.
+    %%% [PLab] hack. save memory.
     clear BinaryMarkerImage2 BinaryMarkerImage2;
     
     %%% Performs the watershed on the MarkedInvertedOrigImage.
     SecondWatershedPre = watershed(MarkedInvertedOrigImage);
-    %%% [NB] hack.save memory
+    %%% [PLab] hack.save memory
     clear MarkedInvertedOrigImage;
     %%% BUG WORKAROUND:
     %%% There is a bug in the watershed function of Matlab that often results in
@@ -551,18 +556,18 @@ for k=1:numThresholdsToTest
     %%% remake the label matrix so that each label is used only once. In later
     %%% steps, inappropriate regions are weeded out anyway.
     
-    %%% [NB, WATERSHED BUG IN VERSION 2011A OR HIGHER HAS BEEN FIXED. SO CHECK VERSION FIRST]
-    if verLessThan('matlab', '7.12.0') && ~isunix
+    %%% [PLab, WATERSHED BUG IN VERSION 2011A (Windows only) OR HIGHER HAS BEEN FIXED. SO CHECK VERSION FIRST]
+    if verLessThan('matlab', '7.12.0') && ispc()
         SecondWatershedPre2 = im2bw(SecondWatershedPre,.5);
         SecondWatershed = bwlabel(SecondWatershedPre2);
-        %%% [NB] hack.save memory
+        %%% [PLab] hack.save memory
         clear SecondWatershedPre2;
     else
         %%% [BS, QUICK AND DIRTY HACK FROM PEKLMANS]
         SecondWatershed = double(SecondWatershedPre);
         %%% END OF BS-HACK BUGFIX FOR VERSION 2011 AND LATER?
     end
-    %%% [NB] hack.save memory
+    %%% [PLab] hack.save memory
     clear SecondWatershedPre;
     drawnow
     
@@ -582,19 +587,19 @@ for k=1:numThresholdsToTest
     %%% labels through the resulting map removes any background regions.
     map2 = [0 full(max(sparse(area_locations2, area_labels2, EditedPrimaryBinaryImage(area_locations2))))];
     FinalBinaryImagePre = map2(SecondWatershed + 1);
-    %%% [NB] hack. save memory
+    %%% [PLab] hack. save memory
     clear SecondWatershed area_labels2 map2;
     
     %%% Fills holes in the FinalBinaryPre image.
     FinalBinaryImage = imfill(FinalBinaryImagePre, 'holes');
-    %%% [NB] hack. save memory
+    %%% [PLab] hack. save memory
     clear FinalBinaryImagePre;
     %%% Converts the image to label matrix format. Even if the above step
     %%% is excluded (filling holes), it is still necessary to do this in order
     %%% to "compact" the label matrix: this way, each number corresponds to an
     %%% object, with no numbers skipped.
     ActualObjectsLabelMatrixImage3 = bwlabel(FinalBinaryImage);
-    %%% [NB] hack. save memory
+    %%% [PLab] hack. save memory
     clear FinalBinaryImage;
     %%% The final objects are relabeled so that their numbers
     %%% correspond to the numbers used for nuclei.
@@ -605,7 +610,7 @@ for k=1:numThresholdsToTest
     %%% image, while the LabelsUsed starts at 1.
     LabelsUsed(ActualObjectsLabelMatrixImage3(LabelLocations(2:end))+1) = EditedPrimaryLabelMatrixImage(LabelLocations(2:end));
     FinalLabelMatrixImagePre = LabelsUsed(ActualObjectsLabelMatrixImage3+1);
-    %%% [NB] hack. save memory
+    %%% [PLab] hack. save memory
     clear FinalBinaryImage LabelsUsed LabelLocations;
     %%% The following is a workaround for what seems to be a bug in the
     %%% watershed function: very very rarely two nuclei end up sharing one
@@ -619,11 +624,11 @@ for k=1:numThresholdsToTest
     %%% label matrix image pre so that every primary object has at least some
     %%% pixels of secondary object.
     FinalLabelMatrixImage = FinalLabelMatrixImagePre;
-    %%% [NB] hack. save memory
+    %%% [PLab] hack. save memory
     clear FinalLabelMatrixImagePre;
     FinalLabelMatrixImage(EditedPrimaryLabelMatrixImage ~= 0) = EditedPrimaryLabelMatrixImage(EditedPrimaryLabelMatrixImage ~= 0);
     
-    %[TS] insert to allow easy collecition of segmentations at all
+    %[PLab] insert to allow easy collecition of segmentations at all
     %different thresholds
     if max(FinalLabelMatrixImage(:))<intmax('uint16')
         cellFinalLabelMatrixImage{k} = uint16(FinalLabelMatrixImage); % if used for cells, few objects, reduce memory load
@@ -634,14 +639,14 @@ for k=1:numThresholdsToTest
     clear FinalLabelMatrixImage; % memory==low
     
 end
-%%%% [TS] %%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of iteration  %%%%%%%%%%%
+%%%% [PLab] %%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of iteration  %%%%%%%%%%%
 
 clear AbsSobeledImage;
 clear PrelimPrimaryBinaryImage;
 
 
 
-%%%% [TS] %%%%%%%%%% ABSOLUTE SEGEMENTATION  Start  %%%%%%%%%%%
+%%%% [PLab] %%%%%%%%%% COMBINE SEGEMENTATIONS  Start  %%%%%%%%%%%
 
 % this code combines knowledge of about the segementation at individual
 % thresholds to one common segmentation, which will be superior and
@@ -656,16 +661,6 @@ for k=numThresholdsToTest:-1:1
     f = cellFinalLabelMatrixImage{k} ~=0;
     FinalLabelMatrixImage(f) = cellFinalLabelMatrixImage{k}(f);
 end
-
-% make a second loop, which creates second best object ID
-% FinalLabelMatrixImageSurrogate  = zeros(size(FinalLabelMatrixImage),'double');
-% if numThresholdsToTest > 1
-%     for k=numThresholdsToTest:-1:1
-%         f = cellFinalLabelMatrixImage{k} ~=0 && cellFinalLabelMatrixImage{k} ~= FinalLabelMatrixImage;
-%         FinalLabelMatrixImageSurrogate(f) = cellFinalLabelMatrixImage{k}(f);
-%     end
-% end
-
 
 % B) Make sure objects are separted
 
@@ -697,10 +692,10 @@ RelabeledDilatedPrelimSecObjectImageMini(DilatedPrelimSecObjectBinaryImageMini) 
 clear ExpandedRelabeledDilatedPrelimSecObjectImageMini;
 % Create Boundaries
 
-I1 = imfilter(RelabeledDilatedPrelimSecObjectImageMini, filter1);   % [TS] reuse sobel filters from above
+I1 = imfilter(RelabeledDilatedPrelimSecObjectImageMini, filter1);   % [PLab] reuse sobel filters from above
 I2 = imfilter(RelabeledDilatedPrelimSecObjectImageMini, filter2);
 AbsSobeledImage = abs(I1) + abs(I2);
-clear I1; clear I2;                  %%% [NB] hack. save memory
+clear I1; clear I2;                  %%% [PLab] hack. save memory
 edgeImage = AbsSobeledImage>0;    % detect edges
 FinalLabelMatrixImage = RelabeledDilatedPrelimSecObjectImageMini .* ~edgeImage;   % set edges in Labelmatrix to zero
 clear Labels; clear ExpandedRelabeledDilatedPrelimSecObjectImageMini;
@@ -709,7 +704,7 @@ clear edgeImage;
 if max(FinalLabelMatrixImage(:)) ~= 0       % check if an object is present Empty Image Handling
     
     % C) Remove regions no longer connected to the primary object
-    % Take code from Neighbour module
+    % Process individual segmented objects en-block to speed up computation 
     distanceToObjectMax = 3;
     loadedImage = FinalLabelMatrixImage;
     props = regionprops(loadedImage,'BoundingBox');
@@ -724,6 +719,7 @@ if max(FinalLabelMatrixImage(:)) ~= 0       % check if an object is present Empt
     FinalLabelMatrixImage2  = zeros(size(FinalLabelMatrixImage));
     numObjects =size(BoxPerObj,1);
     if numObjects>=1  % if objects present
+        patchForPrimaryObject = false(1,numObjects);        
         for k=1: numObjects  % loop through individual objects to safe computation
             miniImage = FinalLabelMatrixImage(N(k):S(k),W(k):E(k));
             bwminiImage = miniImage>0;
@@ -736,39 +732,66 @@ if max(FinalLabelMatrixImage(:)) ~= 0       % check if an object is present Empt
             % completely within child at border of image
             
             NewChildID = labelmini(bwParentOfInterest);
-            NewChildID = NewChildID(NewChildID>0);
-            WithParentIX = mode(NewChildID);
-            bwOutCellBody = labelmini == WithParentIX;
             
-            
-            % now map back the linear indices
-            [r c] = find(bwOutCellBody);
-            
-            % get indices for final image (note that mini image might have
-            % permitted regions of other cells).
-            r = r-1+N(k);
-            c = c-1+W(k);
-            w = sub2ind(size(FinalLabelMatrixImage2),r,c);
-            
-            % Update Working copy of Final Segmentation image based on linear indices.
-            FinalLabelMatrixImage2(w) = k;
-            
+            if isequal(NewChildID,0) % [PLab 150120: only compute if an object is found, see other comments marked by PLab 150120 for explanation]
+                patchForPrimaryObject(k) = true;
+            else
+                NewChildID = NewChildID(NewChildID>0);
+                WithParentIX = mode(NewChildID); % [PLab 150120: note that MODE gives different behavior on 0 input in new MATLAB versions]
+                bwOutCellBody = labelmini == WithParentIX;
+                
+                % now map back the linear indices
+                [r, c] = find(bwOutCellBody);
+                
+                % get indices for final image (note that mini image might have
+                % permitted regions of other cells).
+                r = r-1+N(k);
+                c = c-1+W(k);
+                w = sub2ind(size(FinalLabelMatrixImage2),r,c);
+                
+                % Update Working copy of Final Segmentation image based on linear indices.
+                FinalLabelMatrixImage2(w) = k;            
+            end
         end
         
     end
     % Now mimik standard outupt of calculations of standard module
     FinalLabelMatrixImage = FinalLabelMatrixImage2;
+    
+   
 end
 
-% duplicate penultimate row and column. Thus pixels at border will carry 
-% an object ID (and are detected by iBrain function to discard border cells); 
+% duplicate penultimate row and column. Thus pixels at border will carry
+% an object ID (and are detected by iBrain function to discard border cells);
 FinalLabelMatrixImage(:,1)= FinalLabelMatrixImage(:,2);
 FinalLabelMatrixImage(:,end)= FinalLabelMatrixImage(:,(end-1));
 FinalLabelMatrixImage(1,:)= FinalLabelMatrixImage(2,:);
 FinalLabelMatrixImage(end,:)= FinalLabelMatrixImage((end-1),:);
 
 
-%%%% [TS] %%%%%%%%%% ABSOLUTE SEGEMENTATION  End  %%%%%%%%%%%
+% [PLab 150120: ensure that every primary object has a secondary object:
+% in case that no secondary object could be found (which is related to
+% CP's behavior of using rim of primary object as seed), use the primary
+% segmentation of the missing objects as the secondary object]
+% Note: this fix is after extending the pixels at the border since
+% sometimes small 1 -pixel objects, which are lost, are sitting at the
+% border of an image (and thus would be overwritten)
+
+if numObjects >= 1
+    if any(patchForPrimaryObject)
+        % [PLab]: note the conservative behavior to track individual missing
+        % objects; this is intended for backward compatibility, while a simple
+        % query for missing IDs would be faster, it would be more general and
+        % thus potentially conflict with the segementation results of prior
+        % pipelines (in other regions than the objects lost by prior / default
+        % behavior of segmentation modules)
+        IDsOfObjectsToPatch = find(patchForPrimaryObject);
+        needsToIncludePrimary = ismember(EditedPrimaryLabelMatrixImage,IDsOfObjectsToPatch);
+        FinalLabelMatrixImage(needsToIncludePrimary) =  EditedPrimaryLabelMatrixImage(needsToIncludePrimary);
+    end
+end
+
+%%%% [PLab] %%%%%%%%%% COMBINE SEGEMENTATIONS  End  %%%%%%%%%%%
 
 if ~isfield(handles.Measurements,SecondaryObjectName)
     handles.Measurements.(SecondaryObjectName) = {};
@@ -779,7 +802,7 @@ if ~isfield(handles.Measurements,PrimaryObjectName)
 end
 
 handles = CPrelateobjects(handles,SecondaryObjectName,PrimaryObjectName,FinalLabelMatrixImage,EditedPrimaryLabelMatrixImage,ModuleName);
-%%% [NB] hack. save memory
+%%% [PLab] hack. save memory
 clear EditedPrimaryLabelMatrixImage;
 
 
@@ -794,7 +817,7 @@ drawnow
 fieldname = ['Segmented',SecondaryObjectName];
 handles.Pipeline.(fieldname) = FinalLabelMatrixImage;
 
-%[TS removed propagation]
+%[PLab removed propagation]
 
 %%% Saves the ObjectCount, i.e. the number of segmented objects.
 if ~isfield(handles.Measurements.Image,'ObjectCountFeatures')
@@ -811,14 +834,14 @@ handles.Measurements.Image.ObjectCount{handles.Current.SetBeingAnalyzed}(1,colum
 %%% Saves the location of each segmented object
 handles.Measurements.(SecondaryObjectName).LocationFeatures = {'CenterX','CenterY'};
 tmp = regionprops(FinalLabelMatrixImage,'Centroid');
-%%% [NB] hack. save memory.
+%%% [PLab] hack. save memory.
 Centroid = cat(1,tmp.Centroid);
 if isempty(Centroid)
-    Centroid = [0 0];
+    Centroid = [0 0];   % follow CP's convention to save 0s if no object
 end
 handles.Measurements.(SecondaryObjectName).Location(handles.Current.SetBeingAnalyzed) = {Centroid};
 
-% [TS] note that the following CP code would require additional
+% [PLab] note that the following CP code would require additional
 % calculations, which as default were always done and also used for
 % visualization. If it should be included again, the code either has to be
 % arranged back or , better, a check included, whether the outline should
@@ -829,7 +852,7 @@ handles.Measurements.(SecondaryObjectName).Location(handles.Current.SetBeingAnal
 %     if ~strcmpi(SaveOutlines,'Do not save')
 %         handles.Pipeline.(SaveOutlines) = LogicalOutlines;
 %     end
-% catch dummyError %[TS] bugfix for error message
+% catch dummyError %[PLab] bugfix for error message
 %     error(['The object outlines were not calculated by the ', ModuleName, ' module, so these images were not saved to the handles structure. The Save Images module will therefore not function on these images. This is just for your information - image processing is still in progress, but the Save Images module will fail if you attempted to save these images.'])
 % end
 
@@ -842,7 +865,7 @@ drawnow
 ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
 if any(findobj == ThisModuleFigureNumber)
     
-    %%%% [TS] %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Code for visualization  %%%%%%%%%%%
+    %%%% [PLab] %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Code for visualization  %%%%%%%%%%%
     %%%%%%% Rearranged: Inculde visualization into a conditional statement starting
     %%%%%%% only on local machine, but not CPCluster
     
@@ -859,19 +882,24 @@ if any(findobj == ThisModuleFigureNumber)
     MaxFilteredImage = ordfilt2(FinalLabelMatrixImage,9,ones(3,3),'symmetric');
     %%% Determines the outlines.
     IntensityOutlines = FinalLabelMatrixImage - MaxFilteredImage;
-    %%% [NB] hack.s ave memory.
+    %%% [PLab] hack.s ave memory.
     clear MaxFilteredImage;
     %%% Converts to logical.
     warning off MATLAB:conversionToLogical
     LogicalOutlines = logical(IntensityOutlines);
-    %%% [NB] hack.s ave memory.
+    %%% [PLab] hack.s ave memory.
     clear IntensityOutlines;
     warning on MATLAB:conversionToLogical
-    %%% Determines the grayscale intensity to use for the cell outlines.
-    %[NB-HACK] so that images are not so dim!!!!
-    LineIntensity = quantile(OrigImage(:), 0.99);
-    %%% Overlays the outlines on the original image.
+    
+    % Determines the grayscale intensity to use for the cell outlines.
+    %[PLab-HACK] so that images are not so dim!!!!
     ObjectOutlinesOnOrigImage = OrigImage;
+    ObjectOutlinesOnOrigImage=ObjectOutlinesOnOrigImage-quantile(OrigImage(:), 0.025);
+    ObjectOutlinesOnOrigImage(ObjectOutlinesOnOrigImage<0)=0;
+    ObjectOutlinesOnOrigImage(ObjectOutlinesOnOrigImage>quantile(ObjectOutlinesOnOrigImage(:), 0.95))=quantile(ObjectOutlinesOnOrigImage(:), 0.95);
+    LineIntensity = quantile(ObjectOutlinesOnOrigImage(:), 0.99);
+    
+    
     ObjectOutlinesOnOrigImage(LogicalOutlines) = LineIntensity;
     %%% Calculates BothOutlinesOnOrigImage for displaying in the figure
     %%% window in subplot(2,2,4).
@@ -882,11 +910,11 @@ if any(findobj == ThisModuleFigureNumber)
     %%% Subtracts the PrelimPrimaryBinaryImage from the DilatedPrimaryBinaryImage,
     %%% which leaves the PrimaryObjectOutlines.
     PrimaryObjectOutlines = DilatedPrimaryBinaryImage - EditedPrimaryBinaryImage;
-    %%% [NB] hack. save memory.
+    %%% [PLab] hack. save memory.
     clear DilatedPrimaryBinaryImage EditedPrimaryBinaryImage;
     BothOutlinesOnOrigImage = ObjectOutlinesOnOrigImage;
     BothOutlinesOnOrigImage(PrimaryObjectOutlines == 1) = LineIntensity;
-    %%% [NB] hack. save memory.
+    %%% [PLab] hack. save memory.
     clear PrimaryObjectOutlines LineIntensity;
     
     %%%%%%%%%%%%%%%%%%%%%%%% END OF INITIATION OF VISUALIZATION
@@ -900,7 +928,7 @@ if any(findobj == ThisModuleFigureNumber)
     end
     ObjectCoverage = 100*sum(sum(FinalLabelMatrixImage > 0))/numel(FinalLabelMatrixImage);
     
-    %[TS] display range of thresholds. Which is useful if limits for treshold
+    %[PLab] display range of thresholds. Which is useful if limits for treshold
     %should be used
     %     uicontrol(ThisModuleFigureNumber,'Style','Text','Units','Normalized','Position',[0.25 0.01 .6 0.04],...
     %         'BackgroundColor',[.7 .7 .9],'HorizontalAlignment','Left','String',sprintf('Threshold:  %0.3f               %0.1f%% of image consists of objects',Threshold,ObjectCoverage),'FontSize',handles.Preferences.FontSize);

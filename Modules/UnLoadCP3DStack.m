@@ -31,7 +31,7 @@ drawnow
 [CurrentModule, CurrentModuleNum, ModuleName] = CPwhichmodule(handles);
 
 
-%textVAR01 = Which images do you want to load into memory?
+%textVAR01 = Which images do you want to unload from memory?
 %infotypeVAR01 = imagegroup
 StackName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 %inputtypeVAR01 = popupmenu

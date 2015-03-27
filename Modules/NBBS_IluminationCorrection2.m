@@ -114,16 +114,16 @@ end
 if  ~strncmpi(iBrainTakeOver,'y',1)
     if handles.Current.SetBeingAnalyzed == 1
         
-
+        
         %get a list of all images to be used
         % [TS1, 2012-07-07: reorganized code for initializing images so that only
         % essential information is created. Will bypass slowest step of module and reduce time per call of module by 1-2 min]
         ImageList = cellfun(@(x) fullfile(handles.Pipeline.(strcat('Pathname',ImageName)),x),...
-        handles.Pipeline.(strcat('FileList',ImageName)), 'uniformoutput',false)';
+            handles.Pipeline.(strcat('FileList',ImageName)), 'uniformoutput',false)';
         
         % Initialize the Mean Image
         LogExampleImage = double(imread(ImageList{1}));
-
+        
         % Initialize the STD Image
         LogStdPixel = nan(length(LogExampleImage(:)),IterationNum);
         LogMeanPixel = nan(length(LogExampleImage(:)),IterationNum);
@@ -131,7 +131,7 @@ if  ~strncmpi(iBrainTakeOver,'y',1)
         if length(ImageList)<25*2
             NumImagesToLoad = floor(length(ImageList)/2);
         end
-
+        
         for i = 1:IterationNum
             fprintf('%d out of %d... \n',i,IterationNum)
             tic
@@ -147,18 +147,18 @@ if  ~strncmpi(iBrainTakeOver,'y',1)
             LogMeanPixel(:,i) = nanmean(matTempImages')';
             toc
         end
-
-
+        
+        
         LogStdPixel_Mean = nanmean(LogStdPixel')';
         LogStdImage = reshape(LogStdPixel_Mean,size(LogExampleImage,1),size(LogExampleImage,2));
-
+        
         LogMeanPixel_Mean = nanmean(LogMeanPixel')';
         LogMeanImage = reshape(LogMeanPixel_Mean,size(LogExampleImage,1),size(LogExampleImage,2));
-
-
+        
+        
         %[TS] deactivated -> calculate prior to make accesible to iBrain
         %loaded H = fspecial('gaussian',[SmoothingSize SmoothingSize],SmoothingSize*SmoothingSigma);
-
+        
         IllumFilt_STD = imfilter(LogStdImage,H,'replicate');
         IllumFilt_Mean = imfilter(LogMeanImage,H,'replicate');
         BackgroundSubtractionVal = (10^mean(IllumFilt_Mean(:))) * BackgroundCorrectionCorrectionFactor;
@@ -169,7 +169,7 @@ if  ~strncmpi(iBrainTakeOver,'y',1)
         handles.Pipeline.(strcat(Mean_IlluminationImageName,'_init')) = IllumFilt_Mean;
         handles.Pipeline.(strcat(Std_IlluminationImageName,'_init')) = IllumFilt_STD;
         handles.Pipeline.(strcat(Mean_IlluminationImageName,'_background')) = BackgroundSubtractionVal;
-
+        
     else
         IllumFilt_STD = handles.Pipeline.(strcat(Std_IlluminationImageName,'_init'));
         IllumFilt_Mean = handles.Pipeline.(strcat(Mean_IlluminationImageName,'_init'));
@@ -184,9 +184,9 @@ else
     %get the channel of the image
     [intChannelNumber] = check_image_channel(handles.Pipeline.(strcat('FileList',ImageName)){handles.Current.SetBeingAnalyzed})
     intZstackNumber = 0;
-
+    
     % [BS] store the stat in the Measurement field, with channel and
-    % szstack specific fieldnames 
+    % szstack specific fieldnames
     strStatFieldName = sprintf('illcor_ch%03dz%03d',intChannelNumber,intZstackNumber);
     
     if handles.Current.SetBeingAnalyzed == 1
@@ -212,7 +212,7 @@ else
     IllumFilt_Mean = handles.Measurements.Image.([strStatFieldName,'_mean']);
     IllumFilt_STD = handles.Measurements.Image.([strStatFieldName,'_std']);
     BackgroundSubtractionVal = (10^mean(IllumFilt_Mean(:))) * BackgroundCorrectionCorrectionFactor;
-
+    
 end
 
 
@@ -220,7 +220,7 @@ end
 if strncmpi(AplyIllumCorr,'y',1)
     %    [handles, ImageOutputPlot, OrigImage] = DoCorrectionAndSave(handles,ImageList,IllumFilt_Mean,IllumFilt_STD,OutputName);
     % OrigImage = double(imread(ImageList{handles.Current.SetBeingAnalyzed})); %Deactivated by TS
-  
+    
     % Replacement by  [TS], see comment [TS1], allows to speed up module
     strImageToImport = fullfile(...
         handles.Pipeline.(strcat('Pathname',ImageName)),...
@@ -237,10 +237,10 @@ if strncmpi(AplyIllumCorr,'y',1)
         % [BS, 2012-06-25] Added optional background subtraction
         ImageOutput = ImageOutput-BackgroundSubtractionVal;
         ImageOutput(ImageOutput<0) = 0;
-    end    
+    end
     
     % store non-scaled for visualization
-    ImageOutputPlot = ImageOutput;    
+    ImageOutputPlot = ImageOutput;
     % rescale 0 / 1
     ImageOutput = ImageOutput/65535;
     
@@ -256,69 +256,73 @@ end
 %display the results
 drawnow
 
-ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
-CPfigure(handles,'Image',ThisModuleFigureNumber);
-CPresizefigure(OrigImage,'TwoByTwo',ThisModuleFigureNumber);
-subplot(2,2,1);
-try
-    CPimagesc(IllumFilt_Mean,handles);
-    colormap('JET')
-    colorbar
-    title('Mean Intensity Filter [Log10(intensity)]')
-end
-subplot(2,2,3);
-try
-    CPimagesc(IllumFilt_STD,handles);
-    colormap('JET')
-    colorbar
-    title('STD Intensity Filter [Log10(intensity)]')
-end
 
-subplot(2,4,3);
-try
-    CPimagesc(OrigImage,handles);
-    colormap('JET')
-    title('Original Image')
-end
-subplot(2,4,4);
-try
-    CPimagesc(ImageOutputPlot,handles);
-    colormap('JET')
-    if strncmpi(AplyBackgroundSubtraction,'y',1)
-        title(sprintf('Corrected Image\n+Background Subtraction'),'FontSize',7)
-    else
-        title('Corrected Image')
-    end
-end
-
-subplot(2,4,7);
-try
-    hold on
-    hist(OrigImage(:),round(length(OrigImage(:))/20))
-    vline(BackgroundSubtractionVal,'--r')
-    hold off
-    if ~strncmpi(AplyBackgroundSubtraction,'y',1)
-        set(gca,'xlim',[quantile(OrigImage(:), 0.001) quantile(OrigImage(:), 0.95)])
-    end
-    ylabel('Pixel Count')
-    xlabel('Intensity')
-    title('Original Image Histogram')
-end
-subplot(2,4,8);
-try
-    if ~strncmpi(AplyBackgroundSubtraction,'y',1)
-        hist(ImageOutputPlot(:),round(length(ImageOutputPlot(:))/20))
-        set(gca,'xlim',[quantile(OrigImage(:), 0.001) quantile(OrigImage(:), 0.95)])
-        title('Corrected Image Histogram')
-    else
-        hist(ImageOutputPlot(ImageOutputPlot>0),round(length(ImageOutputPlot(ImageOutputPlot>0))/20))
-        title('Corrected Image Histogram (values > 0)')
-    end
-    ylabel('Pixel Count')
-    xlabel('Intensity')
+if CPisHeadless() == false    % [TS140327]: Early version on ETH share2 had display commented out.
     
+    ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
+    CPfigure(handles,'Image',ThisModuleFigureNumber);
+    CPresizefigure(OrigImage,'TwoByTwo',ThisModuleFigureNumber);
+    subplot(2,2,1);
+    try
+        CPimagesc(IllumFilt_Mean,handles);
+        colormap('JET')
+        colorbar
+        title('Mean Intensity Filter [Log10(intensity)]')
+    end
+    subplot(2,2,3);
+    try
+        CPimagesc(IllumFilt_STD,handles);
+        colormap('JET')
+        colorbar
+        title('STD Intensity Filter [Log10(intensity)]')
+    end
+    
+    subplot(2,4,3);
+    try
+        CPimagesc(OrigImage,handles);
+        colormap('JET')
+        title('Original Image')
+    end
+    subplot(2,4,4);
+    try
+        CPimagesc(ImageOutputPlot,handles);
+        colormap('JET')
+        if strncmpi(AplyBackgroundSubtraction,'y',1)
+            title(sprintf('Corrected Image\n+Background Subtraction'),'FontSize',7)
+        else
+            title('Corrected Image')
+        end
+    end
+    
+    subplot(2,4,7);
+    try
+        hold on
+        hist(OrigImage(:),round(length(OrigImage(:))/20))
+        vline(BackgroundSubtractionVal,'--r')
+        hold off
+        if ~strncmpi(AplyBackgroundSubtraction,'y',1)
+            set(gca,'xlim',[quantile(OrigImage(:), 0.001) quantile(OrigImage(:), 0.95)])
+        end
+        ylabel('Pixel Count')
+        xlabel('Intensity')
+        title('Original Image Histogram')
+    end
+    subplot(2,4,8);
+    try
+        if ~strncmpi(AplyBackgroundSubtraction,'y',1)
+            hist(ImageOutputPlot(:),round(length(ImageOutputPlot(:))/20))
+            set(gca,'xlim',[quantile(OrigImage(:), 0.001) quantile(OrigImage(:), 0.95)])
+            title('Corrected Image Histogram')
+        else
+            hist(ImageOutputPlot(ImageOutputPlot>0),round(length(ImageOutputPlot(ImageOutputPlot>0))/20))
+            title('Corrected Image Histogram (values > 0)')
+        end
+        ylabel('Pixel Count')
+        xlabel('Intensity')
+        
+    end
+    drawnow
 end
-drawnow
 
 
 %

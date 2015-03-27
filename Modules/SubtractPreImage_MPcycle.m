@@ -98,11 +98,12 @@ for j = 1:length(CurrImNameList)
     end
     
     %%% retrieve intensity images
-    CurrImages{j} = CPretrieveimage(handles,CurrImageName,ModuleName,'MustBeGray','CheckScale');
-    PreImages{j} = CPretrieveimage(handles,PreImageName,ModuleName,'MustBeGray','CheckScale');
+    CurrImages{j} = double(CPretrieveimage(handles,CurrImageName,ModuleName,'DontCheckColor','DontCheckScale'));
+    PreImages{j} = double(CPretrieveimage(handles,PreImageName,ModuleName,'DontCheckColor','DontCheckScale'));
     
     %%% subtract intensity images
-    OutputImages{j} = imsubtract(CurrImages{j},PreImages{j});
+    OutputImages{j} = imsubtract(CurrImages{j}.*65536,PreImages{j}.*65536);
+    OutputImages{j} = OutputImages{j}./65536;
     OutputImages{j}(OutputImages{j}<0) = 0;
    
 end

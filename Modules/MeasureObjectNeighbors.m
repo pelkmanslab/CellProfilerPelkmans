@@ -79,8 +79,8 @@ drawnow
 
 %textVAR01 = What did you call the objects whose neighbors you want to measure?
 %infotypeVAR01 = objectgroup
-ObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 %inputtypeVAR01 = popupmenu
+ObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 
 %textVAR02 = Objects are considered neighbors if they are within this distance, in pixels. If you want your objects to be touching before you count neighbors (for instance, in an image of tissue), use the ExpandOrShrink module to expand your objects:
 %defaultVAR02 = 0
@@ -103,6 +103,7 @@ GrayscaleNeighborsName = char(handles.Settings.VariableValues{CurrentModuleNum,4
 ExtraMeasures = char(handles.Settings.VariableValues{CurrentModuleNum,5});
 
 %%%VariableRevisionNumber = 5
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PRELIMINARY CALCULATIONS & FILE HANDLING %%%

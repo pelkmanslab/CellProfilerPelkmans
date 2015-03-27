@@ -245,7 +245,7 @@ op = fspecialCP3D('2D LoG',iHsize);         % force 2D filter
 if iObjIntensityThr == '/'
     iObjIntensityThr = [];
 elseif strcmp(iObjIntensityThr,'auto')
-    iObjIntensityThr = multithresh(Image).*0.8;% a bit more sensitive
+    iObjIntensityThr = multithresh(Image).*0.7;% be sensitive enough!
 else
     try
         iObjIntensityThr = str2double(iObjIntensityThr);

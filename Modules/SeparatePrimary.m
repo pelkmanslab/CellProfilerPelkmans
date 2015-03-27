@@ -59,22 +59,11 @@ drawnow
 %%% Reads (opens) the image you want to analyze and assigns it to a
 %%% variable.
 OrigImage = CPretrieveimage(handles,ImageName,ModuleName,'MustBeGray','CheckScale');
-% Test for blank images
-if isempty(find(OrigImage~=0))
-    warning(sprintf('Blank image has been detected in image: %s', ImageName))
-    return
-end
 
 %%% Retrieves the label matrix image that contains the edited primary
 %%% segmented objects.
 PrimaryLabelImage = CPretrieveimage(handles,['Segmented', PrimaryObjectName],ModuleName,'DontCheckColor','DontCheckScale',size(OrigImage));
 SeparatedPrimaryLabelImage=PrimaryLabelImage>0;
-
-% Test for bad previous segmentation
-if ~any(SeparatedPrimaryLabelImage(:))
-    warning(sprintf('Previous segmentation failed to detect any objects in image: %s', ImageName))
-    return
-end
 
 %%%%%%%%%%%%%%%%%%%%%%
 %%% IMAGE ANALYSIS %%%

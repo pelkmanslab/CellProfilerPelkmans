@@ -23,6 +23,8 @@ drawnow
 %infotypeVAR01 = objectgroup indep
 ObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 
+%%%VariableRevisionNumber = 2
+
 
 %%%%%%%%%%%%%%%%
 %%% ANALYSIS %%%

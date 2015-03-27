@@ -40,6 +40,16 @@ OutputName = char(handles.Settings.VariableValues{CurrentModuleNum,4});
 ComparisonImageName = char(handles.Settings.VariableValues{CurrentModuleNum,5});
 %inputtypeVAR05 = popupmenu
 
+%%%VariableRevisionNumber = 2
+
+
+
+%%%%%%%%%%%%%%%%
+%%% ANALYSIS %%%
+%%%%%%%%%%%%%%%%
+
+
+
 drawnow
 %x_correction = 4
 %y_correction = 4

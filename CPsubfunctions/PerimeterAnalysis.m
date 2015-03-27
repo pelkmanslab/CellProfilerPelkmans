@@ -1,4 +1,4 @@
-function PerimeterTrace=PerimeterAnalysis(LabelImage,WindowSize)
+function PerimeterTrace = PerimeterAnalysis(LabelImage,WindowSize)
 %PERIMETERANALYSIS calculate curvature of object perimeter
 %
 %   PERIMETERPROPS=PERIMETERANALYSIS(LABELIMAGE,WINDOW)
@@ -58,7 +58,10 @@ function PerimeterTrace=PerimeterAnalysis(LabelImage,WindowSize)
 %       imdilate(imerode(LabelImage,mindisk),mindisk);
 %   before calling this function helps.
 %
-%   [Anatol Schwab 23.11.2012]
+%   Author:
+%     Anatol Schwab
+%
+%   (c) Pelkmans Lab 2012
 
 ImSize=size(LabelImage);
 ObjectIDs=setdiff(unique(LabelImage(:)),0);%just to make sure

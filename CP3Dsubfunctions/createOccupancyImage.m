@@ -1,5 +1,5 @@
 function varargout = createOccupancyImage(SegmentationCC,varargin)
-%occImg = CREATEOCCUPANCYIMAGE(SEGMENTATIONCC) projects SEGMENTATIONCC to
+% occImg = CREATEOCCUPANCYIMAGE(SEGMENTATIONCC) projects SEGMENTATIONCC to
 % an OCCIMG, where the intensity is directly correlated to the amount of
 % pixels occupied by objects
 %
@@ -33,10 +33,12 @@ function varargout = createOccupancyImage(SegmentationCC,varargin)
 % Website: http://www.imls.uzh.ch/research/pelkmans.html
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% INITIALIZE SETTINGS   %%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+fprintf('Using the legacy function createOccupancyImage(). If writing novel modules, consider using much less memory-intense (and faster) createOccupancyImage2() \n');
 
 %Check input
 if nargout ~= max(nargin-1,1);
@@ -52,13 +54,13 @@ RCZO=NaN(countPixels,4);
 %(RowColumnZplaneObjectid)
 numLastIX=0;
 for k=1:SegmentationCC.NumObjects
-    
+
     numFirstIX=numLastIX+1;
     numLastIX=numLastIX+numPixels(1,k);
-    
-    [RCZO(numFirstIX:numLastIX,1) RCZO(numFirstIX:numLastIX,2) RCZO(numFirstIX:numLastIX,3)] = ind2sub(SegmentationCC.ImageSize,SegmentationCC.PixelIdxList{1,k});
+
+    [RCZO(numFirstIX:numLastIX,1), RCZO(numFirstIX:numLastIX,2), RCZO(numFirstIX:numLastIX,3)] = ind2sub(SegmentationCC.ImageSize,SegmentationCC.PixelIdxList{1,k});
     RCZO(numFirstIX:numLastIX,4) = k;
-    
+
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -99,3 +101,6 @@ CountPerPx = histc(SubRC,unSubRC);
 occImg(unSubRC)=CountPerPx;
 
 end
+
+
+

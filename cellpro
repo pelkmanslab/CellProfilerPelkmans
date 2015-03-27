@@ -23,17 +23,24 @@ def get_user_path():
     sibling_ibrainshared = os.path.join(os.path.dirname(ROOT), 'iBRAINShared')
     if os.path.exists(sibling_ibrainshared):
         user_path.append(sibling_ibrainshared)
-    user_path = ':'.join(user_path)
+    return ':'.join(user_path)
 
 
 def invoke(command, _in=None):
     '''
     Invoke command as a new system process and return its output.
     '''
-    process = Popen(command, stdin=PIPE, stdout=PIPE, shell=True,
+    process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True,
                     executable='/bin/bash')
     if _in is not None:
         process.stdin.write(_in)
+    error_msg = process.stderr.read()
+    if len(error_msg) > 0:
+        print '=' * 80
+        print 'An error happened while invoking a subprogram:'
+        print '-' * 80
+        print error_msg
+        print '=' * 80
     return process.stdout.read()
 
 
@@ -50,10 +57,13 @@ class CellProfilerLauncher(object):
 
     @staticmethod
     def bake_matlab_code(code, params):
+        if not 'root' in params:
+            params['root'] = ROOT
         if not 'matlab_call' in params:
             params['matlab_call'] = MATLAB_CALL
         wrapped_code = '%(matlab_call)s <<ENDOFMATLAB\n'
-        wrapped_code += '''path('%(user_path)s', path());
+        wrapped_code += '''path('%(root)s', path());
+path('%(user_path)s', path());
 path(cellpro.getrecpath('%(user_path)s'), path());'''
         wrapped_code += code
         wrapped_code += '\nENDOFMATLAB\n'
@@ -61,25 +71,41 @@ path(cellpro.getrecpath('%(user_path)s'), path());'''
 
     def launch_as_gui(self):
         # Launch it as GUI
-        command = '%(matlab_call)s %(gui)s -r "cellpro.launchGUI()" ' % {
+        command = '%(matlab_call)s %(gui)s -r "path(\'%(root)s\', path());'
+        command += 'cellpro.launchGUI()"'
+        command = command % {
             'matlab_call': MATLAB_CALL,
             'gui': MATLAB_GUI,
+            'root': ROOT,
         }
         #print command
         invoke(command)
 
     @property
-    def input_path(self):
-        self.args.input_path
+    def pipeline_path(self):
+        return os.path.abspath(self.args.pipeline)
+
+    @property
+    def images_path(self):
+        return os.path.abspath(self.args.input_path)
+
+    @property
+    def data_path(self):
+        return os.path.abspath(self.args.output_path)
 
     def precluster(self):
+        print 'CellProfiler:precluster'
         code = self.bake_matlab_code('''
-PreCluster_with_pipeline()
-''' % {
+PreCluster_with_pipeline('%(pipeline)s', '%(images_path)s', '%(data_path)s');
+''', {
             'matlab_call': MATLAB_CALL + ' ' + MATLAB_HEADLESS,
             'user_path': MATLAB_USER_PATH,
+            'pipeline': self.pipeline_path,
+            'images_path': self.images_path,
+            'data_path': self.data_path,
         })
-        print code
+        #print code
+        print invoke(code)
 
     def run(self):
         '''
@@ -87,6 +113,14 @@ PreCluster_with_pipeline()
         rely on a number of functions that have been used to run the
         CellProfiler code in the cluster as a part of canonical iBRAIN.
         '''
+        batch_data_filepath = os.path.join(self.data_path, 'Batch_data.mat')
+        if not os.path.exists(batch_data_filepath):
+            self.precluster()
+        #self.cpcluster()
+
+
+class CliError(Exception):
+    '''Command line error.'''
 
 
 if __name__ == '__main__':
@@ -95,14 +129,23 @@ if __name__ == '__main__':
                         help='Input or TIFF (images) folder')
     parser.add_argument('-o', '--output-path',
                         help='Output or BATCH (data) folder')
+    parser.add_argument('-p', '--pipeline',
+                        help='CellProfiler pipeline filepath')
     parser.add_argument('action', choices=['gui', 'run'])
     args = parser.parse_args()
 
-    launcher = CellProfilerLauncher(args)
-    if args.action == 'gui':
-        launcher.launch_as_gui()
-    elif args.action == 'run':
-        launcher.run()
-    else:
-        print 'Unknown action specified.'
+    try:
+        launcher = CellProfilerLauncher(args)
+        if args.action == 'gui':
+            launcher.launch_as_gui()
+        elif args.action == 'run':
+            if args.pipeline is None or args.input_path is None \
+                    or args.output_path is None:
+                raise CliError('Missing on of the required arguments '
+                               '(input/output pathnames or pipeline path).')
+            launcher.run()
+        else:
+            raise CliError('Unknown action specified.')
+    except CliError as error:
+        print str(error)
         parser.print_help()

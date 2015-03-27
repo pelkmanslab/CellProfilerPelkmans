@@ -80,7 +80,11 @@ disp(sprintf('Applying illumination correction on channel number: %d', intChanne
 
 % Store the stat in the Measurement field, with channel and szstack
 % specific fieldnames.
-strStatFieldName = sprintf('illcor_ch%03dz%03d',intChannelNumber,intZstackNumber);
+if strcmp(AlternativeIllCorrFolder,'Pre')
+   strStatFieldName = sprintf('illcor_ch%03dz%03d_Pre',intChannelNumber,intZstackNumber);
+else
+   strStatFieldName = sprintf('illcor_ch%03dz%03d',intChannelNumber,intZstackNumber);
+end
 
 if handles.Current.SetBeingAnalyzed == 1
     % Get the BATCH directory and load illcor statistics.

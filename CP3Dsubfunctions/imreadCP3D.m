@@ -1,4 +1,4 @@
-function Images = imreadCP3D(strFilenames,varargin)
+function Images = imreadCP3D(strFilenames,datatype,illum_stat_values)
 %IMREADCP3D generates a matrix containing the images specified in the
 %   the array STRFILENAMES, where index positions in STRFILENAMES
 %   correspond to different Z-planes. STRFILENAMES has to contain full
@@ -11,8 +11,8 @@ function Images = imreadCP3D(strFilenames,varargin)
 %   images as well as the memory for their storage.
 %   ----------------------------------
 %   Information about module:
-%   Created by of CP3D to load multiple images into one stack
-%   
+%   Created for CP3D to load multiple images into one stack
+%
 %   Authors:
 %   Nico Battich
 %   Thomas Stoeger
@@ -26,12 +26,19 @@ function Images = imreadCP3D(strFilenames,varargin)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Determine if datatype has been selected
-if nargin == 1
+if nargin < 2
     selDataType = 'double';
-elseif isempty(varargin(1))
+elseif isempty(datatype)
     selDataType = 'double';
 else
-    selDataType = (varargin{1});
+    selDataType = (datatype);
+end
+
+if nargin < 3
+    doIllumCorrection = false;
+else
+    doIllumCorrection = true;
+    checkInputOfStatValues(illum_stat_values);
 end
 
 % Check if strFilenames are unambiguous
@@ -76,22 +83,42 @@ end
 
 for k=1:numFiles
     try
-        switch selDataType
-            case 'double'
-                Images(:,:,k) = double(imread(strFilenames{1,k}));
-            case 'single'
-                Images(:,:,k) = single(imread(strFilenames{1,k}));
-            case 'uint16'
-                Images(:,:,k) = uint16(imread(strFilenames{1,k}));
-            otherwise
-                error('Datatype for loading images is not supported')
-        end
+        ImportedRawImage = double(imread(strFilenames{1,k})); % import as double for illumination correction
     catch CanNotLoad
         error(['Could not load image ' strFilenames{1,k} ' . Please check if file exists or if file format is supported (such as .tif or .png).']);
     end
+    
+    if doIllumCorrection == true
+        isLog = 1; % [TS 140808] List here for clarity if output of iBrain statistics change in future.
+        matMean = double(illum_stat_values.mean);
+        matStd = double(illum_stat_values.std);
+        ImageForLayer = IllumCorrect(ImportedRawImage,matMean,matStd,isLog);
+    else
+        ImageForLayer = ImportedRawImage;
+    end
+    
+    switch selDataType
+        case 'double'
+            Images(:,:,k) = ImageForLayer;
+        case 'single'
+            Images(:,:,k) = ImageForLayer;
+        case 'uint16'
+            Images(:,:,k) = ImageForLayer;
+        otherwise
+            error('Datatype for loading images is not supported')
+    end
+    
     
 end
 
 
 
+end
+
+function checkInputOfStatValues(illum_stat_values)
+if ~isfield(illum_stat_values,'mean')
+    error('Illumination correction file does not have mean defined');
+elseif ~isfield(illum_stat_values,'std')
+    error('Illumination correction file does not have mean defined');
+end
 end

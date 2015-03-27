@@ -558,7 +558,7 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         clear Overlaid;
         %%% Bug workaround (see step 9).
         %%% [NB, WATERSHED BUG IN VERSION 2011A OR HIGHER HAS BEEN FIXED. SO CHECK VERSION FIRST]
-        if verLessThan('matlab', '7.12.0')
+        if verLessThan('matlab', '7.12.0') && ispc()
             BlackWatershedLinesPre2 = im2bw(BlackWatershedLinesPre,.5);
             BlackWatershedLines = bwlabel(BlackWatershedLinesPre2);
             %%% [NB] hack. save memory.

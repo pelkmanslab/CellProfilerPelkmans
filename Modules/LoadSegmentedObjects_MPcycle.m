@@ -87,17 +87,47 @@ strSegmentationFileNameTrunk = handles.shiftDescriptor.SegmentationFileNameTrunk
 
 % obtain filename and load segmented image
 SegmentationImages = cell(1,length(ObjectNameList));
+
+% built absolute SEGMENTATION path from relative path stored in handles
+strSegmentationDir = [strrep(handles.Current.DefaultOutputDirectory, [filesep,'BATCH'], filesep), handles.shiftDescriptor.SegmentationDirectory];
+if handles.Current.SetBeingAnalyzed == 1
+    structSegDir = CPdir(fullfile(strSegmentationDir));
+    structSegDir = structSegDir(~[structSegDir.isdir]);
+end
+
+
+
 for i = 1:length(ObjectNameList)
     ObjectName = ObjectNameList{i};
     if strcmpi(ObjectName,'Do not use')
         continue
     end
     
-    % built absolute SEGMENTATION path from relative path stored in handles
-    strSegmentationDir = [strrep(handles.Current.DefaultOutputDirectory, [filesep,'BATCH'], filesep), handles.shiftDescriptor.SegmentationDirectory];
-    
     % built full segmentation image filename from filename trunk stored in handles
-    strSegmentationFileName = [regexprep(strOrigImageName,'.+(_\w{1}\d{2}_)',sprintf('%s$1',strSegmentationFileNameTrunk)),'_Segmented',ObjectName,'.png'];
+    
+    % get example segmentation filename 
+    if handles.Current.SetBeingAnalyzed == 1        
+        segImageIndex = find(arrayfun(@(a) ~isempty(strfind(structSegDir(a).name,ObjectName)), [1:length(ObjectNameList)]),1,'first');
+        segOrigFileName = structSegDir(segImageIndex).name;
+        
+        %get T, F, L, A, Z, C from segmentation inages 
+        segFileNameInfo = flatten(regexp(segOrigFileName,'.+T(\d{04})F(\d{03})L(\d{02})A(\d{02})Z(\d{02})C(\d{02}).*','tokens'));
+        segFileNameInfo = cellfun(@str2num,segFileNameInfo,'uniformoutput',false);
+                
+        handles.shiftDescriptor.SegmentationImageInfo.(ObjectName) = segFileNameInfo; 
+    else
+        segFileNameInfo = handles.shiftDescriptor.SegmentationImageInfo.(ObjectName);
+    end
+        
+    %get correct F
+    currentImageSite = flatten(regexp(strOrigImageName,'.+T\d{04}F(\d{03})L.*','tokens'));
+    currentImageSite = str2num(currentImageSite{1});
+    
+    %strSegmentationFileName = [regexprep(strOrigImageName,'.+(_\w{1}\d{2}_)',sprintf('%s$1',strSegmentationFileNameTrunk)),'_Segmented',ObjectName,'.png'];
+    strSegmentationFileName = [regexprep(strOrigImageName,'.+(_\w{1}\d{2}_)T\d{04}F\d{03}L\d{02}A\d{02}Z\d{02}C\d{02}',...
+        sprintf('%s$1T%.4dF%.3dL%.2dA%.2dZ%.2dC%.2d',strSegmentationFileNameTrunk,segFileNameInfo{1},currentImageSite,segFileNameInfo{3},segFileNameInfo{4},...
+        segFileNameInfo{5},segFileNameInfo{5})),...
+        '_Segmented',ObjectName,'.png'];
     
     % load segmentation image
     strFilePath = fullfile(strSegmentationDir,strSegmentationFileName);
@@ -186,4 +216,25 @@ for i = 1:length(ObjectNameList)
     
 end
 
+function C = flatten(A)
+% 
+% C1 = flatten({{1 {2 3}} {4 5} 6})
+% C2 = flatten({{'a' {'b','c'}} {'d' 'e'} 'f'})
+% 
+% Outputs:
+% C1 = 
+%     [1]    [2]    [3]    [4]    [5]    [6]
+% C2 = 
+%     'a'    'b'    'c'    'd'    'e'    'f'
+%
+% Copyright 2010  The MathWorks, Inc.
+C = {};
+for i=1:numel(A)  
+    if(~iscell(A{i}))
+        C = [C,A{i}];
+    else
+       Ctemp = flatten(A{i});
+       C = [C,Ctemp{:}];
+       
+    end
 end

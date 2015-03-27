@@ -127,7 +127,7 @@ shift.yShift(f) = 0;
 %%% get index of current image
 strOrigImageName = char(handles.Measurements.Image.FileNames{handles.Current.SetBeingAnalyzed}{1,1});
 strLookup = regexprep(strOrigImageName,'A\d{2}Z\d{2}C\d{2}','A\\d{2}Z\\d{2}C\\d{2}');
-index = find(cell2mat(regexp(cellstr(shift.fileName),strLookup)));
+index = find(cellfun(@(x) ~isempty(x),regexp(cellstr(shift.fileName),strLookup)));
 
 IntensityImages = cell(1,length(IntImNameList));
 IntensityOutputImages = cell(1,length(IntImNameList));
@@ -180,6 +180,7 @@ if length(SegmentationOutputImages)>1
     objectNum = cell2mat(cellfun(@(x) length(unique(x(:))),SegmentationOutputImages,'Uniformoutput',false));  
     [~,IX] = sort(objectNum,'ascend');
     
+    
     for k = IX(2:end)
         aIx = unique(SegmentationOutputImages{k}(:));
         aIx(aIx==0)=[];
@@ -196,8 +197,21 @@ if length(SegmentationOutputImages)>1
         for n = 1:length(Loca)
             LabeledSegmentationOutputImages{IX(1)}(SegmentationOutputImages{IX(1)}==bIx(n)) = Loca(n);
         end
-    end
 
+        %%% Note: New objects labels have to be assigned to make labels
+        %%% continuous starting from 1 (necessary for downstream CP
+        %%% modules). This is cycle specific, however, and could in
+        %%% principle lead to different object Ids between cycles. To check
+        %%% this, we relate the new object ids to the original ones, so
+        %%% that we can later map the measurements back to the correct
+        %%% objects.
+        
+        % relate new object labels to original object labels (of original
+        % uncropped segmentation image)
+        comIx = aIx(b);
+        
+    end
+    
     % check that object count is finally really identical
     checkNum = cell2mat(cellfun(@(x) max(unique(x(:))),LabeledSegmentationOutputImages,'Uniformoutput',false));
     if length(unique(checkNum))>1
@@ -434,6 +448,10 @@ for i = 1:length(ObjectNameList)
             end
         end
     end
+    
+    % save relation to original object ID to handles
+    handles.Measurements.(ObjectName).OrigObjectIDFeatures{handles.Current.SetBeingAnalyzed} = 'OriginalObjectId';
+    handles.Measurements.(ObjectName).OrigObjectID{handles.Current.SetBeingAnalyzed} = comIx;
     
     
 end

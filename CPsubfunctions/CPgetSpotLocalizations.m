@@ -138,7 +138,7 @@ if any(~f)
             dMemDivToConsiderForProximity = dMemDiv(fAngle);
             suppIXMembrConsiderForProximity = suppIXMembr(fAngle);
             
-            fProximity = dMemDivToConsiderForProximity <= dMemDiv(bIX); % logical
+            fProximity = dMemDivToConsiderForProximity <= dMemDiv(bIX); % catch weird morphology of cells
             suppIXMembrConsiderForSmallDeviation = suppIXMembrConsiderForProximity(fProximity); % integer index
             CurrdMemDiv = dMemDivToConsiderForProximity(fProximity);
             CurrdMemLoc = dMemLoc(suppIXMembrConsiderForSmallDeviation,:);

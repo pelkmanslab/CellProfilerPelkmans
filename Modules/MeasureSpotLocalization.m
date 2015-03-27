@@ -56,21 +56,18 @@ drawnow
 %textVAR01 = What are the parent objects? e.g Cells.
 %infotypeVAR01 = objectgroup
 %defaultVAR01 = Cells
-%choiceVAR01 =
 ParentObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 %inputtypeVAR01 = popupmenu
 
 %textVAR02 = What are the children objects for which you what to compute distances?
 %infotypeVAR02 = objectgroup
 %defaultVAR02 = Spots
-%choiceVAR02 =
 ChildrenObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 %inputtypeVAR02 = popupmenu
 
 %textVAR03 = What are the objects for which you what to compute distance to the children objects? (note: this object must be a direct child or a direct parent of the 'Parent' inputed above, e.g. Nuclei)
 %infotypeVAR03 = objectgroup
 %defaultVAR03 = Nuclei
-%choiceVAR03 =
 ThirdObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 %inputtypeVAR03 = popupmenu
 
