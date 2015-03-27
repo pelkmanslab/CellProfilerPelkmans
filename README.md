@@ -118,7 +118,7 @@ Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www
 Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
-### SplitOrSpliceMovies
+#### SplitOrSpliceMovies
 
 Author: [Mat](https://www.pelkmanslab.org/?page_id=350)
 
@@ -285,23 +285,33 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 ### Category "MPcycle"
 
+This category is for working with images acquired in different multiplexing (MP) cycles. Note that these modules require a shift descriptor file.
+
 
 #### AlignOjbects_MPcycle
+
+Align images to the corresponding segmentation images (objects).
 
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
 #### LoadSegmentedObjects_MPcycle
 
+Load segmentation images from a directory defined in a shift descriptor file.
+
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
 #### SaveSegmentedCells_MPcycle
 
+Save segmentation images in a directory defined in a shift descriptor file.
+
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
 #### SubtractPreImage_MPcycle
+
+Subtract images from previous cycles.
 
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
