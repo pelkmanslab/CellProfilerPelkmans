@@ -28,6 +28,7 @@ function handles = SubtractPreImage_MPcycle(handles)
 % Author:
 %    Markus Herrmann <markus.herrmann@imls.uzh.ch>
 %
+% $Revision: 1879 $
 
 %%%%%%%%%%%%%%%%%
 %%% VARIABLES %%%
@@ -47,26 +48,62 @@ CurrImNameList{1} = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 CurrImNameList{2} = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 %inputtypeVAR02 = popupmenu
 
-%textVAR03 = What did you call the aligned intensity images of the previous cycle?
+%textVAR03 = 
+%choiceVAR03 = Do not use
 %infotypeVAR03 = imagegroup
-PreImNameList{1} = char(handles.Settings.VariableValues{CurrentModuleNum,3});
+CurrImNameList{3} = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 %inputtypeVAR03 = popupmenu
 
 %textVAR04 = 
 %choiceVAR04 = Do not use
 %infotypeVAR04 = imagegroup
-PreImNameList{2} = char(handles.Settings.VariableValues{CurrentModuleNum,4});
+CurrImNameList{4} = char(handles.Settings.VariableValues{CurrentModuleNum,4});
 %inputtypeVAR04 = popupmenu
 
-%textVAR05 = How do you want to call the subtracted intensity images?
-%defaultVAR05 = SubtrGreen
-%infotypeVAR05 = imagegroup indep
-OutputNameList{1} = char(handles.Settings.VariableValues{CurrentModuleNum,5});
+%textVAR05 = What did you call the aligned intensity images of the previous cycle?
+%infotypeVAR05 = imagegroup
+PreImNameList{1} = char(handles.Settings.VariableValues{CurrentModuleNum,5});
+%inputtypeVAR05 = popupmenu
 
 %textVAR06 = 
-%defaultVAR06 = /
-%infotypeVAR06 = imagegroup indep
-OutputNameList{2} = char(handles.Settings.VariableValues{CurrentModuleNum,6});
+%choiceVAR06 = Do not use
+%infotypeVAR06 = imagegroup
+PreImNameList{2} = char(handles.Settings.VariableValues{CurrentModuleNum,6});
+%inputtypeVAR06 = popupmenu
+
+%textVAR07 = 
+%choiceVAR07 = Do not use
+%infotypeVAR07 = imagegroup
+PreImNameList{3} = char(handles.Settings.VariableValues{CurrentModuleNum,7});
+%inputtypeVAR07 = popupmenu
+
+%textVAR08 = 
+%choiceVAR08 = Do not use
+%infotypeVAR08 = imagegroup
+PreImNameList{4} = char(handles.Settings.VariableValues{CurrentModuleNum,8});
+%inputtypeVAR08 = popupmenu
+
+%textVAR09 = How do you want to call the subtracted intensity images?
+%defaultVAR09 = SubtrGreen
+%infotypeVAR09 = imagegroup indep
+OutputNameList{1} = char(handles.Settings.VariableValues{CurrentModuleNum,9});
+
+%textVAR10 = 
+%defaultVAR10 = /
+%infotypeVAR10 = imagegroup indep
+OutputNameList{2} = char(handles.Settings.VariableValues{CurrentModuleNum,10});
+
+%textVAR11 = 
+%defaultVAR11 = /
+%infotypeVAR11 = imagegroup indep
+OutputNameList{3} = char(handles.Settings.VariableValues{CurrentModuleNum,11});
+
+%textVAR12 = 
+%defaultVAR12 = /
+%infotypeVAR12 = imagegroup indep
+OutputNameList{4} = char(handles.Settings.VariableValues{CurrentModuleNum,12});
+
+%%%VariableRevisionNumber = 12
 
 
 
@@ -87,21 +124,25 @@ for j = 1:length(CurrImNameList)
         continue
     end
     
-    %%% make sure the correct images are loaded for later subtraction
-    CurrFilename = char(handles.Pipeline.(sprintf('Filename%s',CurrImageName)));
-    PreFilename = char(handles.Pipeline.(sprintf('Filename%s',PreImageName)));
-    % the two images from the two different multiplexing cycles should be
-    % from identical sites/channels, hence their filenames should only
-    % differ in one character, namely the cycle number
-    if sum(~(CurrFilename == PreFilename))~=1 %difference of more than one character between cycles
-        error('%s: images from two different sites/channels were selected',mfilename)
-    end
-    
+%     %%% make sure the correct images are loaded for later subtraction
+%     % this hardcoding is superugly, I know, but I don't have a better idea
+%     CurrFilename = char(handles.Pipeline.(sprintf('Filename%s',strrep(CurrImageName,'Align',''))));
+%     PreFilename = char(handles.Pipeline.(sprintf('Filename%s',strrep(PreImageName,'Align',''))));
+%     % the two images from the two different multiplexing cycles should be
+%     % from identical sites/channels, hence their filenames should only
+%     % differ in one character, namely the cycle number
+%     if sum(~(CurrFilename == PreFilename))~=1 %difference of more than one character between cycles
+%         error('%s: images from two different sites/channels were selected',mfilename)
+%     end
+%     
     %%% retrieve intensity images
     CurrImages{j} = double(CPretrieveimage(handles,CurrImageName,ModuleName,'DontCheckColor','DontCheckScale'));
     PreImages{j} = double(CPretrieveimage(handles,PreImageName,ModuleName,'DontCheckColor','DontCheckScale'));
     
     %%% subtract intensity images
+    if ~isequal(size(CurrImages{j}),size(PreImages{j}))
+        error('''%s'' and ''%s'' must have the same size', CurrImageName, PreImageName)
+    end
     OutputImages{j} = imsubtract(CurrImages{j}.*65536,PreImages{j}.*65536);
     OutputImages{j} = OutputImages{j}./65536;
     OutputImages{j}(OutputImages{j}<0) = 0;
