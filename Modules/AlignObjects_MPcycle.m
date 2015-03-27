@@ -107,6 +107,10 @@ IntImOutputNameList{3} = char(handles.Settings.VariableValues{CurrentModuleNum,1
 %infotypeVAR14 = imagegroup indep
 IntImOutputNameList{4} = char(handles.Settings.VariableValues{CurrentModuleNum,14});
 
+%textVAR15 = Type "Pre" (Pre) to load shift descriptor file from previous multiplexing cycle. Type period (.) for using the one stored in the handles.
+%defaultVAR15 = .
+AlternativeShiftDescriptor = char(handles.Settings.VariableValues{CurrentModuleNum,15});
+
 %%%VariableRevisionNumber = 12
 
 
@@ -116,7 +120,53 @@ IntImOutputNameList{4} = char(handles.Settings.VariableValues{CurrentModuleNum,1
 %%%%%%%%%%%%%%%%%%
 
 %%% retrieve shift descriptors from handles
-shift = handles.shiftDescriptor;
+if strncmp(AlternativeShiftDescriptor,'.',1)
+    if length(AlternativeShiftDescriptor) == 1
+        shift = handles.shiftDescriptor;
+    else
+        if strncmp(AlternativeShiftDescriptor,'./../',5)
+            strAlignCyclesDir = fullfile(handles.Current.DefaultOutputDirectory,AlternativeShiftDescriptor);
+            jsonDescriptorFile = fullfile(strAlignCyclesDir,'shiftDescriptor.json');
+            fprintf(['=================================================' ...
+                '=================================================' ...
+                '=================================================' ...
+                '\n\n%s: You loaded an alternative shift descriptor file:\n%s\n\n' ...
+                '=================================================' ...
+                '=================================================' ...
+                '=================================================' ...
+                '\n'],mfilename,jsonDescriptorFile);
+            % load json file
+            shift = loadjson(jsonDescriptorFile);
+        else
+            error('Please specify relative path (relative from default output directory) to ALIGNCYCLES folder that contains the shift descriptor file')
+        end
+    end
+elseif strcmp(AlternativeShiftDescriptor,'Pre')
+    % define path to json file
+    % If output dir is BATCH directory, assume ALIGNCYCLES directory
+    strAlignCyclesDir = handles.Current.DefaultOutputDirectory;
+    if strcmp(getlastdir(strAlignCyclesDir),'BATCH')
+        strAlignCyclesDir = strrep(strAlignCyclesDir, [filesep,'BATCH'],[filesep,'ALIGNCYCLES']);
+    end
+    % use shift descriptor of previous cycle
+    cycleNum = str2double(cell2mat(flatten(regexp(strAlignCyclesDir,'.*?([0-9]+).ALIGNCYCLES','tokens'))));
+    strAlignCyclesDir = strrep(strAlignCyclesDir,[num2str(cycleNum),filesep,'ALIGNCYCLES'],[num2str(cycleNum-1),filesep,'ALIGNCYCLES']);
+    jsonDescriptorFile = fullfile(strAlignCyclesDir,'shiftDescriptor.json');
+    fprintf(['=================================================' ...
+                    '=================================================' ...
+                    '=================================================' ...
+                    '\n\n%s: You loaded an alternative shift descriptor file:\n%s\n\n' ...
+                    '=================================================' ...
+                    '=================================================' ...
+                    '=================================================' ...
+                    '\n'],mfilename,jsonDescriptorFile);
+    % load json file
+    shift = loadjson(jsonDescriptorFile);
+elseif strcmp(AlternativeShiftDescriptor,'.')
+    shift = handles.shiftDescriptor;
+else
+    error('Please specify which shift descriptor file should be used!')
+end
 
 f = isnan(shift.xShift);   % [TS] : assume NaN (no shift calculated) to be no shift
 shift.xShift(f) = 0;
@@ -126,8 +176,21 @@ shift.yShift(f) = 0;
 
 %%% get index of current image
 strOrigImageName = char(handles.Measurements.Image.FileNames{handles.Current.SetBeingAnalyzed}{1,1});
-strLookup = regexprep(strOrigImageName,'A\d{2}Z\d{2}C\d{2}','A\\d{2}Z\\d{2}C\\d{2}');
-index = find(cellfun(@(x) ~isempty(x),regexp(cellstr(shift.fileName),strLookup)));
+% do this with a subfunction that allows using strings from different microscopes
+% VisiScope: \d+_r\d{02}_c\d{02}_[A-Z]_C\d{02}
+% Yokogawa: T\d{04}F\d{03}L\d{02}A\d{2}Z\d{2}C\d{2}
+[~, strMicroscopeType] = check_image_position(strOrigImageName);
+if strcmpi(strMicroscopeType, 'CV7K')
+    strLookup = regexprep(strOrigImageName,'A\d{2}Z\d{2}C\d{2}','A\\d{2}Z\\d{2}C\\d{2}');
+    strLookupShort = regexprep(strLookup,'.*(_[A-Z]\d{2}_)','$1','once');
+elseif strcmpi(strMicroscopeType, 'Visi') %'_s\d{04}_r\d{02}_c\d{02}_[A-Z]+_C\d{02}'
+    strLookup = regexprep(strOrigImageName,'_[A-Z]+_C\d{02}','_[A-Z]+_C\\d{02}');
+    strLookupShort = regexprep(strLookup,'.*(_[A-Z]+_C\d{02})','$1','once');
+else
+    error('Microscope type could not be determined. Currently implemented are ''Visi'' and ''CV7K''')
+end
+
+index = find(cellfun(@(x) ~isempty(x),regexp(cellstr(shift.fileName),strLookupShort)));
 
 IntensityImages = cell(1,length(IntImNameList));
 IntensityOutputImages = cell(1,length(IntImNameList));
@@ -141,7 +204,7 @@ for j = 1:length(IntImNameList)
     IntensityImages{j} = CPretrieveimage(handles,IntImNameList{j},ModuleName,'MustBeGray','CheckScale');
     
     %%% shift/crop intensity images
-    if abs(shift.yShift(index))>shift.maxShift || abs(shift.xShift(index))>shift.maxShift % don't shift images if shift values are very high (reflects empty images)
+    if shift.noShiftIndex(index)
         IntensityOutputImages{j} = zeros(size(IntensityImages{j}(1+shift.lowerOverlap : end-shift.upperOverlap, 1+shift.rightOverlap : end-shift.leftOverlap)));
     else
         IntensityOutputImages{j} = IntensityImages{j}(1+shift.lowerOverlap-shift.yShift(index) : end-(shift.upperOverlap+shift.yShift(index)), 1+shift.rightOverlap-shift.xShift(index) : end-(shift.leftOverlap+shift.xShift(index)));
@@ -160,44 +223,46 @@ for i = 1:sum(~strcmp(ObjectNameList,'Do not use'))
     %%% load segmentation images
     SegmentationImages{i} = CPretrieveimage(handles,['Segmented', ObjectName],ModuleName,'MustBeGray','DontCheckScale');
     
-    %%% crop segmenation images
-    if abs(shift.yShift(index))>shift.maxShift || abs(shift.xShift(index))>shift.maxShift
-        SegmentationOutputImages{i} = zeros(size(SegmentationImages{i}(1+shift.lowerOverlap : end-shift.upperOverlap, 1+shift.rightOverlap : end-shift.leftOverlap)));
+    %%% crop segmentation images
+    if shift.noShiftIndex(index)
+        SegmentationOutputImages{i} = bwlabel(zeros(size(SegmentationImages{i}(1+shift.lowerOverlap : end-shift.upperOverlap, 1+shift.rightOverlap : end-shift.leftOverlap))));
     else
         SegmentationOutputImages{i} = SegmentationImages{i}(1+shift.lowerOverlap : end-shift.upperOverlap, 1+shift.rightOverlap : end-shift.leftOverlap);
     end
 end
 
-% track, wheher all segementations should be cleared (e.g.: if object count 
-% differs or the shift is above the maximally allowed tolerance for shifts);
-doEraseSegementation = false; 
-
-
-%%% if more than one object, make sure that all objects have identical object counts
-if length(SegmentationOutputImages)>1
-    LabeledSegmentationOutputImages = SegmentationOutputImages;
-    % get object count
-    objectNum = cell2mat(cellfun(@(x) length(unique(x(:))),SegmentationOutputImages,'Uniformoutput',false));  
-    [~,IX] = sort(objectNum,'ascend');
+if sum(~strcmp(ObjectNameList,'Do not use'))>0
     
-    
-    for k = IX(2:end)
-        aIx = unique(SegmentationOutputImages{k}(:));
+    %%% if more than one object, make sure that all objects have identical object counts
+    if length(SegmentationOutputImages)>1
+        LabeledSegmentationOutputImages = cellfun(@(x) zeros(size(x)),SegmentationOutputImages,'Uniformoutput',false);
+        % get object counts
+        woZeros = cellfun(@(x) x(x~=0),SegmentationOutputImages,'Uniformoutput',false);
+        objectNum = cell2mat(cellfun(@(x) length(unique(x(:)) ~= 0),woZeros,'Uniformoutput',false));
+        [~,IX] = sort(objectNum,'ascend');
+        
+        % take objects with lowest and second lowest counts
+        aIx = unique(SegmentationOutputImages{IX(2)}(:));
         aIx(aIx==0)=[];
         bIx = unique(SegmentationOutputImages{IX(1)}(:));
         bIx(bIx==0)=[];
         % get common objects
-        [b,Locb] = ismember(aIx,bIx);
-        [~,Loca] = ismember(bIx,aIx(b));
-
-        % give objects new labels (discard objects that are not part of both object classes)
-        for m = 1:length(Locb)
-            LabeledSegmentationOutputImages{k}(SegmentationOutputImages{k}==aIx(m)) = Locb(m);
+        b = ismember(aIx,bIx);
+        a = ismember(bIx,aIx(b));
+        if ~(isequal(aIx(b),bIx(a)))
+            error('object count must not be different between segmented objects')
         end
-        for n = 1:length(Loca)
-            LabeledSegmentationOutputImages{IX(1)}(SegmentationOutputImages{IX(1)}==bIx(n)) = Loca(n);
+        
+        % assign objects common, continuous labels
+        aIx = aIx(b);
+        bIx = bIx(a);
+        for m = 1:length(aIx)
+            for k = IX(2:end)
+                LabeledSegmentationOutputImages{k}(SegmentationOutputImages{k}==aIx(m)) = m;
+            end
+            LabeledSegmentationOutputImages{IX(1)}(SegmentationOutputImages{IX(1)}==bIx(m)) = m;
         end
-
+        
         %%% Note: New objects labels have to be assigned to make labels
         %%% continuous starting from 1 (necessary for downstream CP
         %%% modules). This is cycle specific, however, and could in
@@ -206,37 +271,21 @@ if length(SegmentationOutputImages)>1
         %%% that we can later map the measurements back to the correct
         %%% objects.
         
-        % relate new object labels to original object labels (of original
-        % uncropped segmentation image)
-        comIx = aIx(b);
+        % keep track of original object labels (of the uncropped images)
+        comIx = aIx;
+                    
+        % check that object count is finally really identical
+        checkNum = cell2mat(cellfun(@(x) length(unique(x(:))),LabeledSegmentationOutputImages,'Uniformoutput',false));
+        if length(unique(checkNum))>1
+            error('object count must not be different between segmented objects');
+        end
         
+    elseif length(SegmentationOutputImages)==1
+        comIx = unique(SegmentationOutputImages{1});
+        comIx(comIx==0) = []; % remove background 
+        LabeledSegmentationOutputImages{1} = bwlabel(SegmentationOutputImages{1});
     end
-    
-    % check that object count is finally really identical
-    checkNum = cell2mat(cellfun(@(x) max(unique(x(:))),LabeledSegmentationOutputImages,'Uniformoutput',false));
-    if length(unique(checkNum))>1
-        % [TS 14-05-04] : changed default behaviour: instead of error
-        % (which will break analysis of plate-wide projects), there will be no
-        % segmentation used
-        fprintf('object count must not be different between segmented objects: Assume absent segmentation \n');
-        doEraseSegementation = true;
-    end
-    
-else
-    %%% only one object, so business as usual
-    LabeledSegmentationOutputImages{1} = bwlabel(SegmentationOutputImages{1});  
-end
 
-%%% if shift exeeds maximally tolerated valued, exclude site from analysis
-if logical(shift.noShiftIndex(index))
-    doEraseSegementation = true;
-end
-
-% Replace segmentation by empty image, in case there was a problem
-if doEraseSegementation == true;
-    for k = 1:length(ObjectNameList)
-        LabeledSegmentationOutputImages{k} = bwlabel(zeros(size(IntensityOutputImages{1})));
-    end
 end
 
 
@@ -249,94 +298,45 @@ drawnow
 
 ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
 if any(findobj == ThisModuleFigureNumber)
+    
+    IntensityImages4Display = IntensityOutputImages(cellfun(@(x) ~isempty(x),IntensityOutputImages));
        
     CPfigure(handles,'Image',ThisModuleFigureNumber);
     
-    %%% Calculates the object outlines, which are overlaid on the intensity
-    %%% image.
-    %%% Creates the structuring element that will be used for dilation.
-    StructuringElement = strel('square',3);
-    %%% Converts the FinalLabelMatrixImage to binary.
-    FinalBinaryImage = im2bw(SegmentationImages{1},.5);
-    %%% Dilates the FinalBinaryImage by one pixel (8 neighborhood).
-    DilatedBinaryImage = imdilate(FinalBinaryImage, StructuringElement);
-    %%% Subtracts the FinalBinaryImage from the DilatedBinaryImage,
-    %%% which leaves the PrimaryObjectOutlines.
-    PrimaryObjectOutlines = DilatedBinaryImage - FinalBinaryImage;
-    %%% Overlays the object outlines on the original image.
-    ObjectOutlinesOnIntImage = IntensityImages{1};
-    %%% Determines the grayscale intensity to use for the cell outlines.
-    LineIntensity = max(IntensityOutputImages{1}(:));
-    ObjectOutlinesOnIntImage(PrimaryObjectOutlines == 1) = LineIntensity;
-    %%% display original images
-    subplot(2,2,1); 
-    CPimagesc(ObjectOutlinesOnIntImage,handles);
-    title([ObjectNameList{1}, sprintf(' Outlines on ''%s'' Image', IntImNameList{1})]);
-    
-    %%% Calculates the object outlines, which are overlaid on the intensity
-    %%% image.
-    %%% Creates the structuring element that will be used for dilation.
-    StructuringElement2 = strel('square',3);
-    %%% Converts the FinalLabelMatrixImage to binary.
-    FinalBinaryImage2 = im2bw(LabeledSegmentationOutputImages{1},.5);
-    %%% Dilates the FinalBinaryImage by one pixel (8 neighborhood).
-    DilatedBinaryImage2 = imdilate(FinalBinaryImage2, StructuringElement2);
-    %%% Subtracts the FinalBinaryImage from the DilatedBinaryImage,
-    %%% which leaves the PrimaryObjectOutlines.
-    PrimaryObjectOutlines2 = DilatedBinaryImage2 - FinalBinaryImage2;
-    %%% Overlays the object outlines on the original image.
-    ObjectOutlinesOnIntImage2 = IntensityOutputImages{1};
-    %%% Determines the grayscale intensity to use for the cell outlines.
-    LineIntensity2 = max(IntensityOutputImages{1}(:));
-    ObjectOutlinesOnIntImage2(PrimaryObjectOutlines2 == 1) = LineIntensity2;
-    %%% display aligned images
-    subplot(2,2,2); 
-    CPimagesc(ObjectOutlinesOnIntImage2,handles);
+    %%% Display aligned image
+    subplot(1,2,1); 
+    CPimagesc(IntensityImages4Display{1},handles);
     title([ObjectNameList{1}, sprintf(' Outlines on ''%s'' Image', IntImOutputNameList{1})]);
+    if sum(~strcmp(ObjectNameList,'Do not use'))>0
+        SegmentationImage4Display = LabeledSegmentationOutputImages{1};
+    elseif isfield(handles.Pipeline,'SegmentedCells')
+        SegmentationImage4Display = handles.Pipeline.('SegmentedCells');
+    else
+        SegmentationImage4Display = [];
+    end
+    %%% Calculates object outlines, which are overlaid on the intensity image.
+    B = bwboundaries(SegmentationImage4Display,'holes');
+    hold on
+    for k = 1:length(B)
+        boundary = B{k};
+        plot(boundary(:,2), boundary(:,1), 'r', 'LineWidth', 1)
+    end
+    hold off
     
-    if sum(~cellfun(@isempty,IntensityOutputImages))>1
+    if sum(~cellfun(@isempty,IntensityImages4Display))>1
         
-        %%% Calculates the object outlines, which are overlaid on the intensity
-        %%% image.
-        %%% Creates the structuring element that will be used for dilation.
-        StructuringElement = strel('square',3);
-        %%% Converts the FinalLabelMatrixImage to binary.
-        FinalBinaryImage = im2bw(SegmentationImages{1},.5);
-        %%% Dilates the FinalBinaryImage by one pixel (8 neighborhood).
-        DilatedBinaryImage = imdilate(FinalBinaryImage, StructuringElement);
-        %%% Subtracts the FinalBinaryImage from the DilatedBinaryImage,
-        %%% which leaves the PrimaryObjectOutlines.
-        PrimaryObjectOutlines = DilatedBinaryImage - FinalBinaryImage;
-        %%% Overlays the object outlines on the original image.
-        ObjectOutlinesOnIntImage = IntensityImages{2};
-        %%% Determines the grayscale intensity to use for the cell outlines.
-        LineIntensity = max(IntensityOutputImages{2}(:));
-        ObjectOutlinesOnIntImage(PrimaryObjectOutlines == 1) = LineIntensity;
-        %%% display original images
-        subplot(2,2,3);
-        CPimagesc(ObjectOutlinesOnIntImage,handles);
-        title([ObjectNameList{1}, sprintf(' Outlines on ''%s'' Image', IntImNameList{2})]);
-        
-        %%% Calculates the object outlines, which are overlaid on the intensity
-        %%% image.
-        %%% Creates the structuring element that will be used for dilation.
-        StructuringElement2 = strel('square',3);
-        %%% Converts the FinalLabelMatrixImage to binary.
-        FinalBinaryImage2 = im2bw(LabeledSegmentationOutputImages{1},.5);
-        %%% Dilates the FinalBinaryImage by one pixel (8 neighborhood).
-        DilatedBinaryImage2 = imdilate(FinalBinaryImage2, StructuringElement2);
-        %%% Subtracts the FinalBinaryImage from the DilatedBinaryImage,
-        %%% which leaves the PrimaryObjectOutlines.
-        PrimaryObjectOutlines2 = DilatedBinaryImage2 - FinalBinaryImage2;
-        %%% Overlays the object outlines on the original image.
-        ObjectOutlinesOnIntImage2 = IntensityOutputImages{2};
-        %%% Determines the grayscale intensity to use for the cell outlines.
-        LineIntensity2 = max(IntensityOutputImages{2}(:));
-        ObjectOutlinesOnIntImage2(PrimaryObjectOutlines2 == 1) = LineIntensity2;
-        %%% display aligned images
-        subplot(2,2,4);
-        CPimagesc(ObjectOutlinesOnIntImage2,handles);
-        title([ObjectNameList{1}, sprintf(' Outlines on ''%s'' Image', IntImOutputNameList{2})]);
+        %%% Display aligned image
+        subplot(1,2,2);
+        CPimagesc(IntensityImages4Display{2},handles);
+        title([ObjectNameList{2}, sprintf(' Outlines on ''%s'' Image', IntImOutputNameList{2})]);
+        %%% Calculates object outlines, which are overlaid on the intensity image.
+        B = bwboundaries(SegmentationImage4Display,'holes');
+        hold on
+        for k = 1:length(B)
+            boundary = B{k};
+            plot(boundary(:,2), boundary(:,1), 'r', 'LineWidth', 1)
+        end
+        hold off
         
     end
     
@@ -421,7 +421,7 @@ for i = 1:length(ObjectNameList)
                     childrenCount(subobj,ixParent) = length(childObj);
                 end
                 % save new object counts to handles
-                handles.Measurements.(ObjectName).Children{handles.Current.SetBeingAnalyzed} = childrenCount;
+                handles.Measurements.(ObjectName).Children(handles.Current.SetBeingAnalyzed) = {childrenCount};
             end
         end
         
@@ -444,14 +444,14 @@ for i = 1:length(ObjectNameList)
                     parentCount(subobj,ixChild) = parentObj;
                 end
                 % save new object counts to handles
-                handles.Measurements.(ObjectName).Parent{handles.Current.SetBeingAnalyzed} = parentCount;
+                handles.Measurements.(ObjectName).Parent(handles.Current.SetBeingAnalyzed) = {parentCount};
             end
         end
     end
     
     % save relation to original object ID to handles
     handles.Measurements.(ObjectName).OrigObjectIDFeatures{handles.Current.SetBeingAnalyzed} = 'OriginalObjectId';
-    handles.Measurements.(ObjectName).OrigObjectID{handles.Current.SetBeingAnalyzed} = comIx;
+    handles.Measurements.(ObjectName).OrigObjectID(handles.Current.SetBeingAnalyzed) = {comIx};
     
     
 end
