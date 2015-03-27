@@ -86,7 +86,6 @@ Custom modules:
 * MeasureObjectRobustIntensity
 * MeasureSingerFeatures
 * MeasureObjectColocalization (check with ObjectColocalization)
-* AlignImage_MPcycle
 * AlignOjbects_MPcycle
 * LoadSegmentedObjects_MPcycle
 * SaveSegmentedCells_MPcycle
@@ -94,6 +93,10 @@ Custom modules:
 * SpeedUpCellprofiler
 
 For documentation on custom modules see below. More details can be found in the actual Matlab functions.
+
+
+### Category "File Processing"
+
 
 #### LoadImages
 
@@ -103,36 +106,6 @@ First module of a pipeline for loading raw images from disk.
 #### CreateBatchFiles
 
 Last module of a pipeline for distributing batch jobs when working in parallel on the cluster.
-
-
-#### InitializeCP3DStack
-
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
-
-
-#### LoadCP3DStack
-
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
-
-
-#### ImageProjectionCP3D
-
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
-
-
-#### IdentifyPrimLoGCP3D
-
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
-
-
-#### RelateCP3D
-
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
-
-
-#### LoadSegmentedObjectsCP3D
-
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### LoadSpotCorrection
@@ -173,6 +146,10 @@ Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 #### TopImageProjection
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+
+### Category "Object processing"
 
 
 #### SegmentationVolume3D
@@ -225,6 +202,9 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
+### Category "Measurement"
+
+
 #### MeasureChildren
 
 Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
@@ -260,9 +240,50 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 Author: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
-#### AlignImage_MPcycle
+### Category "Others"
 
-Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
+
+#### SpeedUpCellProfiler
+
+Author: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+
+### Category "CP3D"
+
+
+#### InitializeCP3DStack
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+#### LoadCP3DStack
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+#### ImageProjectionCP3D
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+#### IdentifyPrimLoGCP3D
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+#### RelateCP3D
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+#### LoadSegmentedObjectsCP3D
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+
+### Category "MPcycle"
 
 
 #### AlignOjbects_MPcycle
@@ -284,10 +305,6 @@ Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
-
-#### SpeedUpCellProfiler
-
-Author: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 
