@@ -71,6 +71,9 @@ function handles = IdentifyPrimLoGCP3D(handles)
 %
 % [TS]
 % *************************************************************************
+%
+% $Revision: 1879 $
+
 
 drawnow
 
@@ -112,6 +115,9 @@ iDetectionThr = char(handles.Settings.VariableValues{CurrentModuleNum,7});
 %textVAR08 = What is the minimal intensity of a voxel within a spot?
 %defaultVAR08 = /
 iObjIntensityThr = char(handles.Settings.VariableValues{CurrentModuleNum,8});
+
+
+%%%VariableRevisionNumber = 12
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%  CHECK INPUT   %%%%%%%%%%%%%%%%%
