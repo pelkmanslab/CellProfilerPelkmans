@@ -287,7 +287,7 @@ This category is for working with images acquired in different multiplexing (MP)
 
 #### AlignOjbects_MPcycle
 
-Align images to the corresponding segmentation images (objects).
+Align intensity images to the corresponding segmentation images (objects).
 
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
@@ -308,7 +308,7 @@ Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 #### SubtractPreImage_MPcycle
 
-Subtract images from previous cycles.
+Subtract images from different cycles.
 
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
