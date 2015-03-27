@@ -52,7 +52,6 @@ Custom modules:
 
 * LoadImages (starting from LoadEvenMoreImages, include Markus bug)
 * CreateBatchFiles
-* CreateBatchFilesTracking (? include in CreateBatchFiles)
 * InitializeCP3DStack
 * LoadCP3DStack
 * ImageProjectionCP3D
@@ -60,8 +59,6 @@ Custom modules:
 * RelateCP3D
 * LoadSegmentedObjectsCP3D
 * LoadSpotCorrection
-* SplitOrSpliceMovies (? Mat)
-* DynamicObjectFiler (? Mat)
 * IlluminationCorrection (combine existing modules)
 * IlluminationCorrectionPerSite
 * ShiftImage
