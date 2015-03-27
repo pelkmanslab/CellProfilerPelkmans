@@ -11,8 +11,6 @@ function handles = LoadSegmentedObjects_MPcycle(handles)
 %
 % Author:
 %    Markus Herrmann <markus.herrmann@imls.uzh.ch>
-%
-
 
 %%%%%%%%%%%%%%%%%
 %%% VARIABLES %%%
@@ -51,23 +49,18 @@ ObjectNameList{5} = char(handles.Settings.VariableValues{CurrentModuleNum,5});
 %infotypeVAR06 = objectgroup indep
 ObjectNameList{6} = char(handles.Settings.VariableValues{CurrentModuleNum,6});
 
+%textVAR07 = Which segmentation do you want to load?
+%choiceVAR07 = Original
+%choiceVAR07 = Aligned
+OriginalOrAligned = char(handles.Settings.VariableValues{CurrentModuleNum,7});
+%inputtypeVAR07 = popupmenu
+
 
 
 
 %%%%%%%%%%%%%%%%
 %%% ANALYSIS %%%
 %%%%%%%%%%%%%%%%
-
-% get the filename of the object setgementation as stored by
-% SaveSegmentedCells
-strOrigImageName = char(handles.Measurements.Image.FileNames{handles.Current.SetBeingAnalyzed}{1,1});
-
-% format the segmentation file name
-matDotIndices = strfind(strOrigImageName,'.');
-% new CP apparently removes file extensions from image names
-if ~isempty(matDotIndices)
-    strOrigImageName = strOrigImageName(1,1:matDotIndices(end)-1);
-end
 
 % load shift descriptors file only once and store to handles
 if ~isfield(handles,'shiftDescriptor')
@@ -82,60 +75,49 @@ if ~isfield(handles,'shiftDescriptor')
     handles.shiftDescriptor = loadjson(jsonDescriptorFile);
 end
 
-% get filename trunk from handles and modify filename accordingly
-strSegmentationFileNameTrunk = handles.shiftDescriptor.SegmentationFileNameTrunk;
+% built absolute SEGMENTATION path from relative path stored in handles
+strSegmentationDir = [strrep(handles.Current.DefaultOutputDirectory, [filesep,'BATCH'], filesep), handles.shiftDescriptor.SegmentationDirectory];
+if strcmp(OriginalOrAligned,'Aligned')
+    strSegmentationDir = strrep(strSegmentationDir,'SEGMENTATION','SEGMENTATION_ALIGNED');
+end
+if exist(strSegmentationDir,'dir')==2
+    error('%s: segmentation directory ''%s'' does not exist!',mfilename,strSegmentationDir)
+end
 
 % obtain filename and load segmented image
 SegmentationImages = cell(1,length(ObjectNameList));
-
-% built absolute SEGMENTATION path from relative path stored in handles
-strSegmentationDir = [strrep(handles.Current.DefaultOutputDirectory, [filesep,'BATCH'], filesep), handles.shiftDescriptor.SegmentationDirectory];
-if handles.Current.SetBeingAnalyzed == 1
-    structSegDir = CPdir(fullfile(strSegmentationDir));
-    structSegDir = structSegDir(~[structSegDir.isdir]);
-end
-
-
-
 for i = 1:length(ObjectNameList)
     ObjectName = ObjectNameList{i};
     if strcmpi(ObjectName,'Do not use')
         continue
     end
     
-    % built full segmentation image filename from filename trunk stored in handles
-    
-    % get example segmentation filename 
-    if handles.Current.SetBeingAnalyzed == 1        
-        segImageIndex = find(arrayfun(@(a) ~isempty(strfind(structSegDir(a).name,ObjectName)), [1:length(ObjectNameList)]),1,'first');
-        segOrigFileName = structSegDir(segImageIndex).name;
-        
-        %get T, F, L, A, Z, C from segmentation inages 
-        segFileNameInfo = flatten(regexp(segOrigFileName,'.+T(\d{04})F(\d{03})L(\d{02})A(\d{02})Z(\d{02})C(\d{02}).*','tokens'));
-        segFileNameInfo = cellfun(@str2num,segFileNameInfo,'uniformoutput',false);
-                
-        handles.shiftDescriptor.SegmentationImageInfo.(ObjectName) = segFileNameInfo; 
+    % read segmentation folder content
+    structSegDir = CPdir(fullfile(strSegmentationDir));
+    cellSegFiles = {structSegDir(~[structSegDir.isdir]).name}; 
+    % build filenames
+    cellFieldnames = flatten(regexp(fieldnames(handles.Pipeline),'Filename.*','match'));
+    cellLookup = handles.Pipeline.(cellFieldnames{1});
+    strLookup = cellLookup{end};
+    [~, strMicroscopeType] = check_image_position(strLookup);
+    if strcmpi(strMicroscopeType, 'CV7K') 
+        strExpr = char(flatten(regexp(strLookup,'_(\w{1}\d{2}_T\d{4}F\d{3})L\d{2}A\d{2}Z\d{2}C\d{2}','tokens')));
+    elseif strcmpi(strMicroscopeType, 'Visi') 
+        strExpr = char(flatten(regexp(strLookup,'_(s\d{04}_r\d{02}_c\d{02})_[A-Z]+_C\d{02}','tokens')));
     else
-        segFileNameInfo = handles.shiftDescriptor.SegmentationImageInfo.(ObjectName);
+        error('Microscope type could not be determined. Currently implemented are ''Visi'' and ''CV7K''')
     end
-        
-    %get correct F
-    currentImageSite = flatten(regexp(strOrigImageName,'.+T\d{04}F(\d{03})L.*','tokens'));
-    currentImageSite = str2num(currentImageSite{1});
-    
-    %strSegmentationFileName = [regexprep(strOrigImageName,'.+(_\w{1}\d{2}_)',sprintf('%s$1',strSegmentationFileNameTrunk)),'_Segmented',ObjectName,'.png'];
-    strSegmentationFileName = [regexprep(strOrigImageName,'.+(_\w{1}\d{2}_)T\d{04}F\d{03}L\d{02}A\d{02}Z\d{02}C\d{02}',...
-        sprintf('%s$1T%.4dF%.3dL%.2dA%.2dZ%.2dC%.2d',strSegmentationFileNameTrunk,segFileNameInfo{1},currentImageSite,segFileNameInfo{3},segFileNameInfo{4},...
-        segFileNameInfo{5},segFileNameInfo{5})),...
-        '_Segmented',ObjectName,'.png'];
+    ixImage = cellfun(@(x) ~isempty(x),regexp(cellSegFiles,sprintf('%s.*Segmented%s',strExpr,ObjectName),'once'));
+    strSegmentationFileName = char(cellSegFiles(ixImage));
     
     % load segmentation image
     strFilePath = fullfile(strSegmentationDir,strSegmentationFileName);
     if fileattrib(strFilePath)
         SegmentationImages{i} = double(imread(fullfile(strSegmentationDir,strSegmentationFileName)));
+        fprintf('%s: loaded segmentation image: %s\n',mfilename,strSegmentationFileName);
     else
         error('%s: looking for segmentation file ''%s''. Does not exist!',mfilename,strFilePath)
-    end
+    end 
     
 end
 
@@ -180,16 +162,6 @@ for i = 1:length(ObjectNameList)
     if strcmpi(ObjectName,'Do not use')
         continue
     end
-    
-    %%% Saves the segmented image, not edited for objects along the edges or
-    %%% for size, to the handles structure.
-    fieldname = ['UneditedSegmented',ObjectName];
-    handles.Pipeline.(fieldname) = SegmentationImages{i};
-    
-    %%% Saves the segmented image, only edited for small objects, to the
-    %%% handles structure.
-    fieldname = ['SmallRemovedSegmented',ObjectName];
-    handles.Pipeline.(fieldname) = SegmentationImages{i};
     
     %%% Saves the final segmented label matrix image to the handles structure.
     fieldname = ['Segmented',ObjectName];
