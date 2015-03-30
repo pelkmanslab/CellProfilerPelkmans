@@ -5,8 +5,35 @@ function handles = objectColocalisationMF(handles)
 %
 % SHORT DESCRIPTION:
 % MatF in Pelkmans Lab, 010911.
-% this module is analysing the colocalisation of object 3 with object 1 and  with object 2.
-% these objects must be specified in the GUI
+% this module measure, in pixel, the colocalisation of the segmentations of the object 3 
+% with the segmentation of the object 1 and the segmentation of object 2.
+% these objects are to be specified in the GUI, the outputs are multiple:
+
+%as outputs we have: Objects surface in each parent, Surface of
+%collocalisation between objects in each parent and ratios 
+
+%in details:
+
+%handles.Measurements.Cells.objectsCollocalisationFeatures{1} = [Item1Name '_surface_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{2} = [Item2Name '_surface_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{3} = [Item3Name '_surface_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{4} = [Item3Name '_in_' Item1Name '_surface_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{5} = [Item3Name '_in_' Item2Name '_surface_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{6} = [Item1Name '_in_' Item2Name '_surface_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{7} = ['fraction_of_' Item1Name '_occupied_by_' Item3Name '_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{8} = ['fraction_of_' Item2Name '_occupied_by_' Item3Name '_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{9} = ['fraction_of_' Item3Name '_occupied_by_' Item1Name '_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{10} = ['fraction_of_' Item3Name '_occupied_by_' Item2Name '_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{11} = ['fraction_of_non_overlapping_' Item1Name '_with_' Item2Name '_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{12} = ['fraction_of_non_overlapping_' Item2Name '_with_' Item1Name '_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{13} = ['fraction_of_non_overlapping_' Item1Name '_occupied_by_' Item3Name '_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{14} = ['fraction_of_non_overlapping_' Item2Name '_occupied_by_' Item3Name '_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{15} = ['fraction_of_' Item3Name '_in_NOA_located_in_' Item1Name '_in_' ParentName];
+%handles.Measurements.Cells.objectsCollocalisationFeatures{16} = ['fraction_of_' Item3Name '_in_NOA_located_in_' Item2Name '_in_' ParentName];
+
+
+
+
 % Beta version 1
 
 
