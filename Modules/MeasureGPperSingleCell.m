@@ -1,13 +1,16 @@
 function handles = MeasureGPperSingleCell(handles)
 
-%%%MF on 120111 in pelkmans lab
-%%%This module works only on laurdan stained images, the GP formula has
-%%%been taken from 'Visualizing lipid structure and raft domains in living
-%%%cells with two-photon microscopy, Gaus & al 2003 PNAS
-%%%Inputs are the following: Image name 1 is the image of the cells stained with Laurdan and acquired in 
-%%%the window 1 (see Gaus & al 2003 PNAS for the exact emission Wavelength to record, anyway before using this 
-%%%module you must look at it). ImageName2 is the same but for the window 2. third input is the object segmentation to use
-%%%fairly easy no? :)
+% help for the module MeasureGPperSingleCell    
+% Category: Measurement
+%
+% MF on 120111 in pelkmans lab
+% This module works only on laurdan stained images, the GP formula has
+% been taken from 'Visualizing lipid structure and raft domains in living
+% cells with two-photon microscopy, Gaus & al 2003 PNAS
+% Inputs are the following: Image name 1 is the image of the cells stained with Laurdan and acquired in 
+% the window 1 (see Gaus & al 2003 PNAS for the exact emission Wavelength to record, anyway before using this 
+% module you must look at it). ImageName2 is the same but for the window 2. third input is the object segmentation to use
+% fairly easy no? :)
 
 %%%%%%%%%%%%%%%%%
 %%% VARIABLES %%%
