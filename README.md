@@ -160,7 +160,7 @@ Note: Renamed standard module (DiscardSinglePixelObject)
 
 
 #### IdentifyPrimaryIterative
-
+b
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
@@ -196,7 +196,8 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 #### BorderNeighborAnalysis
 
-Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Two major functions: A) Basic statistics about ajacency to other cells (e.g.: number of adjacent cells) B) Relational information about neighbors of each cell (e.g. their object ID), which currentenlty (Apr 2015) require separate loading functions after CP/iBrain, but enable to create aribtrary secondary features (e.g.: median nuclear elongation of the three neighboring cells with the shortest contact sites to the cell of interest).
+
 
 
 ### Category "Measurement"
