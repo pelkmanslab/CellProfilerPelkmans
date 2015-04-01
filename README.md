@@ -14,7 +14,7 @@ List of Cell Profiler (CP) modules available on [iBRAIN](https://github.com/pelk
 Standard modules:
 
 * ExportToExcel
-* SaveImage
+* SaveImages (+)
 * LoadSingleImage
 * ApplyThreshold
 * Combine
@@ -41,6 +41,8 @@ Standard modules:
 * MeasureTexture
 * LoadSegmentedCells
 * SaveSegmentedCells
+
+(+) indicates standard modules with custom improvements (e.g.: additional optional inputs).
 
 For documentation on standard modules see [manual](http://cellprofiler.org/linked_files/Documentation/cp1_manual_9717.pdf)
 
@@ -93,6 +95,14 @@ For documentation on custom modules see below. More details can be found in the 
 
 
 ### Category "File Processing"
+
+#### SaveImages
+
+Derived from original CP's module for saving individual images from the pipeline to the disk. In addition to the original module, it is possible to replace parts of the names of the output files (e.g.: save images created by CP in a format that pretends that the new images correspond to a new microscopy-channel).
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
 
 
 #### LoadImages
@@ -196,7 +206,7 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 #### BorderNeighborAnalysis
 
-Two major functions: A) Basic statistics about ajacency to other cells (e.g.: number of adjacent cells) B) Relational information about neighbors of each cell (e.g. their object ID), which currentenlty (Apr 2015) require separate loading functions after CP/iBrain, but enable to create aribtrary secondary features (e.g.: median nuclear elongation of the three neighboring cells with the shortest contact sites to the cell of interest).
+Two major functions: A) Basic statistics about adjacency to other cells (e.g.: number of adjacent cells) B) Relational information about neighbours of each cell (e.g. their object ID), which currently (Apr 2015) require separate loading functions after CP/iBrain, but enable to create arbitrary secondary features (e.g.: median nuclear elongation of the three neighbouring cells with the shortest contact sites to the cell of interest).
 
 Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
