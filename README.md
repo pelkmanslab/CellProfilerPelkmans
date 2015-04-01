@@ -198,7 +198,7 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 Two major functions: A) Basic statistics about ajacency to other cells (e.g.: number of adjacent cells) B) Relational information about neighbors of each cell (e.g. their object ID), which currentenlty (Apr 2015) require separate loading functions after CP/iBrain, but enable to create aribtrary secondary features (e.g.: median nuclear elongation of the three neighboring cells with the shortest contact sites to the cell of interest).
 
-
+Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 ### Category "Measurement"
 
