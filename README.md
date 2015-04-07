@@ -62,6 +62,7 @@ Custom modules:
 * ImageProjectionCP3D
 * IdentifyPrimLoGCP3D
 * RelateCP3D
+* LeaveNChildren
 * LoadSegmentedObjectsCP3D
 * LoadSpotCorrection
 * IlluminationCorrection (combine existing modules)
@@ -81,7 +82,7 @@ Custom modules:
 * ShrinkObjectsSafely
 * BorderNeighborAnalysis
 * MeasureChildren
-* MeasureSpotLocalization (check with MeasureLocalizationOfSpots)
+* MeasureLocalizationOfSpots
 * MeasureNucleiSpots
 * MeasureObjectEnvironment
 * MeasureObjectNeighbors
@@ -125,7 +126,7 @@ Loads a MATLAB matrix into CellProfiler. E.g.: This matrix can be used by the Id
 #### IdentifySpots2D
 Identifies individual spots in an image. E.g.: usable to identify single transcript molecules or to identify nuclei in a low-resolution image.
 
-Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376) & [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 
 #### SplitOrSpliceMovies
@@ -173,7 +174,7 @@ Note: Renamed standard module (DiscardSinglePixelObject)
 
 
 #### IdentifyPrimaryIterative
-b
+
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
@@ -186,6 +187,15 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 #### JoinObjectSegmentation
 
 Authors: [Nico](https://www.pelkmanslab.org/?page_id=360)
+
+
+#### LeaveNChildren
+
+Ensures that each parent object (e.g. cell) have the same user-specified amount of children objects (e.g. transcripts). If parent has to many children, excess children are randomly selected and removed. If parent has too little children, all are lost.
+
+
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### MergeAndRelateChildren
@@ -220,12 +230,16 @@ Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 #### MeasureChildren
 
-Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Obtains for each parent object (e.g.: cell) the mean and variance and central moments of measurements of children. The name of the feature set must correspond to the one which has been used internally by the module used to generate measurements of the children (e.g ChildLocalizationZScored for MeasureLocalizationOfSpots, or IntensityTranscript if the objects called transcript have been quantified by MeasureObjectIntensity). 
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
-#### MeasureSpotLocalization
+#### MeasureLocalizationOfSpots
 
-Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Measures the localization of each spot (e.g. transcript molecule) relative to other objects (e.g. nuclei and cellular periphery) and other spots. The module yields raw absolute measurements and measurements, which have been normalized by z-scoring against 100 random relocations of spots to cytoplasmic positions. 
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376) and [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 
 #### MeasureNucleiSpots
