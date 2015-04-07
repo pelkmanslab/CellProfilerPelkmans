@@ -65,6 +65,7 @@ Custom modules:
 * LeaveNChildren
 * LoadSegmentedObjectsCP3D
 * LoadSpotCorrection
+* ScanSpotThresholds
 * IlluminationCorrection (combine existing modules)
 * IlluminationCorrectionPerSite
 * ShiftImage
@@ -120,7 +121,15 @@ Last module of a pipeline for distributing batch jobs when working in parallel o
 
 #### LoadSpotCorrection
 
-Loads a MATLAB matrix into CellProfiler. E.g.: This matrix can be used by the IdentifySpots2D module to change the threshold at given positions so that optical aberrations of the lens do not affect the counting of spots.  Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Loads a MATLAB matrix into CellProfiler. E.g.: This matrix can be used by the IdentifySpots2D module to change the threshold at given positions so that optical aberrations of the lens do not affect the counting of spots.  
+
+Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+#### ScanSpotThresholds
+
+Identifies spots at varying thresholds. Can be used with SpotThrDetection package (brutusCorrectionOfPlateFromPipeline) to construct correction matrix for spatial bias due to lens artifacts (also see Exp_computeCorrectionMatrix of image-based transcriptomics and LoadSpotCorrection module)
+
+ Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### IdentifySpots2D
