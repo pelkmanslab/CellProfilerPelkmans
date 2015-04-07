@@ -104,7 +104,7 @@ For documentation on custom modules see below. More detailed documentation can b
 
 Derived from original CP's module for saving individual images from the pipeline to the disk. In addition to the original module, it is possible to replace parts of the names of the output files (e.g.: save images created by CP in a format that pretends that the new images correspond to a new microscopy-channel).
 
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Author of customizations: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 
