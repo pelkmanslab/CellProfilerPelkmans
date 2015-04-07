@@ -284,7 +284,7 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 #### InitializeCP3DStack
 
-Initializes the processing of 3D information. Allows the synchronisation of multiple z planes corresponding to the same stack (and site) within single cycle of CellProfiler (and if present according to the 2D images initialized by LoadImages). Note that the module add depends on the general functions of the pelkmanslab to exact metainformation (see METAFROMIMAGENAME.m) . This module does not load images (to save the amount of image information in memory). Loading and removal from RAM requires the separate modules LoadCP3DStack and UnLoadCP3DStack. 
+Initializes the processing of 3D information. Allows the synchronisation of multiple z planes corresponding to the same stack (and site) within single cycle of CellProfiler (and if present according to the 2D images initialized by LoadImages). Note that the module add depends on the general functions of the pelkmanslab to exact metainformation (see METAFROMIMAGENAME.m) . This module does not load images (to reduce the amount of image information in memory). Loading and removal from RAM requires the separate modules LoadCP3DStack and UnLoadCP3DStack. 
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
