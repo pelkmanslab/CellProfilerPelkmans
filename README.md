@@ -56,8 +56,6 @@ Custom modules:
 
 * LoadImages (starting from LoadEvenMoreImages, include Markus bug)
 * CreateBatchFiles
-* InitializeCP3DStack
-* LoadCP3DStack
 * ImageProjectionCP3D
 * IdentifyPrimLoGCP3D
 * RelateCP3D
@@ -93,6 +91,13 @@ Custom modules:
 * LoadSegmentedObjects_MPcycle
 * SaveSegmentedCells_MPcycle
 * SubtractPreImage_MPcycle
+
+
+* InitializeCP3DStack
+* LoadCP3DStack
+* UnLoadCP3DStack
+* SaveSegmentedObjectsCP3D
+* LoadSegmentedObjectsCP3D
 
 For documentation on custom modules see below. More detailed documentation can be found in the actual Matlab functions. This information can also be queried from the GUI using the `?` button.
 
@@ -311,7 +316,15 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
+#### SaveSegmentedObjectsCP3D
+
+Save the segmentation of 3D objects. Note that the code internally tests and supports dor different formats of storing the 3D data (allowing an easy extension of the module, if needed).
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
 #### LoadSegmentedObjectsCP3D
+Load the segmentation of 3D objects. Note that the code internally tests and supports dor different formats of storing the 3D data (allowing an easy extension of the module, if needed).
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
