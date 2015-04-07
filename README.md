@@ -178,8 +178,9 @@ Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
 #### IdentifySecondaryIterative
+Identifies the secondary object (e.g. cytoplasm) surrounding a primary object (e.g. nucleus). Uses an arbitrary amount of different thresholds to create a joined segmentation that does not get worse by including more thresholds (and thus becomes very accurate and largely eliminates manual setup). The only critical parameter that has to be tested is the lowest absolute threshold value (which should be between the background of the camera and the dimmest stained pixel of a cell). 
 
-Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### JoinObjectSegmentation
