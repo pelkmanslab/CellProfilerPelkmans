@@ -37,7 +37,6 @@ Standard modules:
 * MeasureObjectIntensity
 * MeasureObjectNeighbors
 * MeasureRadialDistribution
-* MeasureSingerFeatures
 * MeasureTexture
 * LoadSegmentedCells
 * SaveSegmentedCells
