@@ -262,9 +262,7 @@ Author: Berned Snijder (alumni)
 
 
 #### MeasureObjectNeighbors
-
-Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
-
+Standard CellProfiler module that "calculates how many neighbors each object has and records various properties about the neighbors' relationships, including the percentage of an object's edge pixels that touch a neighbor."  Also see custom module BorderNeighbourAnalysis, which provides similar, but larger functionality. 
 
 #### MeasureObjectRobustIntensity
 Measures the 5, 25, 50, 75 and 95 percentiles of the intensities of all pixels of an object. Useful if a small set of pixels contains a bright signal, which reflects a technical detail of the assay rather than the underlying biological readout.
