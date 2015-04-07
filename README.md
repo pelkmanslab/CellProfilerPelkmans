@@ -44,9 +44,11 @@ Standard modules:
 
 For documentation on standard modules see [manual](http://cellprofiler.org/linked_files/Documentation/cp1_manual_9717.pdf)
 
+<!-- 
 TODO:
 - sort them according to 'class' (e.g. file processing, image processing, ...)
 - create separete classes for CP3D and MPcycle
+ -->
 
 Custom modules:
 
@@ -92,7 +94,7 @@ Custom modules:
 * SubtractPreImage_MPcycle
 * SpeedUpCellprofiler
 
-For documentation on custom modules see below. More details can be found in the actual Matlab functions.
+For documentation on custom modules see below. More detailed documentation can be found in the actual Matlab functions. This information can also be queried from the GUI using the `?` button.
 
 
 ### Category "File Processing"
@@ -285,33 +287,33 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 ### Category "MPcycle"
 
-This category is for working with images acquired in different multiplexing (MP) cycles. Note that these modules require a shift descriptor file.
+This category is for working with images acquired in different multiplexing (MP) cycles. The modules of this category all depend on a shift descriptor file in JSON format, which specifies the shift between images acquired in different cycles and provides additional meta information, such as location of segmentation images. The shift descriptor file has to be generated prior to running the CellProfiler pipeline.
 
 
 #### AlignOjbects_MPcycle
 
-Align images to the corresponding segmentation images (objects).
+Align images of the currently processed cycle to the corresponding segmentation images (objects), which may correspond to another cycle.
 
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
 #### LoadSegmentedObjects_MPcycle
 
-Load segmentation images from a directory defined in a shift descriptor file.
+Load segmentation images from a directory defined in the shift descriptor file.
 
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
 #### SaveSegmentedCells_MPcycle
 
-Save segmentation images in a directory defined in a shift descriptor file.
+Save segmentation images in a directory defined in the shift descriptor file.
 
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
 #### SubtractPreImage_MPcycle
 
-Subtract images from previous cycles.
+Subtract images of a previous cycle from those of the currently processed cycle.
 
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
@@ -320,4 +322,4 @@ Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 ## CP subfunctions
 
-
+<!-- TODO: add subfunctions -->

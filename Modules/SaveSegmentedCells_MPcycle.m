@@ -4,8 +4,8 @@ function handles = SaveSegmentedCells_MPcycle(handles)
 % Category: MPcycle
 %
 % SHORT DESCRIPTION:
-% Identifies objects (e.g. cell edges) using "seed" objects identified by
-% an Identify Primary module (e.g. nuclei).
+% Saving images within a MP project, where the SEGMENTATION directory
+% may lie outside of the project directory.
 % *************************************************************************
 %
 % Website: http://www.cellprofiler.org
