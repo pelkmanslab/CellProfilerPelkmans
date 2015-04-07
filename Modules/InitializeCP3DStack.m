@@ -6,7 +6,7 @@ function handles = InitializeCP3DStack(handles)
 % IMPORTANT NOTE:
 % This module gets information about the metainformation from the file name
 % of the images. These are microscope specific. Unless you use exactly the
-% same microsocpe, you might have to adjust METRFROMIMAGENAME and there
+% same microsocpe, you might have to adjust METAFROMIMAGENAME and there
 % write your own custom code, which parses the file name and extracts the
 % metainformation. You might have a look at matlab's help on regular
 % expressions.
@@ -36,6 +36,7 @@ function handles = InitializeCP3DStack(handles)
 % Website: http://www.imls.uzh.ch/research/pelkmans.html
 %
 %
+% $Revision: 1879 $
 
 
 
