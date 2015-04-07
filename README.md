@@ -41,6 +41,7 @@ Standard modules:
 * MeasureTexture
 * LoadSegmentedCells
 * SaveSegmentedCells
+* SpeedUpCellprofiler
 
 (+) indicates standard modules with custom improvements (e.g.: additional optional inputs).
 
@@ -91,7 +92,6 @@ Custom modules:
 * LoadSegmentedObjects_MPcycle
 * SaveSegmentedCells_MPcycle
 * SubtractPreImage_MPcycle
-* SpeedUpCellprofiler
 
 For documentation on custom modules see below. More detailed documentation can be found in the actual Matlab functions. This information can also be queried from the GUI using the `?` button.
 
@@ -235,7 +235,7 @@ Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 #### MeasureObjectEnvironment
 
-Author: Brened Snijder (alumni)
+Author: Berned Snijder (alumni)
 
 
 #### MeasureObjectNeighbors
@@ -244,22 +244,19 @@ Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 
 #### MeasureObjectRobustIntensity
+Measures the 5, 25, 50, 75 and 95 percentiles of the intensities of all pixels of an object. Useful if a small set of pixels contains a bright signal, which reflects a technical detail of the assay rather than the underlying biological readout.
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### MeasureSingerFeatures
 
-Author: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Measures the polarisation and dispersion of (segmented) spot and (unsegmented) intensities within a cell as described by Robert Singer's group in Park et al. 2012, Cell Reports (http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4079260 )
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 ### Category "Others"
-
-
-#### SpeedUpCellProfiler
-
-Author: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
-
 
 
 ### Category "CP3D"
