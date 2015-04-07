@@ -119,7 +119,7 @@ Last module of a pipeline for distributing batch jobs when working in parallel o
 
 #### LoadSpotCorrection
 
-Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Authors: Loads a MATLAB matrix into CellProfiler. E.g.: This matrix can be used by the IdentifySpots2D module to change the threshold at given positions so that optical aberrations of the lens do not affect the counting of spots.  [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### IdentifySpots2D
