@@ -204,6 +204,7 @@ Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 
 #### ShrinkObjectsSafely
+Shrinks identified objects by a defined distance, but not so far that the resulting object would become too tiny or lost. Contrasting CellProfiler's inbuilt module, this ensures 1:1 relations between different segmentations describing thes same biological object.
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
