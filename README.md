@@ -155,7 +155,7 @@ Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 #### TopImageProjection
 
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 
 
