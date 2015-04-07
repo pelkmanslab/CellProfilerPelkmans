@@ -5,6 +5,8 @@ function handles = SaveImages(handles)
 %
 % SHORT DESCRIPTION:
 % Saves any image produced during the image analysis, in any image format.
+% In addition to the original SaveImages Module by Carpenter et al. it
+% contains an additional input to substitute parts of the file name
 % *************************************************************************
 %
 % Because CellProfiler usually performs many image analysis steps on many
@@ -83,7 +85,7 @@ function handles = SaveImages(handles)
 %   Vicky Lay
 %   Jun Liu
 %   Chris Gang
-%
+%   Thomas Stoeger
 % Website: http://www.cellprofiler.org
 %
 % $Revision: 4434 $
@@ -207,7 +209,16 @@ OptionalParameters = char(handles.Settings.VariableValues{CurrentModuleNum,12});
 UpdateFileOrNot = char(handles.Settings.VariableValues{CurrentModuleNum,13});
 %inputtypeVAR13 = popupmenu
 
-%textVAR14 = Warning! It is possible to overwrite existing files using this module!
+%textVAR14 = Which part of the filename should be substituted?
+%defaultVAR14 = Z01C02
+Substituted = char(handles.Settings.VariableValues{CurrentModuleNum,14});
+
+%textVAR15 = What should be the replacement within the filename?
+%defaultVAR15 = Z01C01
+Substitution = char(handles.Settings.VariableValues{CurrentModuleNum,15});
+
+%textVAR16 = Warning! It is possible to overwrite existing files using this module!
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%   WARNING   %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %If you change anything here, make sure the image tool SaveImageAs is
@@ -288,6 +299,11 @@ if strcmpi(SaveWhen,'Every cycle') || strcmpi(SaveWhen,'First cycle') && SetBein
         end
     end
 
+    % start - insertion by Pelkmans lab: substitute parts of filename
+ 	FileName = strrep(FileName, Substituted, Substitution);
+    % end - insertion by Pelkmans lab: substitute parts of filename
+    
+    
     FileName = [FileName '.' FileFormat];
 
     if strncmp(FileDirectory,'.',1)

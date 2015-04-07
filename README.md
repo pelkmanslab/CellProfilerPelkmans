@@ -14,7 +14,7 @@ List of Cell Profiler (CP) modules available on [iBRAIN](https://github.com/pelk
 Standard modules:
 
 * ExportToExcel
-* SaveImage
+* SaveImages (+)
 * LoadSingleImage
 * ApplyThreshold
 * Combine
@@ -42,6 +42,8 @@ Standard modules:
 * LoadSegmentedCells
 * SaveSegmentedCells
 
+(+) indicates standard modules with custom improvements (e.g.: additional optional inputs).
+
 For documentation on standard modules see [manual](http://cellprofiler.org/linked_files/Documentation/cp1_manual_9717.pdf)
 
 <!-- 
@@ -54,7 +56,6 @@ Custom modules:
 
 * LoadImages (starting from LoadEvenMoreImages, include Markus bug)
 * CreateBatchFiles
-* CreateBatchFilesTracking (? include in CreateBatchFiles)
 * InitializeCP3DStack
 * LoadCP3DStack
 * ImageProjectionCP3D
@@ -62,8 +63,6 @@ Custom modules:
 * RelateCP3D
 * LoadSegmentedObjectsCP3D
 * LoadSpotCorrection
-* SplitOrSpliceMovies (? Mat)
-* DynamicObjectFiler (? Mat)
 * IlluminationCorrection (combine existing modules)
 * IlluminationCorrectionPerSite
 * ShiftImage
@@ -98,6 +97,14 @@ For documentation on custom modules see below. More detailed documentation can b
 
 
 ### Category "File Processing"
+
+#### SaveImages
+
+Derived from original CP's module for saving individual images from the pipeline to the disk. In addition to the original module, it is possible to replace parts of the names of the output files (e.g.: save images created by CP in a format that pretends that the new images correspond to a new microscopy-channel).
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
 
 
 #### LoadImages
@@ -165,7 +172,7 @@ Note: Renamed standard module (DiscardSinglePixelObject)
 
 
 #### IdentifyPrimaryIterative
-
+b
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
@@ -201,8 +208,9 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 #### BorderNeighborAnalysis
 
-Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Two major functions: A) Basic statistics about adjacency to other cells (e.g.: number of adjacent cells) B) Relational information about neighbours of each cell (e.g. their object ID), which currently (Apr 2015) require separate loading functions after CP/iBrain, but enable to create arbitrary secondary features (e.g.: median nuclear elongation of the three neighbouring cells with the shortest contact sites to the cell of interest).
 
+Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 ### Category "Measurement"
 
