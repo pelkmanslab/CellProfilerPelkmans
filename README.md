@@ -94,6 +94,7 @@ Custom modules:
 * SaveSegmentedObjectsCP3D
 * LoadSegmentedObjectsCP3D
 * IdentifySpotsCP3D
+* VolumeObjectToImageCP3D
 
 For documentation on custom modules see below. More detailed documentation can be found in the actual Matlab functions. This information can also be queried from the GUI using the `?` button.
 
