@@ -19,7 +19,6 @@ Standard modules:
 * ApplyThreshold
 * Combine
 * Crop
-* ImageProjection
 * RescaleIntensities
 * Resize
 * Smooth
@@ -30,7 +29,7 @@ Standard modules:
 * IdentifyPrimLoG
 * IdentifyPrimManual
 * IdentifySecondary
-* IdentifyTertiareSubregion
+* IdentifyTertiarySubregion
 * MeasureImageGranularity
 * MeasureImageIntensity
 * MeasureObjectAreaShape
@@ -59,6 +58,7 @@ Custom modules:
 * ScanSpotThresholds
 * IlluminationCorrection (combine existing modules)
 * IlluminationCorrectionPerSite
+* ImageProjection
 * ShiftImage
 * SubtractBackgroundPelkmans
 * TopImageProjection
@@ -168,10 +168,16 @@ Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
+### Category "Image processing"
+
+#### ImageProjection
+
+Projects mulitple images to a single one (e.g.: maximum intensity projection, average intensity projection, ...)
+
+Author: Berend Snijder (alumnus)
 
 
 ### Category "Object processing"
-
 
 #### SegmentationVolume3D
 
@@ -257,7 +263,7 @@ Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 #### MeasureObjectEnvironment
 
-Author: Berend Snijder (alumni)
+Author: Berend Snijder (alumnus)
 
 
 #### MeasureObjectNeighbors
