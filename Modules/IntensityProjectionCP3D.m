@@ -1,7 +1,7 @@
 function handles = IntensityProjectionCP3D(handles)
 
 % Help for the IntensityProjectionCP3D
-% Category: Image Processing
+% Category: Other
 %
 % SHORT DESCRIPTION:
 % creates intensity projection images of loaded CP3D stacks 
@@ -11,6 +11,8 @@ function handles = IntensityProjectionCP3D(handles)
 %
 % Author:
 %   Markus Herrmann
+%
+% $Revision: 1879 $
 
 
 %%%%%%%%%%%%%%%%%
@@ -36,6 +38,8 @@ OutputImageName = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 IntensityMethod = char(handles.Settings.VariableValues{CurrentModuleNum,03});
 %inputtypeVAR03 = popupmenu
 
+
+%%%VariableRevisionNumber = 5
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PRELIMINARY CALCULATIONS & FILE HANDLING %%%
