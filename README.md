@@ -294,7 +294,7 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 #### LoadCP3DStack
 
-Loads a set of images, which have been initialized by InitializeCP3DStack, into RAM. Use cleverly with UnLoadCP3DS Stack to reduce peak RAM usage (thus allowing most computational jobs to finish on standard nodes). Note that LoadCP3DStack optionally performs illumination correction by the z-score based method.
+Loads a set of images, which have been initialized by InitializeCP3DStack, into RAM. Use cleverly with UnLoadCP3DS Stack to reduce peak RAM usage (thus allowing most computational jobs to finish on standard nodes). Note that LoadCP3DStack optionally performs illumination correction by the z-score based method (requiring the general function of pelkmanlab called getIlluminationReference).
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
