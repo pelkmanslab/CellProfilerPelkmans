@@ -332,6 +332,14 @@ Removes a stack of images, which has been fully loaded to RAM from RAM again. Us
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
+#### VolumeObjectToImageCP3D
+Creates a 2D image (note: not a 2D segmentation), which shows all the layers occupied by a 3D segmentation. E.g.: if followed by standard MeasureObjectIntensity it is possible to quantify the volume and the distribution of the 3D shape.
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+
+
 ### Category "MPcycle"
 
 This category is for working with images acquired in different multiplexing (MP) cycles. The modules of this category all depend on a shift descriptor file in JSON format, which specifies the shift between images acquired in different cycles and provides additional meta information, such as location of segmentation images. The shift descriptor file has to be generated prior to running the CellProfiler pipeline.
