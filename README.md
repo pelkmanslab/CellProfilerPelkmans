@@ -258,7 +258,7 @@ Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 #### MeasureObjectEnvironment
 
-Author: Berned Snijder (alumni)
+Author: Berend Snijder (alumni)
 
 
 #### MeasureObjectNeighbors
