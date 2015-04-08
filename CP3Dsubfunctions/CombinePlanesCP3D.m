@@ -21,7 +21,7 @@ switch lower(Method)
     case 'std'
         ProjImage = std(Image,[],3); %... Actually the std projection can be quite a nice spot detection
     case 'sum'
-        ProjImage = sum(Image,3); %... Actually the std projection can be quite a nice spot detection
+        ProjImage = sum(Image,3); % Sum projection as initially implemented by Markus in IntensityProjectionCP3D
     otherwise
         error([Method 'is no supported projection method']);
 end
