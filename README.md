@@ -94,6 +94,7 @@ Custom modules:
 * IdentifySpotsCP3D
 * VolumeObjectToImageCP3D
 * RelateCP3D
+* IntensityProjectionCP3D
 
 For documentation on custom modules see below. More detailed documentation can be found in the actual Matlab functions. This information can also be queried from the GUI using the `?` button.
 
@@ -339,6 +340,10 @@ Creates a 2D image (note: not a 2D segmentation), which shows all the layers occ
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
+#### IntensityProjectionCP3D
+Creates intensity projections from images present as a CP3D stack
+
+Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
 
