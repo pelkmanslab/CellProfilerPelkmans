@@ -65,7 +65,6 @@ Custom modules:
 * ShiftImage
 * SubtractBackgroundPelkmans
 * TopImageProjection
-* SegmentationVolume3D
 * DiscardObjectBySize (from DiscardSinglePixelObjects)
 * IdentifySpots2D
 * IdentifyPrimaryIterative
