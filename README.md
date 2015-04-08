@@ -299,11 +299,6 @@ Loads a set of images, which have been initialized by InitializeCP3DStack, into 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
-#### ImageProjectionCP3D
-
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
-
-
 #### IdentifyPrimLoGCP3D
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
