@@ -324,6 +324,7 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 #### UnLoadCP3DStack
 Removes a stack of images, which has been fully loaded to RAM from RAM again. Use cleverly with LoadCP3DS Stack to reduce peak RAM usage (thus allowing most computational jobs to finish on standard nodes).
 
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 ### Category "MPcycle"
 
