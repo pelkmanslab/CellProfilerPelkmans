@@ -56,8 +56,6 @@ Custom modules:
 
 * LoadImages (starting from LoadEvenMoreImages, include Markus bug)
 * CreateBatchFiles
-* ImageProjectionCP3D
-* IdentifyPrimLoGCP3D
 * RelateCP3D
 * LeaveNChildren
 * LoadSegmentedObjectsCP3D
@@ -96,6 +94,7 @@ Custom modules:
 * UnLoadCP3DStack
 * SaveSegmentedObjectsCP3D
 * LoadSegmentedObjectsCP3D
+* IdentifySpotsCP3D
 
 For documentation on custom modules see below. More detailed documentation can be found in the actual Matlab functions. This information can also be queried from the GUI using the `?` button.
 
@@ -299,7 +298,9 @@ Loads a set of images, which have been initialized by InitializeCP3DStack, into 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
-#### IdentifyPrimLoGCP3D
+#### IdentifySpotsCP3D
+
+Identifies spots in 3D stacks. Can be used to detect transcripts or nuclei. Optionally, 2D or 3D information is used to enhance the distinction between round object and image background.
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
