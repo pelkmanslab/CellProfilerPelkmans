@@ -58,7 +58,6 @@ Custom modules:
 * CreateBatchFiles
 * RelateCP3D
 * LeaveNChildren
-* LoadSegmentedObjectsCP3D
 * LoadSpotCorrection
 * ScanSpotThresholds
 * IlluminationCorrection (combine existing modules)
