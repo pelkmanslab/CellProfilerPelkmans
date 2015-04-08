@@ -15,11 +15,13 @@ function ProjImage = CombinePlanesCP3D(Image,Method)
 
 
 
-switch Method
-    case 'Maximum'
+switch lower(Method)
+    case 'maximum'
         ProjImage = max(Image,[],3);
-    case 'Std'
+    case 'std'
         ProjImage = std(Image,[],3); %... Actually the std projection can be quite a nice spot detection
+    case 'sum'
+        ProjImage = sum(Image,3); %... Actually the std projection can be quite a nice spot detection
     otherwise
         error([Method 'is no supported projection method']);
 end
