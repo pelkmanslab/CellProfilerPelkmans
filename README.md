@@ -35,6 +35,7 @@ Standard modules:
 * MeasureObjectAreaShape
 * MeasureObjectIntensity
 * MeasureObjectNeighbors
+* MeasureObjectNeighbors
 * MeasureRadialDistribution
 * MeasureTexture
 * SpeedUpCellprofiler
@@ -78,7 +79,6 @@ Custom modules:
 * MeasureLocalizationOfSpots
 * MeasureNucleiSpots
 * MeasureObjectEnvironment
-* MeasureObjectNeighbors
 * MeasureObjectRobustIntensity
 * MeasureSingerFeatures
 * MeasureObjectColocalization (check with ObjectColocalization)
