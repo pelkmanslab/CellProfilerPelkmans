@@ -107,9 +107,6 @@ Derived from original CP's module for saving individual images from the pipeline
 
 Author of customizations: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
-
-
-
 #### LoadImages
 
 First module of a pipeline for loading raw images from disk.
@@ -126,17 +123,7 @@ Loads a MATLAB matrix into CellProfiler. E.g.: This matrix can be used by the Id
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
-#### ScanSpotThresholds
 
-Identifies spots at varying thresholds. Can be used with SpotThrDetection package (brutusCorrectionOfPlateFromPipeline) to construct correction matrix for spatial bias due to lens artifacts (also see Exp_computeCorrectionMatrix of image-based transcriptomics and LoadSpotCorrection module)
-
- Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
-
-
-#### IdentifySpots2D
-Identifies individual spots in an image. E.g.: usable to identify single transcript molecules or to identify nuclei in a low-resolution image.
-
-Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376) and [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 
 #### SplitOrSpliceMovies
@@ -179,9 +166,19 @@ Author: Berend Snijder (alumnus)
 
 ### Category "Object processing"
 
-#### SegmentationVolume3D
 
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+#### ScanSpotThresholds
+
+Identifies spots at varying thresholds. Can be used with SpotThrDetection package (brutusCorrectionOfPlateFromPipeline) to construct correction matrix for spatial bias due to lens artifacts (also see Exp_computeCorrectionMatrix of image-based transcriptomics and LoadSpotCorrection module)
+
+ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+#### IdentifySpots2D
+Identifies individual spots in an image. E.g.: usable to identify single transcript molecules or to identify nuclei in a low-resolution image.
+
+Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376) and [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 
 #### DiscardObjectBySize
@@ -233,14 +230,15 @@ Shrinks identified objects by a defined distance, but not so far that the result
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
+### Category "Measurement"
+
+
+
 #### BorderNeighborAnalysis
 
 Two major functions: A) Basic statistics about adjacency to other cells (e.g.: number of adjacent cells) B) Relational information about neighbours of each cell (e.g. their object ID), which currently (Apr 2015) require separate loading functions after CP/iBrain, but enable to create arbitrary secondary features (e.g.: median nuclear elongation of the three neighbouring cells with the shortest contact sites to the cell of interest).
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
-
-### Category "Measurement"
-
 
 #### MeasureChildren
 
