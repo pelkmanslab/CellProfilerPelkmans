@@ -1,7 +1,7 @@
 function handles = UnLoadCP3DStack(handles)
 
 % Help for the UnLoadCP3D module:
-% Category: File Processing
+% Category: Other
 %
 % SHORT DESCRIPTION:
 % Will remove from 3D stacks form memory. It requires a prior

@@ -1,7 +1,7 @@
 function handles = LoadCP3DStack(handles)
 
 % Help for the LoadCP3D module:
-% Category: File Processing
+% Category: Other
 %
 % SHORT DESCRIPTION:
 % Will load files into a 3D Image Matrix. It requires a prior

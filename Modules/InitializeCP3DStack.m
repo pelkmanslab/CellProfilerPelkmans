@@ -1,6 +1,6 @@
 function handles = InitializeCP3DStack(handles)
 % Help for the InitializeCP3DStack module:
-% Category: File Processing
+% Category: Other
 %
 %
 % IMPORTANT NOTE:

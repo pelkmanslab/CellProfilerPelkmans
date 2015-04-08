@@ -1,6 +1,6 @@
 function handles = IdentifySpotsCP3D(handles)
 % Help for the IdentifySpotsCP3D module:
-% Category: Object Processing
+% Category: Other
 %
 
 % SHORT DESCRIPTION:

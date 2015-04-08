@@ -1,7 +1,7 @@
 function handles = AddVolumeToSegmentationCP3D(handles)
 
 % Help for the AddVolumeToSegmentationCP3D module:
-% Category: Object Processing
+% Category: Other
 %
 % SHORT DESCRIPTION:
 % This module will create up to one 3D object per 2D object based upon
