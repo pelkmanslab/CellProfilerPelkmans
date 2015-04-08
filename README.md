@@ -38,8 +38,6 @@ Standard modules:
 * MeasureObjectNeighbors
 * MeasureRadialDistribution
 * MeasureTexture
-* LoadSegmentedCells
-* SaveSegmentedCells
 * SpeedUpCellprofiler
 
 (+) indicates standard modules with custom improvements (e.g.: additional optional inputs).
@@ -56,7 +54,6 @@ Custom modules:
 
 * LoadImages (starting from LoadEvenMoreImages, include Markus bug)
 * CreateBatchFiles
-* RelateCP3D
 * LeaveNChildren
 * LoadSpotCorrection
 * ScanSpotThresholds
@@ -70,6 +67,8 @@ Custom modules:
 * IdentifyPrimaryIterative
 * IdentifySecondaryIterative
 * JoinObjectSegmentation
+* LoadSegmentedCells
+* SaveSegmentedCells
 * MergeAndRelateChildren (check with related modules)
 * PropagateObjects
 * SeparateObjects
@@ -94,6 +93,7 @@ Custom modules:
 * LoadSegmentedObjectsCP3D
 * IdentifySpotsCP3D
 * VolumeObjectToImageCP3D
+* RelateCP3D
 
 For documentation on custom modules see below. More detailed documentation can be found in the actual Matlab functions. This information can also be queried from the GUI using the `?` button.
 
@@ -311,6 +311,8 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### RelateCP3D
+
+Relates children objects (e.g.: 2D or 3D spot) to parents (e.g.: 2D or 3D cell) and counts the number of children of each parent.
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
