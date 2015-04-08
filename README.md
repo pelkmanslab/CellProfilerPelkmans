@@ -303,6 +303,12 @@ Identifies spots in 3D stacks. Can be used to detect transcripts or nuclei. Opti
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
+#### AddVolumeToSegmentationCP3D
+
+Takes (standard) 2D segmenation and intensities of images in 3D stack to identify 3D objects (Volumes corresponding to objects already identified in 2D segmentation). 
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
 
 #### RelateCP3D
 
