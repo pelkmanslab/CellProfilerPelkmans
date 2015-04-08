@@ -1,5 +1,5 @@
-function handles = IdentifyPrimLoGCP3D(handles)
-% Help for the IdentifyPrimLGCP3D module:
+function handles = IdentifySpotsCP3D(handles)
+% Help for the IdentifySpotsCP3D module:
 % Category: Object Processing
 %
 
