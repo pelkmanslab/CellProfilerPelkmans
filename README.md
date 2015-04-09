@@ -282,6 +282,17 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 ### Category "Others"
 
+#### SaveSegmentedCells
+
+Saves a segmentation from CellPrrofiler to disk. Such a saved segmentation can later be loaded with the LoadSegmentedCells module in other/future pipelines. It is a prerequisite for showing outlines of cells in classify_gui.
+
+Author: [Prisca](https://www.pelkmanslab.org/?page_id=253)
+
+#### LoadSegmentedCells
+
+Loads a segmentation, which has been previously saved to disk by the SaveSegmentedCells module. Allows to reuse the same segmentation for multiple different pipelines. 
+
+Authors:  [Prisca](https://www.pelkmanslab.org/?page_id=253) and [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 #### InitializeCP3DStack
 
