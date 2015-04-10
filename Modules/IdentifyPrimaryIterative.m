@@ -103,6 +103,10 @@ function handles = IdentifyPrimaryIterative(handles)
 % Test mode for perimeter analysis: 
 % Displays curvature, convex/concave, equivalent radius and segment of each object.
 % Pick values from images to fine tune settings.
+%
+% Selection method for identification of watershed nodes:
+% 'quickNdirty' uses only a few nodes within a concave region -> fast, but less accurate
+% 'niceNslow' uses all nodes within a concave region -> slow, but more accurate
 % 
 % DEPENDENCIES:
 % PerimeterAnalysis.m
@@ -203,6 +207,13 @@ PerimSegEqSegment = degtorad(str2double(char(handles.Settings.VariableValues{Cur
 %choiceVAR17 = Yes
 TestMode = char(handles.Settings.VariableValues{CurrentModuleNum,17});
 %inputtypeVAR17 = popupmenu
+
+%textVAR18 = Watershed node selection method
+%choiceVAR18 = quickNdirty
+%choiceVAR18 = niceNslow
+SelectionMethod = char(handles.Settings.VariableValues{CurrentModuleNum,18});
+%inputtypeVAR18 = popupmenu
+
 
 %%%VariableRevisionNumber = 15
 
@@ -338,9 +349,9 @@ if ~isempty(imInputObjects)
         
         % Perform the actual segmentation
         if strcmp(DebugMode, 'On')
-            imCutMask(:,:,i) = PerimeterWatershedSegmentation(imObj2Cut,OrigImage,cellPerimeterProps{i},PerimSegEqRadius,PerimSegEqSegment,LowerSizeCutThres, 'debugON');
+            imCutMask(:,:,i) = PerimeterWatershedSegmentation(imObj2Cut,OrigImage,cellPerimeterProps{i},PerimSegEqRadius,PerimSegEqSegment,LowerSizeCutThres, SelectionMethod, 'debugON');
         else
-            imCutMask(:,:,i) = PerimeterWatershedSegmentation(imObj2Cut,OrigImage,cellPerimeterProps{i},PerimSegEqRadius,PerimSegEqSegment,LowerSizeCutThres);
+            imCutMask(:,:,i) = PerimeterWatershedSegmentation(imObj2Cut,OrigImage,cellPerimeterProps{i},PerimSegEqRadius,PerimSegEqSegment,LowerSizeCutThres, SelectionMethod);
         end
         imCut(:,:,i) = bwlabel(imObj2Cut.*~imCutMask(:,:,i));
         
