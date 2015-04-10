@@ -158,6 +158,17 @@ ErodedPrimaryObjectImage = imerode(PrimaryObjectImage, ones(3));
 SubregionObjectImage = SecondaryObjectImage;
 SubregionObjectImage(ErodedPrimaryObjectImage~=0) = 0;
 
+% [TS150410: added part of IdentifyTertiarySubregionNoShrinkage as a
+% comment, since this appears quite clever - potentially it would be good
+% to add this as an option]
+% [Version of DB 150204 - Start]: Removed shrinkage of embedded object]
+% NotErodedPrimaryObjectImage = PrimaryObjectImage;
+% SubregionObjectImage = SecondaryObjectImage;
+% SubregionObjectImage(NotErodedPrimaryObjectImage~=0) = 0;
+% [Version of DB 150204 - End]  ; 
+
+
+
 %%% Calculates object outlines
 MaxFilteredImage = ordfilt2(SubregionObjectImage,9,ones(3,3),'symmetric');
 %%% Determines the outlines.
