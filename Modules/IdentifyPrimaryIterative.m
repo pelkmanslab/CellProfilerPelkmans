@@ -208,13 +208,6 @@ PerimSegEqSegment = degtorad(str2double(char(handles.Settings.VariableValues{Cur
 TestMode = char(handles.Settings.VariableValues{CurrentModuleNum,17});
 %inputtypeVAR17 = popupmenu
 
-%textVAR18 = Watershed node selection method
-%choiceVAR18 = quickNdirty
-%choiceVAR18 = niceNslow
-SelectionMethod = char(handles.Settings.VariableValues{CurrentModuleNum,18});
-%inputtypeVAR18 = popupmenu
-
-
 %%%VariableRevisionNumber = 15
 
 
@@ -349,9 +342,9 @@ if ~isempty(imInputObjects)
         
         % Perform the actual segmentation
         if strcmp(DebugMode, 'On')
-            imCutMask(:,:,i) = PerimeterWatershedSegmentation(imObj2Cut,OrigImage,cellPerimeterProps{i},PerimSegEqRadius,PerimSegEqSegment,LowerSizeCutThres, SelectionMethod, 'debugON');
+            imCutMask(:,:,i) = PerimeterWatershedSegmentation(imObj2Cut,OrigImage,cellPerimeterProps{i},PerimSegEqRadius,PerimSegEqSegment,LowerSizeCutThres, 'debugON');
         else
-            imCutMask(:,:,i) = PerimeterWatershedSegmentation(imObj2Cut,OrigImage,cellPerimeterProps{i},PerimSegEqRadius,PerimSegEqSegment,LowerSizeCutThres, SelectionMethod);
+            imCutMask(:,:,i) = PerimeterWatershedSegmentation(imObj2Cut,OrigImage,cellPerimeterProps{i},PerimSegEqRadius,PerimSegEqSegment,LowerSizeCutThres);
         end
         imCut(:,:,i) = bwlabel(imObj2Cut.*~imCutMask(:,:,i));
         
