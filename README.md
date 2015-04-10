@@ -176,6 +176,7 @@ Identifies spots at varying thresholds. Can be used with SpotThrDetection packag
 
 
 #### IdentifySpots2D
+
 Identifies individual spots in an image. E.g.: usable to identify single transcript molecules or to identify nuclei in a low-resolution image.
 
 Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376) and [Nico](https://www.pelkmanslab.org/?page_id=360)
@@ -188,10 +189,13 @@ Note: Renamed standard module (DiscardSinglePixelObject)
 
 #### IdentifyPrimaryIterative
 
+Identifies primary objects (generally nuclei) in a gray scale image in a two-step process. In the first step, it applies a global threshold (calculated by the Otsu method) to the image. This already identifies many objects, but it usually results in several objects still being clumped together. In the second step, these clumped objects are then further separated. To this end, clumped objects are identified on the basis of their size and shape. The thereby selected objects are then cut along watershed lines connecting concave regions. This process can be iterated to separate clumps of more then two objects. 		
+
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
 #### IdentifySecondaryIterative
+
 Identifies the secondary object (e.g. cytoplasm) surrounding a primary object (e.g. nucleus). Uses an arbitrary amount of different thresholds to create a joined segmentation that does not get worse by including more thresholds (and thus becomes very accurate and largely eliminates manual setup). The only critical parameter that has to be tested is the lowest absolute threshold value (which should be between the background of the camera and the dimmest stained pixel of a cell). 
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
