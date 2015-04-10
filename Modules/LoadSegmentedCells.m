@@ -5,11 +5,14 @@ function handles = LoadSegmentedCells(handles)
 %
 % SHORT DESCRIPTION:
 % Loads object segmentation from iBRAIN's SEGMENTATION directory
+% The channel, which forms the base of the file name of the segmentation 
+% can be specified (in case objects are from different pipelines) - by
+% default the first channel as specified in the 
 % *************************************************************************
 %
 % Website: http://www.cellprofiler.org
 %
-% $Revision: 1 $
+% $Revision: 1809 $
 
 %%%%%%%%%%%%%%%%%
 %%% VARIABLES %%%
@@ -23,16 +26,25 @@ drawnow
 %infotypeVAR01 = objectgroup indep
 ObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 
-%%%VariableRevisionNumber = 2
+%textVAR02 = Which channel forms the basis of the filenames?
+%infotypeVAR02 = imagegroup
+iChannel = char(handles.Settings.VariableValues{CurrentModuleNum,2});
+%inputtypeVAR02 = popupmenu
 
+%%%VariableRevisionNumber = 5
 
 %%%%%%%%%%%%%%%%
 %%% ANALYSIS %%%
 %%%%%%%%%%%%%%%%
 
+% Get Position of the channel
+FoundChannel = cell2mat(cellfun(@(x) strcmp(x,iChannel), handles.Measurements.Image.FileNamesText,'UniformOutput', false));
+PosOfChannel = find(FoundChannel,1,'first');
+
+
 % get the filename of the object setgementation as stored by
 % SaveSegmentedCells
-strOrigImageName = char(handles.Measurements.Image.FileNames{handles.Current.SetBeingAnalyzed}{1,1});
+strOrigImageName = char(handles.Measurements.Image.FileNames{handles.Current.SetBeingAnalyzed}{1,PosOfChannel});
 
 % format the segmentation file name
 matDotIndices=strfind(strOrigImageName,'.');

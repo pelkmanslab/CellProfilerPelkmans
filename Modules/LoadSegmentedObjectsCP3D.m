@@ -10,7 +10,7 @@ function handles = LoadSegmentedObjectsCP3D(handles)
 %
 % Website: http://www.cellprofiler.org
 %
-% $Revision: 1 $
+% $Revision: 1234 $
 
 %%%%%%%%%%%%%%%%%
 %%% VARIABLES %%%

@@ -10,8 +10,8 @@ function handles = SaveSegmentedObjectsCP3D(handles)
 %   it checks if there is .Format within the object (which is false for
 %   cp1, but true when following stanadard of cp3d) in that case the output
 %   will be the structure of the object (which dependent upon the format
-%   choosen may contain the linear indices of individual objects)
-%   FILENAMES are derived from the current Measuremnt.Image which, for 3D
+%   chosen may contain the linear indices of individual objects)
+%   FILENAMES are derived from the current Measurement.Image which, for 3D
 %   has a sole filename per stack.
 %
 % *************************************************************************

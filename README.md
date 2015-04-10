@@ -19,7 +19,6 @@ Standard modules:
 * ApplyThreshold
 * Combine
 * Crop
-* ImageProjection
 * RescaleIntensities
 * Resize
 * Smooth
@@ -30,17 +29,16 @@ Standard modules:
 * IdentifyPrimLoG
 * IdentifyPrimManual
 * IdentifySecondary
-* IdentifyTertiareSubregion
+* IdentifyTertiarySubregion
 * MeasureImageGranularity
 * MeasureImageIntensity
 * MeasureObjectAreaShape
 * MeasureObjectIntensity
 * MeasureObjectNeighbors
+* MeasureObjectNeighbors
 * MeasureRadialDistribution
-* MeasureSingerFeatures
 * MeasureTexture
-* LoadSegmentedCells
-* SaveSegmentedCells
+* SpeedUpCellprofiler
 
 (+) indicates standard modules with custom improvements (e.g.: additional optional inputs).
 
@@ -56,34 +54,31 @@ Custom modules:
 
 * LoadImages (starting from LoadEvenMoreImages, include Markus bug)
 * CreateBatchFiles
-* InitializeCP3DStack
-* LoadCP3DStack
-* ImageProjectionCP3D
-* IdentifyPrimLoGCP3D
-* RelateCP3D
-* LoadSegmentedObjectsCP3D
+* LeaveNChildren
 * LoadSpotCorrection
+* ScanSpotThresholds
 * IlluminationCorrection (combine existing modules)
 * IlluminationCorrectionPerSite
+* ImageProjection
 * ShiftImage
 * SubtractBackgroundPelkmans
 * TopImageProjection
-* SegmentationVolume3D
 * DiscardObjectBySize (from DiscardSinglePixelObjects)
 * IdentifySpots2D
 * IdentifyPrimaryIterative
 * IdentifySecondaryIterative
 * JoinObjectSegmentation
+* LoadSegmentedCells
+* SaveSegmentedCells
 * MergeAndRelateChildren (check with related modules)
 * PropagateObjects
 * SeparateObjects
 * ShrinkObjectsSafely
 * BorderNeighborAnalysis
 * MeasureChildren
-* MeasureSpotLocalization (check with MeasureLocalizationOfSpots)
+* MeasureLocalizationOfSpots
 * MeasureNucleiSpots
 * MeasureObjectEnvironment
-* MeasureObjectNeighbors
 * MeasureObjectRobustIntensity
 * MeasureSingerFeatures
 * MeasureObjectColocalization (check with ObjectColocalization)
@@ -91,7 +86,15 @@ Custom modules:
 * LoadSegmentedObjects_MPcycle
 * SaveSegmentedCells_MPcycle
 * SubtractPreImage_MPcycle
-* SpeedUpCellprofiler
+* InitializeCP3DStack
+* LoadCP3DStack
+* UnLoadCP3DStack
+* SaveSegmentedObjectsCP3D
+* LoadSegmentedObjectsCP3D
+* IdentifySpotsCP3D
+* VolumeObjectToImageCP3D
+* RelateCP3D
+* IntensityProjectionCP3D
 
 For documentation on custom modules see below. More detailed documentation can be found in the actual Matlab functions. This information can also be queried from the GUI using the `?` button.
 
@@ -102,10 +105,7 @@ For documentation on custom modules see below. More detailed documentation can b
 
 Derived from original CP's module for saving individual images from the pipeline to the disk. In addition to the original module, it is possible to replace parts of the names of the output files (e.g.: save images created by CP in a format that pretends that the new images correspond to a new microscopy-channel).
 
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
-
-
-
+Author of customizations: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 #### LoadImages
 
@@ -119,12 +119,11 @@ Last module of a pipeline for distributing batch jobs when working in parallel o
 
 #### LoadSpotCorrection
 
-Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Loads a MATLAB matrix into CellProfiler. E.g.: This matrix can be used by the IdentifySpots2D module to change the threshold at given positions so that optical aberrations of the lens do not affect the counting of spots.  
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
-#### IdentifySpots2D
-
-Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### SplitOrSpliceMovies
@@ -134,7 +133,7 @@ Author: [Mat](https://www.pelkmanslab.org/?page_id=350)
 
 #### IlluminationCorrection
 
-Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) and [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### IlluminationCorrectionPerSite
@@ -154,16 +153,32 @@ Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 #### TopImageProjection
 
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
+### Category "Image processing"
+
+#### ImageProjection
+
+Projects mulitple images to a single one (e.g.: maximum intensity projection, average intensity projection, ...)
+
+Author: Berend Snijder (alumnus)
 
 
 ### Category "Object processing"
 
 
-#### SegmentationVolume3D
 
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+#### ScanSpotThresholds
+
+Identifies spots at varying thresholds. Can be used with SpotThrDetection package (brutusCorrectionOfPlateFromPipeline) to construct correction matrix for spatial bias due to lens artifacts (also see Exp_computeCorrectionMatrix of image-based transcriptomics and LoadSpotCorrection module)
+
+ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+#### IdentifySpots2D
+Identifies individual spots in an image. E.g.: usable to identify single transcript molecules or to identify nuclei in a low-resolution image.
+
+Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376) and [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 
 #### DiscardObjectBySize
@@ -172,18 +187,26 @@ Note: Renamed standard module (DiscardSinglePixelObject)
 
 
 #### IdentifyPrimaryIterative
-b
+
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 
 
 #### IdentifySecondaryIterative
+Identifies the secondary object (e.g. cytoplasm) surrounding a primary object (e.g. nucleus). Uses an arbitrary amount of different thresholds to create a joined segmentation that does not get worse by including more thresholds (and thus becomes very accurate and largely eliminates manual setup). The only critical parameter that has to be tested is the lowest absolute threshold value (which should be between the background of the camera and the dimmest stained pixel of a cell). 
 
-Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### JoinObjectSegmentation
 
 Authors: [Nico](https://www.pelkmanslab.org/?page_id=360)
+
+
+#### LeaveNChildren
+
+Ensures that each parent object (e.g. cell) have the same user-specified amount of children objects (e.g. transcripts). If parent has to many children, excess children are randomly selected and removed. If parent has too little children, all are lost.
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### MergeAndRelateChildren
@@ -202,27 +225,33 @@ Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 
 #### ShrinkObjectsSafely
+Shrinks identified objects by a defined distance, but not so far that the resulting object would become too tiny or lost. Contrasting CellProfiler's inbuilt module, this ensures 1:1 relations between different segmentations describing thes same biological object.
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+### Category "Measurement"
+
 
 
 #### BorderNeighborAnalysis
 
 Two major functions: A) Basic statistics about adjacency to other cells (e.g.: number of adjacent cells) B) Relational information about neighbours of each cell (e.g. their object ID), which currently (Apr 2015) require separate loading functions after CP/iBrain, but enable to create arbitrary secondary features (e.g.: median nuclear elongation of the three neighbouring cells with the shortest contact sites to the cell of interest).
 
-Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376)
-
-### Category "Measurement"
-
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 #### MeasureChildren
 
-Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Obtains for each parent object (e.g.: cell) the mean and variance and central moments of measurements of children. The name of the feature set must correspond to the one which has been used internally by the module used to generate measurements of the children (e.g ChildLocalizationZScored for MeasureLocalizationOfSpots, or IntensityTranscript if the objects called transcript have been quantified by MeasureObjectIntensity). 
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
-#### MeasureSpotLocalization
+#### MeasureLocalizationOfSpots
 
-Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Measures the localization of each spot (e.g. transcript molecule) relative to other objects (e.g. nuclei and cellular periphery) and other spots. The module yields raw absolute measurements and measurements, which have been normalized by z-scoring against 100 random relocations of spots to cytoplasmic positions. 
+
+Authors: [Thomas](https://www.pelkmanslab.org/?page_id=376) and [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 
 #### MeasureNucleiSpots
@@ -232,64 +261,99 @@ Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 #### MeasureObjectEnvironment
 
-Author: Brened Snijder (alumni)
+Author: Berend Snijder (alumnus)
 
 
 #### MeasureObjectNeighbors
-
-Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
-
+Standard CellProfiler module that "calculates how many neighbors each object has and records various properties about the neighbors' relationships, including the percentage of an object's edge pixels that touch a neighbor."  Also see custom module BorderNeighbourAnalysis, which provides similar, but larger functionality. 
 
 #### MeasureObjectRobustIntensity
+Measures the 5, 25, 50, 75 and 95 percentiles of the intensities among all pixels of an object. Useful if a small set of pixels contains a bright signal, which reflects a technical detail of the assay rather than the underlying biological readout.
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### MeasureSingerFeatures
 
-Author: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Measures the polarisation and dispersion of (segmented) spot and (unsegmented) intensities within a cell as described by Robert Singer's group in Park et al. 2012, Cell Reports (http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4079260 )
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 ### Category "Others"
 
+#### SaveSegmentedCells
 
-#### SpeedUpCellProfiler
+Saves a segmentation from CellPrrofiler to disk. Such a saved segmentation can later be loaded with the LoadSegmentedCells module in other/future pipelines. It is a prerequisite for showing outlines of cells in classify_gui.
 
-Author: [Nico](https://www.pelkmanslab.org/?page_id=360) & [Thomas](https://www.pelkmanslab.org/?page_id=376)
+Author: [Prisca](https://www.pelkmanslab.org/?page_id=253)
 
+#### LoadSegmentedCells
 
+Loads a segmentation, which has been previously saved to disk by the SaveSegmentedCells module. Allows to reuse the same segmentation for multiple different pipelines. 
 
-### Category "CP3D"
-
+Authors:  [Prisca](https://www.pelkmanslab.org/?page_id=253) and [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 #### InitializeCP3DStack
+
+Initializes the processing of 3D information. Allows the synchronisation of multiple z planes corresponding to the same stack (and site) within single cycle of CellProfiler (and if present according to the 2D images initialized by LoadImages). Note that the module add depends on the general functions of the pelkmanslab to exact metainformation (see METAFROMIMAGENAME.m) . This module does not load images (to reduce the amount of image information in memory). Loading and removal from RAM requires the separate modules LoadCP3DStack and UnLoadCP3DStack. 
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### LoadCP3DStack
 
-Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
-
-
-#### ImageProjectionCP3D
+Loads a set of images, which have been initialized by InitializeCP3DStack, into RAM. Use cleverly with UnLoadCP3DS Stack to reduce peak RAM usage (thus allowing most computational jobs to finish on standard nodes). Note that LoadCP3DStack optionally performs illumination correction by the z-score based method (requiring the general function of pelkmanlab called getIlluminationReference).
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
-#### IdentifyPrimLoGCP3D
+#### IdentifySpotsCP3D
+
+Identifies spots in 3D stacks. Can be used to detect transcripts or nuclei. Optionally, 2D or 3D information is used to enhance the distinction between round object and image background.
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+#### AddVolumeToSegmentationCP3D
+
+Takes (standard) 2D segmenation and intensities of images in 3D stack to identify 3D objects (Volumes corresponding to objects already identified in 2D segmentation). 
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### RelateCP3D
 
+Relates children objects (e.g.: 2D or 3D spot) to parents (e.g.: 2D or 3D cell) and counts the number of children of each parent.
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+
+#### SaveSegmentedObjectsCP3D
+
+Save the segmentation of 3D objects. Note that the code internally tests and supports dor different formats of storing the 3D data (allowing an easy extension of the module, if needed).
+
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 #### LoadSegmentedObjectsCP3D
+Load the segmentation of 3D objects. Note that the code internally tests and supports dor different formats of storing the 3D data (allowing an easy extension of the module, if needed).
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+#### UnLoadCP3DStack
+Removes a stack of images, which has been fully loaded to RAM from RAM again. Use cleverly with LoadCP3DS Stack to reduce peak RAM usage (thus allowing most computational jobs to finish on standard nodes).
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+#### VolumeObjectToImageCP3D
+Creates a 2D image (note: not a 2D segmentation), which shows all the layers occupied by a 3D segmentation. E.g.: if followed by standard MeasureObjectIntensity it is possible to quantify the volume and the distribution of the 3D shape.
+
+Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+#### IntensityProjectionCP3D
+Creates intensity projections from images present as a CP3D stack
+
+Authors : [Markus](https://www.pelkmanslab.org/?page_id=402) and [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
 

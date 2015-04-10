@@ -1,7 +1,7 @@
 function handles = VolumeObjectToImageCP3D(handles)
 
 % Help for VolumeObjectToImageCP3D:
-% Category: Image Processing
+% Category: Other
 %
 % SHORT DESCRIPTION:
 % Transforms a 3D object segmentation into a 2D intensity image, where

@@ -36,7 +36,7 @@ SubObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 %inputtypeVAR02 = popupmenu
 ParentName = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 
-%textVAR03 = What is the name of the feature, which should be used?
+%textVAR03 = What is the name of the feature set, which should be used?
 %defaultVAR03 = ChildLocalizationZScored
 FeatureName = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 

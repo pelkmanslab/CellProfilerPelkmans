@@ -47,18 +47,26 @@ matStd = imresize(matStd,ReFact);
 
 % do correction
 if isLog == 1
+    % Avoid -Inf values after log10 transform.
     Image(Image == 0) = 1;
+    % Apply z-score normalization for each single pixel.
     CorrectedImage = (log10(Image)-matMean)./matStd;
+    % Reverse z-score.
     CorrectedImage = (CorrectedImage.*mean(matStd(:)))+mean(matMean(:));
+    % Reverse log10 transform that was applied to images when learning 
+    % mean/std statistics as well the corrected image.
     CorrectedImage = 10.^CorrectedImage;  
-    CorrectedImage(CorrectedImage<0)=0;
 else
+    % Apply z-score normalization for each single pixel.
     CorrectedImage = (Image-matMean)./matStd;
+    % Reverse z-score.
     CorrectedImage = (CorrectedImage.*mean(matStd(:)))+mean(matMean(:));    
-    CorrectedImage(CorrectedImage<0)=0;
 end
- 
-% fix potentially broken pixels (which are not variable)
+
+% Avoid negative values in the final image
+CorrectedImage(CorrectedImage<0)=0;
+
+% Fix potentially broken pixels (which are not variable)
 CorrectedImage = fixNonNumericalValueInImage(CorrectedImage);
 
 end

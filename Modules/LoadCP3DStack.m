@@ -1,7 +1,7 @@
 function handles = LoadCP3DStack(handles)
 
 % Help for the LoadCP3D module:
-% Category: File Processing
+% Category: Other
 %
 % SHORT DESCRIPTION:
 % Will load files into a 3D Image Matrix. It requires a prior
@@ -100,141 +100,137 @@ end
 
 end
 
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-% Note the following function is part of getIlluminationReference.m, which
-% is not part of iBrain repository; ideally there should not be any need
-% for copying the function to this module. Please do not change the
-% function of this module, without synchronizing the function outside of
-% this module. Also it would be good to replace the copy within this module
-% by a call to a general function. 
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-function [matMeanImage matStdImage hasIlluminationCorrection] = getIlluminationReference(strBatchDir,iChannel,cacheInRam)
-if nargin < 3
-    cacheInRam = false;
-end
-
-strPathToCurrentIllumination = fullfile(strBatchDir,...
-    sprintf('Measurements_batch_illcor_channel%03d_zstack000.mat',iChannel));
-
-matMeanImage = [];
-matStdImage =[];
-
-if ~any(fileattrib(strPathToCurrentIllumination))
-    hasIlluminationCorrection = false;
-    warning('matlab:bsBla','%s:  failed to load illumination correction %s',mfilename,strPathToCurrentIllumination);
-else
-    hasIlluminationCorrection = true;
-    if cacheInRam == false
-        ImportedIlluminationCorrection = load(strPathToCurrentIllumination);
-        matMeanImage = double(ImportedIlluminationCorrection.stat_values.mean);
-        matStdImage = double(ImportedIlluminationCorrection.stat_values.std);
-    else
-        ImportedIlluminationCorrection = cacheForIlluminationStats(strPathToCurrentIllumination);
-        matMeanImage = ImportedIlluminationCorrection.stat_values.mean;  % conversion to double in cache to save time
-        matStdImage = ImportedIlluminationCorrection.stat_values.std;
-    end
-    
-end
-
-end
-
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-% Note the following function is part of getIlluminationReference.m, which
-% is not part of iBrain repository; ideally there should not be any need
-% for copying the function to this module. Please do not change the
-% function of this module, without synchronizing the function outside of
-% this module. Also it would be good to replace the copy within this module
-% by a call to a general function. 
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-function dat = cacheForIlluminationStats(strFileName)
-% Initialize Persistent variables for caching
-persistent CachedMeasurments;
-persistent OriginalPathOfChached;
-
-if isempty(CachedMeasurments)
-    CachedMeasurments = cell(0);
-end
-
-if isempty(OriginalPathOfChached)
-    OriginalPathOfChached = cell(0);
-end
-
-nStrFileName = npc(strFileName); % npc to ensure that each file only stored once in cache once
-
-[isCached cachedLoc]= ismember(nStrFileName,OriginalPathOfChached);
-
-if ~isCached   % load into cache, if absent there
-    fprintf('Caching illumination correction ... ');
-    cachedLoc = length(CachedMeasurments) + 1;
-    
-    ImportedIlluminationCorrection = load(nStrFileName);
-    ImportedIlluminationCorrection.stat_values.matMeanImage = double(ImportedIlluminationCorrection.stat_values.mean);
-    ImportedIlluminationCorrection.stat_values.std = double(ImportedIlluminationCorrection.stat_values.std);
-    
-    OriginalPathOfChached{cachedLoc} = nStrFileName;
-    CachedMeasurments{cachedLoc} = ImportedIlluminationCorrection;    
-    
-    fprintf('complete \n');
-end
-
-dat = CachedMeasurments{cachedLoc}; % retreive data
-end
 
 
-
-
-
-
-% %% Original Code (without variables listed to prevent CP problems)
-% function handles = LoadCP3DStack(handles)
-% 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%% PRELIMINARY ERROR CHECKING & FILE HANDLING %%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
-% try
-%     % obtain full path to file, note that Path and Filename have been stored separately before to remain consistency with CP1 modules such as create Batchfiles
-%     ImagePathFile =  cellfun(@(x) fullfile(handles.Pipeline.(StackName).Pathname, char(x)), handles.Pipeline.(StackName).FileNames, 'UniformOutput', 0);
-%     
-%     handles.Pipeline.(StackName) = imreadCP3D(ImagePathFile,'single');
-% catch NotLoaded
-%     error(['Image processing was canceled in the ', ModuleName, ' module because the specified files could not be loaded.'])
-% end
-% 
-% 
-% %%%%%%%%%%%%%
-% %%% DISPLAY
-% %%%%%%%%%%%%%
-% 
-% CombinedImage =  CombinePlanesCP3D(handles.Pipeline.(StackName),'Maximum');
-% 
-% drawnow
-% ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
-% if any(findobj == ThisModuleFigureNumber)
-% 
-%     %%% Activates the appropriate figure window.
-%     CPfigure(handles,'Image',ThisModuleFigureNumber);
-% 
-%     if handles.Current.SetBeingAnalyzed == handles.Current.StartingImageSet
-%         CPresizefigure(CombinedImage,'TwoByTwo',ThisModuleFigureNumber);
-%     end
-%     
-%     %%% A subplot of the figure window is set to display the Combined Image
-%     %%% image.  Using CPimagesc or image instead of imshow doesn't work when
-%     %%% some of the pixels are saturated.
-% 
-%     CPimagesc(CombinedImage,handles);
-% 
-%     title(sprintf('Maximum intensity projection of loaded %s stack, cycle #%d', StackName ,num2str(handles.Current.SetBeingAnalyzed)));
-% end
-% 
-% 
-% end
+%%% EARLY BRANCH BY MARKUS:
+%%% x allows loading of multiple stacks
+%%% x does not perform illumination correction (which had not been part of
+%%% LoadCP3DStack back then)
+% % 
+% % function handles = LoadCP3DMultipleStacks(handles)
+% % 
+% % % Help for the LoadCP3D module:
+% % % Category: File Processing
+% % %
+% % % SHORT DESCRIPTION:
+% % % Will load files into a 3D Image Matrix. It requires a prior
+% % % INITIALIZECP3DSTACK module. Note that specifically loading with this
+% % % module followed by clearing it from memory by UNLOADCP3DSTACK allows 
+% % % control over memory.
+% % % 
+% % %   
+% % %   Authors:
+% % %   Nico Battich
+% % %   Thomas Stoeger
+% % %   Lucas Pelkmans
+% % %
+% % % Battich et al., 2013.
+% % % Website: http://www.imls.uzh.ch/research/pelkmans.html
+% % % ***********************************************************************
+% % %
+% % %
+% % % $Revision: 1879 $
+% % %
+% % % modification to enable loading of multiple stacks [Markus Herrmann]
+% % 
+% % 
+% % %%%%%%%%%%%%%%%%%
+% % %%% VARIABLES %%%
+% % %%%%%%%%%%%%%%%%%
+% % 
+% % drawnow
+% % 
+% % [CurrentModule, CurrentModuleNum, ModuleName] = CPwhichmodule(handles);
+% % 
+% % %textVAR01 = What did you call the images you want to load into memory?
+% % %defaultVAR01 = StackBlue
+% % StackName1 = char(handles.Settings.VariableValues{CurrentModuleNum,1});
+% % 
+% % %textVAR02 = What did you call the images you want to load into memory?
+% % %defaultVAR02 = StackGreen
+% % StackName2 = char(handles.Settings.VariableValues{CurrentModuleNum,2});
+% % 
+% % %textVAR03 = What did you call the images you want to load into memory?
+% % %defaultVAR03 = StackRed
+% % StackName3 = char(handles.Settings.VariableValues{CurrentModuleNum,3});
+% % 
+% % %textVAR04 = What did you call the images you want to load into memory?
+% % %defaultVAR04 = /
+% % StackName4 = char(handles.Settings.VariableValues{CurrentModuleNum,4});
+% % 
+% % %%%VariableRevisionNumber = 1
+% % 
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % %%% PRELIMINARY ERROR CHECKING & FILE HANDLING %%%
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % 
+% % cellStackNames = {StackName1, StackName2, StackName3, StackName4}';
+% % indexCell = cell2mat(cellfun(@(x) ~strcmp(x,'/'), cellStackNames, 'UniformOutput', false));
+% % cellStackNamesValid = cellStackNames(indexCell);
+% % 
+% % cellPath = cellfun(@(x) handles.Pipeline.(x).Pathname, cellStackNamesValid, 'UniformOutput', false);
+% % cellFile = cellfun(@(x) handles.Pipeline.(x).FileNames, cellStackNamesValid, 'UniformOutput', false);
+% % 
+% % for j = 1:size(cellStackNamesValid,1)
+% %     
+% %     try
+% %         % obtain full path to file, note that Path and Filename have been stored separately before to remain consistency with CP modules such as create Batchfiles
+% %         ImagePathFile =  cellfun(@(x) fullfile(cellPath{j}, char(x)), cellFile{j}, 'UniformOutput', 0);
+% %         
+% %         handles.Pipeline.(cellStackNamesValid{j}) = imreadCP3D(ImagePathFile,'single');
+% %         
+% %     catch NotLoaded
+% %         error(['Image processing was canceled in the ', ModuleName, ' module for ', StackName1, ' because the specified files could not be loaded.'])
+% %     end
+% %     
+% % end
+% % 
+% % 
+% % %%%%%%%%%%%%%%
+% % %%% DISPLAY %%
+% % %%%%%%%%%%%%%%
+% % 
+% % % only plot the stacks (MIP images), which were loaded by the module!
+% % numStacks = sum(cell2mat(cellfun(@(x) ~strcmp(x,'/'), cellStackNames, 'UniformOutput', false)));
+% % 
+% % cellCombinedImages = cell(numStacks,1);
+% % for k = 1:numStacks
+% %     cellCombinedImages{k} = CombinePlanesCP3D(handles.Pipeline.(eval(sprintf('StackName%d',k))),'Maximum');
+% % end
+% % 
+% % drawnow
+% % ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
+% % if any(findobj == ThisModuleFigureNumber)
+% % 
+% %     %%% Activates the appropriate figure window.
+% %     CPfigure(handles,'Image',ThisModuleFigureNumber);
+% % 
+% %     if handles.Current.SetBeingAnalyzed == handles.Current.StartingImageSet
+% %         cellfun(@(x) CPresizefigure(x,'TwoByTwo',ThisModuleFigureNumber),cellCombinedImages,'UniformOutput',false);
+% %     end
+% %     
+% %     %%% A subplot of the figure window is set to display the Combined Image
+% %     %%% image.  Using CPimagesc or image instead of imshow doesn't work when
+% %     %%% some of the pixels are saturated.
+% % 
+% %     for k = 1:numStacks
+% %         
+% %         if size(cellCombinedImages,1) < 3
+% %             ii = 1;
+% %         elseif size(cellCombinedImages,1) >= 3
+% %             ii = 2;
+% %         end
+% %         
+% %         subplot(ii,2,k), CPimagesc(cellCombinedImages{k},handles);
+% %         title(sprintf('MIP of loaded %s, cycle #%d', eval(sprintf('StackName%d',k)) ,num2str(handles.Current.SetBeingAnalyzed)));
+% %         
+% %     end
+% % 
+% % end
+% % 
+% % 
+% % end
+% % 
+% % 
+% % 
+% % 

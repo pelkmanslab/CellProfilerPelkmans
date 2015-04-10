@@ -1,7 +1,7 @@
 function handles = IntensityProjectionCP3D(handles)
 
 % Help for the IntensityProjectionCP3D
-% Category: Image Processing
+% Category: Other
 %
 % SHORT DESCRIPTION:
 % creates intensity projection images of loaded CP3D stacks 
@@ -11,6 +11,9 @@ function handles = IntensityProjectionCP3D(handles)
 %
 % Author:
 %   Markus Herrmann
+%   Thomas Stoeger
+%
+% $Revision: 1879 $
 
 
 %%%%%%%%%%%%%%%%%
@@ -37,6 +40,8 @@ IntensityMethod = char(handles.Settings.VariableValues{CurrentModuleNum,03});
 %inputtypeVAR03 = popupmenu
 
 
+%%%VariableRevisionNumber = 5
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PRELIMINARY CALCULATIONS & FILE HANDLING %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -44,13 +49,9 @@ drawnow
 
 CurrStack = handles.Pipeline.(StackName);
 
-if strcmp(IntensityMethod,'Max')
-    % Create maximum intensity projection
-    IPStack = max(CurrStack,[],3);
-else
-    % Create sum intensity projection
-    IPStack = sum(CurrStack,3);
-end
+IPStack = CombinePlanesCP3D(CurrStack,IntensityMethod); % [TS 150408: use dedicated function of CP3D for projection]
+IPStack = double(IPStack) ./ 65535; % [TS 150408: introduce division and enforce double to follow CP's convention for 2D images]
+
 
 handles.Pipeline.(OutputImageName) = IPStack;
 
