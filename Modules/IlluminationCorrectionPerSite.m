@@ -235,8 +235,6 @@ end
 % find indices of mask for correction
 MaskIdx = find(matMask==1);
 
-end
-
 
 %%%%%%%%%%%%%%%%%%
 %%% LOAD IMAGE %%%
