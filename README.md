@@ -138,7 +138,9 @@ Authors: [Nico](https://www.pelkmanslab.org/?page_id=360) and [Thomas](https://w
 
 #### IlluminationCorrectionPerSite
 
-Author: [Viki](https://www.pelkmanslab.org/?page_id=373)
+Uses std and mean illumination function calculated by iBrain, on both a per site and plate-wise basis, which are then used to correct uneven illumination/lighting/shading via Z-scoring, with optional masking of pixels from the correction. Useful when imaging entire wells such that each site comprises differing regions of empty space.
+
+Author: [Vicky](https://www.pelkmanslab.org/?page_id=373)
 
 
 #### ShiftImage
