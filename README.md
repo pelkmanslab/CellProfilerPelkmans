@@ -162,7 +162,6 @@ For documentation on standard modules also see [CellProfiler manual](http://cell
 
 * LoadSegmentedCells
 * SaveSegmentedCells
-
 * LoadCP3DStack
 * LoadSegmentedObjectsCP3
 * IdentifySpotsCP3D
@@ -172,7 +171,6 @@ For documentation on standard modules also see [CellProfiler manual](http://cell
 * SaveSegmentedObjectsCP3D
 * UnLoadCP3DStack
 * VolumeObjectToImageCP3D
-
 * AlignOjbects_MPcycle
 * LoadSegmentedObjects_MPcycle
 * SaveSegmentedCells_MPcycle
