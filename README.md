@@ -238,7 +238,7 @@ Author: [Nico](https://www.pelkmanslab.org/?page_id=360)
 
 ---
 
-### Category "Object processing"
+#### Category "Object processing" ####
 
 ##### DiscardObjectBySize #####
 
@@ -302,7 +302,7 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 ---
 
-### Category "Measurement"
+#### Category "Measurement" ####
 
 ##### BorderNeighborAnalysis #####
 
