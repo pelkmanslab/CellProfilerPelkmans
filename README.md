@@ -26,7 +26,7 @@ To this end, add the following line to your `startup.m` file:
 addpath(genpath('~/cellprofiler'))
 ```
 
-Note that this file has to reside in your *initial working folder*. For more information see [startup](http://ch.mathworks.com/help/matlab/ref/startup.html).
+Note that this file has to reside in your *initial working folder*. For more information see [Matlab startup](http://ch.mathworks.com/help/matlab/ref/startup.html).
 
 
 ## How to ##
@@ -61,7 +61,7 @@ Each module belongs to one of the following categories:
 
 Detailed documentation can be found in the actual Matlab functions (.m files). This information can also be queried from the GUI using the `?` button.
 
-For documentation on standard modules also see [manual](http://cellprofiler.org/linked_files/Documentation/cp1_manual_9717.pdf).
+For documentation on standard modules also see [CellProfiler manual](http://cellprofiler.org/linked_files/Documentation/cp1_manual_9717.pdf).
 
 
 ### Standard modules ###
@@ -178,7 +178,8 @@ For documentation on standard modules also see [manual](http://cellprofiler.org/
 * SaveSegmentedCells_MPcycle
 * SubtractPreImage_MPcycle
 
----
+
+### Documentation ###
 
 #### Category "File processing" ####
 
