@@ -1,7 +1,7 @@
 function handles = SaveSegmentedCells_MPcycle(handles)
 
 % Help for the SaveSegmentedCells module:
-% Category: MPcycle
+% Category: Others (MPcycle)
 %
 % SHORT DESCRIPTION:
 % Saving images within a MP project, where the SEGMENTATION directory

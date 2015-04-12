@@ -1,12 +1,12 @@
-function handles = LoadImages(handles)
+function handles = LoadMoreImages(handles)
 
-% Help for the Load Images module:
+% Help for the Load More Images module:
 % Category: File Processing
 %
 % SHORT DESCRIPTION:
 % Allows you to specify which images or movies are to be loaded and in
 % which order. Groups of images will be loaded per cycle of CellProfiler
-% processing.
+% processing. Addapted by Berend Snijder from LoadImages.m
 % *************************************************************************
 %
 % Tells CellProfiler where to retrieve images and gives each image a
@@ -283,31 +283,174 @@ TextToFind{4} = char(handles.Settings.VariableValues{CurrentModuleNum,8});
 %infotypeVAR09 = imagegroup indep
 ImageName{4} = char(handles.Settings.VariableValues{CurrentModuleNum,9});
 
-%textVAR10 = If using ORDER, how many images are there in each group (i.e. each field of view)?
-%defaultVAR10 = 3
-ImagesPerSet = str2double(char(handles.Settings.VariableValues{CurrentModuleNum,10}));
+%textVAR10 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR10 = /
+TextToFind{5} = char(handles.Settings.VariableValues{CurrentModuleNum,10});
 
-%textVAR11 = Are you loading image or movie files?
-%choiceVAR11 = Image
-%choiceVAR11 = Movie
-ImageOrMovie = char(handles.Settings.VariableValues{CurrentModuleNum,11});
-%inputtypeVAR11 = popupmenu
+%textVAR11 = What do you want to call these images within CellProfiler?
+%defaultVAR11 = /
+%infotypeVAR11 = imagegroup indep
+ImageName{5} = char(handles.Settings.VariableValues{CurrentModuleNum,11});
 
-%textVAR12 = If you are loading a movie, what is the extension?
-%choiceVAR12 = avi
-%choiceVAR12 = stk
-FileFormat = char(handles.Settings.VariableValues{CurrentModuleNum,12});
-%inputtypeVAR12 = popupmenu
+%textVAR12 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR12 = /
+TextToFind{6} = char(handles.Settings.VariableValues{CurrentModuleNum,12});
 
-%textVAR13 = Analyze all subfolders within the selected folder?
-%choiceVAR13 = No
-%choiceVAR13 = Yes
-AnalyzeSubDir = char(handles.Settings.VariableValues{CurrentModuleNum,13});
-%inputtypeVAR13 = popupmenu
+%textVAR13 = What do you want to call these images within CellProfiler?
+%defaultVAR13 = /
+%infotypeVAR13 = imagegroup indep
+ImageName{6} = char(handles.Settings.VariableValues{CurrentModuleNum,13});
 
-%textVAR14 = Enter the path name to the folder where the images to be loaded are located (starting with "./../"). Type period (.) for default image folder.
-%defaultVAR14 = .
-Pathname = char(handles.Settings.VariableValues{CurrentModuleNum,14});
+%textVAR14 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR14 = /
+TextToFind{7} = char(handles.Settings.VariableValues{CurrentModuleNum,14});
+
+%textVAR15 = What do you want to call these images within CellProfiler?
+%defaultVAR15 = /
+%infotypeVAR15 = imagegroup indep
+ImageName{7} = char(handles.Settings.VariableValues{CurrentModuleNum,15});
+
+%textVAR16 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR16 = /
+TextToFind{8} = char(handles.Settings.VariableValues{CurrentModuleNum,16});
+
+%textVAR17 = What do you want to call these images within CellProfiler?
+%defaultVAR17 = /
+%infotypeVAR17 = imagegroup indep
+ImageName{8} = char(handles.Settings.VariableValues{CurrentModuleNum,17});
+
+%textVAR18 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR18 = /
+TextToFind{9} = char(handles.Settings.VariableValues{CurrentModuleNum,18});
+
+%textVAR19 = What do you want to call these images within CellProfiler?
+%defaultVAR19 = /
+%infotypeVAR19 = imagegroup indep
+ImageName{9} = char(handles.Settings.VariableValues{CurrentModuleNum,19});
+
+%textVAR20 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR20 = /
+TextToFind{10} = char(handles.Settings.VariableValues{CurrentModuleNum,20});
+
+%textVAR21 = What do you want to call these images within CellProfiler?
+%defaultVAR21 = /
+%infotypeVAR21 = imagegroup indep
+ImageName{10} = char(handles.Settings.VariableValues{CurrentModuleNum,21});
+
+%textVAR22 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR22 = /
+TextToFind{11} = char(handles.Settings.VariableValues{CurrentModuleNum,22});
+
+%textVAR23 = What do you want to call these images within CellProfiler?
+%defaultVAR23 = /
+%infotypeVAR23 = imagegroup indep
+ImageName{11} = char(handles.Settings.VariableValues{CurrentModuleNum,23});
+
+%textVAR24 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR24 = /
+TextToFind{12} = char(handles.Settings.VariableValues{CurrentModuleNum,24});
+
+%textVAR25 = What do you want to call these images within CellProfiler?
+%defaultVAR25 = /
+%infotypeVAR25 = imagegroup indep
+ImageName{12} = char(handles.Settings.VariableValues{CurrentModuleNum,25});
+
+%textVAR26 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR26 = /
+TextToFind{13} = char(handles.Settings.VariableValues{CurrentModuleNum,26});
+
+%textVAR27 = What do you want to call these images within CellProfiler?
+%defaultVAR27 = /
+%infotypeVAR27 = imagegroup indep
+ImageName{13} = char(handles.Settings.VariableValues{CurrentModuleNum,27});
+
+%textVAR28 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR28 = /
+TextToFind{14} = char(handles.Settings.VariableValues{CurrentModuleNum,28});
+
+%textVAR29 = What do you want to call these images within CellProfiler?
+%defaultVAR29 = /
+%infotypeVAR29 = imagegroup indep
+ImageName{14} = char(handles.Settings.VariableValues{CurrentModuleNum,29});
+
+%textVAR30 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR30 = /
+TextToFind{15} = char(handles.Settings.VariableValues{CurrentModuleNum,30});
+
+%textVAR31 = What do you want to call these images within CellProfiler?
+%defaultVAR31 = /
+%infotypeVAR31 = imagegroup indep
+ImageName{15} = char(handles.Settings.VariableValues{CurrentModuleNum,31});
+
+%textVAR32 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR32 = /
+TextToFind{16} = char(handles.Settings.VariableValues{CurrentModuleNum,32});
+
+%textVAR33 = What do you want to call these images within CellProfiler?
+%defaultVAR33 = /
+%infotypeVAR33 = imagegroup indep
+ImageName{16} = char(handles.Settings.VariableValues{CurrentModuleNum,33});
+
+%textVAR34 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR34 = /
+TextToFind{17} = char(handles.Settings.VariableValues{CurrentModuleNum,34});
+
+%textVAR35 = What do you want to call these images within CellProfiler?
+%defaultVAR35 = /
+%infotypeVAR35 = imagegroup indep
+ImageName{17} = char(handles.Settings.VariableValues{CurrentModuleNum,35});
+
+%textVAR36 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR36 = /
+TextToFind{18} = char(handles.Settings.VariableValues{CurrentModuleNum,36});
+
+%textVAR37 = What do you want to call these images within CellProfiler?
+%defaultVAR37 = /
+%infotypeVAR37 = imagegroup indep
+ImageName{18} = char(handles.Settings.VariableValues{CurrentModuleNum,37});
+
+%textVAR38 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR38 = /
+TextToFind{19} = char(handles.Settings.VariableValues{CurrentModuleNum,38});
+
+%textVAR39 = What do you want to call these images within CellProfiler?
+%defaultVAR39 = /
+%infotypeVAR39 = imagegroup indep
+ImageName{19} = char(handles.Settings.VariableValues{CurrentModuleNum,39});
+
+%textVAR40 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
+%defaultVAR40 = /
+TextToFind{20} = char(handles.Settings.VariableValues{CurrentModuleNum,40});
+
+%textVAR41 = What do you want to call these images within CellProfiler?
+%defaultVAR41 = /
+%infotypeVAR41 = imagegroup indep
+ImageName{20} = char(handles.Settings.VariableValues{CurrentModuleNum,41});
+
+%textVAR42 = If using ORDER, how many images are there in each group (i.e. each field of view)?
+%defaultVAR42 = 3
+ImagesPerSet = str2double(char(handles.Settings.VariableValues{CurrentModuleNum,42}));
+
+%textVAR43 = Are you loading image or movie files?
+%choiceVAR43 = Image
+%choiceVAR43 = Movie
+ImageOrMovie = char(handles.Settings.VariableValues{CurrentModuleNum,43});
+%inputtypeVAR43 = popupmenu
+
+%textVAR44 = If you are loading a movie, what is the extension?
+%choiceVAR44 = avi
+%choiceVAR44 = stk
+FileFormat = char(handles.Settings.VariableValues{CurrentModuleNum,44});
+%inputtypeVAR44 = popupmenu
+
+%textVAR45 = Analyze all subfolders within the selected folder?
+%choiceVAR45 = No
+%choiceVAR45 = Yes
+AnalyzeSubDir = char(handles.Settings.VariableValues{CurrentModuleNum,45});
+%inputtypeVAR45 = popupmenu
+
+%pathnametextVAR46 = Enter the path name to the folder where the images to be loaded are located. Type period (.) for default image folder.
+Pathname = char(handles.Settings.VariableValues{CurrentModuleNum,46});
 
 %%%VariableRevisionNumber = 1
 
@@ -323,7 +466,7 @@ SetBeingAnalyzed = handles.Current.SetBeingAnalyzed;
 %%% i.e., store only valid entries
 tmp1 = {};
 tmp2 = {};
-for n = 1:4
+for n = 1:20
     if ~strcmp(TextToFind{n}, '/') && ~strcmp(ImageName{n}, '/')
         tmp1{end+1} = TextToFind{n};
         tmp2{end+1} = ImageName{n};
@@ -347,6 +490,8 @@ drawnow
 
 %%% Extracting the list of files to be analyzed occurs only the first time
 %%% through this module.
+
+
 if SetBeingAnalyzed == 1
 
     for i = 1:length(ImageName)
@@ -361,42 +506,13 @@ if SetBeingAnalyzed == 1
             Pathname = handles.Current.DefaultImageDirectory;
         else
             Pathname = fullfile(handles.Current.DefaultImageDirectory,Pathname(2:end));
-            fprintf(['=================================================' ...
-                     '=================================================' ...
-                     '=================================================' ...
-                     '\n\n%s: You specified an alternative path:\n%s\n\n' ...
-                     '=================================================' ...
-                     '=================================================' ...
-                     '=================================================' ...
-                     '\n'],mfilename,Pathname);        
-        end
-    elseif strcmp(Pathname,'Pre')
-        if ~isempty(strfind(handles.Current.DefaultImageDirectory,'TIFF'))
-            pos = strfind(handles.Current.DefaultImageDirectory,'TIFF');
-            cycleNum = str2double(handles.Current.DefaultImageDirectory(pos-2));
-            if ~isnan(cycleNum)
-                Pathname = strrep(handles.Current.DefaultImageDirectory,[num2str(cycleNum),filesep,'TIFF'],[num2str(cycleNum-1),filesep,'TIFF']);
-                fprintf(['=================================================' ...
-                    '=================================================' ...
-                    '=================================================' ...
-                    '\n\n%s: You specified an alternative path:\n%s\n\n' ...
-                    '=================================================' ...
-                    '=================================================' ...
-                    '=================================================' ...
-                    '\n'],mfilename,Pathname);
-            else
-                error('Your pathname input specifies a previous multiplexing cycle ("Pre"), but your projects doesn''t seem to be a multiplexing project!')
-            end
-        else
-            error(['Image processing was canceled in the ', ModuleName, ' module because the path for previous multiplexing cycle could not be determined correctly.'])
         end
     end
     SpecifiedPathname = Pathname;
     if ~exist(SpecifiedPathname,'dir')
-        error(['Image processing was canceled in the ', ModuleName, ' module because the directory "',SpecifiedPathname,'" does not exist. Be sure that no spaces or unusual characters exist in your typed entry and that the pathname of the directory begins with ./'])
+        error(['Image processing was canceled in the ', ModuleName, ' module because the directory "',SpecifiedPathname,'" does not exist. Be sure that no spaces or unusual characters exist in your typed entry and that the pathname of the directory begins with /.'])
     end
 
-    
     if strcmp(LoadChoice,'Order')
 
         if strcmp(ImageOrMovie,'Image')
@@ -654,12 +770,10 @@ for n = 1:length(ImageName)
             FileList = handles.Pipeline.(fieldname);
             %%% Determines the file name of the image you want to analyze.
             CurrentFileName = FileList(SetBeingAnalyzed);
-
             %%% Determines the directory to switch to.
             fieldname = ['Pathname', ImageName{n}];
             Pathname = handles.Pipeline.(fieldname);
             [LoadedImage, handles] = CPimread(fullfile(Pathname,CurrentFileName{1}), handles);
-
             %%% Note, we are not using the CPretrieveimage subfunction because we are
             %%% here retrieving the image from the hard drive, not from the handles
             %%% structure.

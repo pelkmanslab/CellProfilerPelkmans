@@ -1,7 +1,7 @@
 function handles = SubtractPreImage_MPcycle(handles)
 
 % Help for the SUBTRACTPREIMAGE_MPCYCLE module:
-% Category: MPcycle
+% Category: Others (MPcycle)
 %
 % SHORT DESCRIPTION: 
 % Obtains intensity images of two subsequent multiplexing cycles from the

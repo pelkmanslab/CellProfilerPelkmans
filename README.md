@@ -86,14 +86,17 @@ For documentation on standard modules also see [manual](http://cellprofiler.org/
 ##### Object Processing #####
 
 * ExandOrShrink
+* FilterByObjectMeasurement
 * IdentifyPrimAutomatic
 * IdentifyPrimLoG
 * IdentifyPrimManual
 * IdentifySecondary
 * IdentifyTertiarySubregion
+* Relate
 
 ##### Measurements #####
 
+* MeasureCorrelation
 * MeasureImageGranularity
 * MeasureImageIntensity
 * MeasureObjectAreaShape
@@ -116,13 +119,13 @@ For documentation on standard modules also see [manual](http://cellprofiler.org/
 ##### File Processing #####
 
 * CreateBatchFiles
-* LoadImages (starting from LoadEvenMoreImages, include Markus bug)
+* LoadImages
 * LoadSpotCorrection
 * Save Images
 
 ##### Image Processing #####
 
-* IlluminationCorrection (combine existing modules)
+* IlluminationCorrection (TODO: combine existing modules)
 * IlluminationCorrectionPerSite
 * ImageProjection
 * ShiftImage
@@ -131,13 +134,13 @@ For documentation on standard modules also see [manual](http://cellprofiler.org/
 
 ##### Object Processing #####
 
-* DiscardObjectBySize (from DiscardSinglePixelObjects)
+* DiscardObjectBySize
 * IdentifySpots2D
 * IdentifyPrimaryIterative
 * IdentifySecondaryIterative
 * JoinObjectSegmentation
 * LeaveNChildren
-* MergeAndRelateChildren (check with related modules)
+* MergeAndRelateChildren (TODO: check with related modules)
 * PropagateObjects
 * ScanSpotThresholds
 * SeparateObjects
@@ -152,7 +155,7 @@ For documentation on standard modules also see [manual](http://cellprofiler.org/
 * MeasureObjectEnvironment
 * MeasureObjectNeighbors
 * MeasureObjectRobustIntensity
-* MeasureObjectColocalization (check with ObjectColocalization)
+* MeasureObjectColocalization
 * MeasureSingerFeatures
 
 ##### Other #####
@@ -361,6 +364,10 @@ Saves a segmentation from CellPrrofiler to disk. Such a saved segmentation can l
 
 Author: [Prisca](https://www.pelkmanslab.org/?page_id=253)
 
+#### SplitOrSpliceMovies
+
+Author: [Mat](https://www.pelkmanslab.org/?page_id=350)
+
 
 #### "CP3D" ####
 
@@ -454,15 +461,6 @@ Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
 Subtract images of a previous cycle from those of the currently processed cycle.
 
 Author: [Markus](https://www.pelkmanslab.org/?page_id=402)
-
-
-
-
-
-
-#### SplitOrSpliceMovies
-
-Author: [Mat](https://www.pelkmanslab.org/?page_id=350)
 
 
 
