@@ -10,16 +10,13 @@ Major differences to the original version:
 
 ## Installation ##
 
-To install *CellProfilerPelkmans*, clone this repository:
+First, you need to clone this repository:
 
 ```{bash}
 git clone git@github.com:pelkmanslab/CellProfilerPelkmans.git ~/cellprofiler
 ```
 
-In order to be able to start CellProfiler from Matlab, you have to put the
-location of the local copy of the repository on the Matlab path.
-
-
+In order to be able to start CellProfiler from Matlab, you have to put the location of the local copy of this repository on the Matlab path.
 To this end, add the following line to your `startup.m` file:
 
 ```{matlab}
@@ -27,6 +24,30 @@ addpath(genpath('~/cellprofiler'))
 ```
 
 Note that this file has to reside in your *initial working folder*. For more information see [Matlab startup](http://ch.mathworks.com/help/matlab/ref/startup.html).
+
+## Dependencies ##
+
+Some CP modules depend on Matlab code that resides outside of this repository. This code is located at [iBRAINdependencies](https://github.com/pelkmanslab/iBRAINDependencies).
+
+To use *CellProfilerPelkmans* you thus also have to put the location of the local copy of the *iBRAINdependencies* repository on the Matlab path.
+
+To this end, first clone the repository:
+
+```{bash}
+git clone git@github.com:pelkmanslab/iBRAINDependencies.git ~/ibraindep
+```
+
+Then add the following line to your `startup.m` file:
+
+```{matlab}
+addpath(genpath('~/ibraindep/matlab'))
+```
+
+On unix systems you can alternatively define the `MATLABPATH` environment variable. To this end, add the following line to your `.bash_profile` file:
+
+```{bash}
+export MATLABPATH=$MATLABPATH:$HOME/ibraindep/matlab
+```
 
 
 ## How to ##
@@ -41,14 +62,7 @@ CellProfiler
 This will start the CellProfiler program and open the GUI window. 
 
 
-## Dependencies ##
-
-> *CellProfilerPelkmans* depends on Matlab code that resides outside of this repository. We haven't yet finally decided how we will manage these dependencies.
-
-For information on the current status and ongoing discussion see the corresponding [issue](https://github.com/pelkmanslab/CellProfilerPelkmans/issues/4).
-
-
-## CP Modules ##
+## Modules ##
 
 List of Cell Profiler (CP) modules available on [iBRAIN](https://github.com/pelkmanslab/iBRAIN).
 
