@@ -363,7 +363,7 @@ Saves a segmentation from CellPrrofiler to disk. Such a saved segmentation can l
 
 Author: [Prisca](https://www.pelkmanslab.org/?page_id=253)
 
-#### SplitOrSpliceMovies
+##### SplitOrSpliceMovies #####
 
 Author: [Mat](https://www.pelkmanslab.org/?page_id=350)
 
@@ -433,7 +433,7 @@ Creates intensity projections from images present as a CP3D stack.
 Authors : [Markus](https://www.pelkmanslab.org/?page_id=402) and [Thomas](https://www.pelkmanslab.org/?page_id=376)
 
 
-#### "MPcycle" #### 
+#### "MPcycle" ####
 
 The "MPcycle" modules provide a framework for working with images acquired in different multiplexing (MP) cycles. The modules of this category all depend on a shift descriptor file in JSON format, which specifies the shift between images acquired in different cycles and provides additional meta information, such as location of segmentation images. The shift descriptor file has to be generated prior to running the CellProfiler pipeline.
 
