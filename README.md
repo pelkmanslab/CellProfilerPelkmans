@@ -93,6 +93,7 @@ For documentation on standard modules also see [CellProfiler manual](http://cell
 * IdentifySecondary
 * IdentifyTertiarySubregion
 * Relate
+* MergeAndRelateChildren
 
 ##### Measurements #####
 
@@ -105,6 +106,9 @@ For documentation on standard modules also see [CellProfiler manual](http://cell
 * MeasureObjectNeighbors
 * MeasureRadialDistribution
 * MeasureTexture
+* MeasureGPperSingleCell
+* MeasureObjectColocalisation
+
 
 ##### Other #####
 
@@ -346,6 +350,34 @@ Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
 Measures the polarisation and dispersion of (segmented) spot and (unsegmented) intensities within a cell as described by Robert Singer's group in Park et al. 2012, Cell Reports (http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4079260 )
 
 Author: [Thomas](https://www.pelkmanslab.org/?page_id=376)
+
+##### MeasureObjectColocalisation #####
+
+this module measure, in pixel, the colocalisation of the segmentations of the object 3 
+with the segmentation of the object 1 and the segmentation of object 2.
+these objects are to be specified in the GUI, the outputs are multiple:
+
+Author: [Mat](https://www.pelkmanslab.org/?page_id=350)
+
+##### MeasureGPperSingleCell #####
+
+This module works only on laurdan stained images, the GP formula has
+been taken from 'Visualizing lipid structure and raft domains in living 
+cells with two-photon microscopy, Gaus & al 2003 PNAS
+Inputs are the following: Image name 1 is the image of the cells stained with Laurdan and acquired in 
+the window 1 (see Gaus & al 2003 PNAS for the exact emission Wavelength to record, anyway before using this 
+module you must look at it). ImageName2 is the same but for the window 2. third input is the object segmentation to use.
+
+Author: [Mat](https://www.pelkmanslab.org/?page_id=350)
+
+##### MergeAndRelateChildren #####
+
+Relates children objects to parent objects as a single entity, 
+typically when children objects define a unique organelle like the
+Golgi for exemple.
+
+Author: [Mat](https://www.pelkmanslab.org/?page_id=350)
+
 
 ---
 
