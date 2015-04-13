@@ -34,19 +34,19 @@ To use *CellProfilerPelkmans* you thus also have to put the location of the loca
 To this end, first clone the repository:
 
 ```{bash}
-git clone git@github.com:pelkmanslab/iBRAINDependencies.git ~/ibraindep
+git clone git@github.com:pelkmanslab/iBRAINDependencies.git ~/pelkmanslibrary
 ```
 
 Then add the following line to your `startup.m` file:
 
 ```{matlab}
-addpath(genpath('~/ibraindep/matlab'))
+addpath(genpath('~/pelkmanslibrary/matlab'))
 ```
 
 On unix systems you can alternatively define the `MATLABPATH` environment variable. To this end, add the following line to your `.bash_profile` file:
 
 ```{bash}
-export MATLABPATH=$MATLABPATH:$HOME/ibraindep/matlab
+export MATLABPATH=$MATLABPATH:$HOME/pelkmanslibrary/matlab
 ```
 
 
