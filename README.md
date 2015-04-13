@@ -27,7 +27,7 @@ Note that this file has to reside in your *initial working folder*. For more inf
 
 ## Dependencies ##
 
-Some CP modules depend on Matlab code that resides outside of this repository. This code is located at [iBRAINdependencies](https://github.com/pelkmanslab/iBRAINDependencies).
+Some CP modules depend on Matlab code that resides outside of this repository. This code is located at [PelkmansLibrary](https://github.com/pelkmanslab/PelkmansLibrary).
 
 To use *CellProfilerPelkmans* you thus also have to put the location of the local copy of the *iBRAINdependencies* repository on the Matlab path.
 
