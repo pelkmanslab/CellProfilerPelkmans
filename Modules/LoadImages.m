@@ -571,8 +571,10 @@ if SetBeingAnalyzed == 1
                 for MovieFileNumber = 1:length(FileList)
                     CurrentMovieFileName = char(FileList(MovieFileNumber));
                     if strcmpi(FileFormat,'avi') == 1
-                        try MovieAttributes = aviinfo(fullfile(SpecifiedPathname, CurrentMovieFileName));
-                        catch error(['Image processing was canceled in the ', ModuleName, ' module because the file ',fullfile(SpecifiedPathname, CurrentMovieFileName),' was not readable as an uncompressed avi file.'])
+                        try 
+                        	MovieAttributes = aviinfo(fullfile(SpecifiedPathname, CurrentMovieFileName));
+                        catch 
+                        	error(['Image processing was canceled in the ', ModuleName, ' module because the file ',fullfile(SpecifiedPathname, CurrentMovieFileName),' was not readable as an uncompressed avi file.'])
                         end
                         NumFrames = MovieAttributes.NumFrames;
                         for FrameNumber = 1:NumFrames
@@ -591,7 +593,8 @@ if SetBeingAnalyzed == 1
                                 %%% Puts the frame number into the FrameByFrameFileList in the second row.
                                 FrameByFrameFileList{n}(2,StartingPositionForThisMovie + FrameNumber) = {FrameNumber};
                             end
-                        catch error(['Image processing was canceled in the ', ModuleName, ' module because the file ',fullfile(SpecifiedPathname, CurrentMovieFileName),' was not readable as a stk file.'])
+                        catch 
+                        	error(['Image processing was canceled in the ', ModuleName, ' module because the file ',fullfile(SpecifiedPathname, CurrentMovieFileName),' was not readable as a stk file.'])
                         end
                     end
                     StartingPositionForThisMovie = StartingPositionForThisMovie + NumFrames;
@@ -673,8 +676,10 @@ if SetBeingAnalyzed == 1
                 for MovieFileNumber = 1:length(FileList)
                     CurrentMovieFileName = char(FileList(MovieFileNumber));
                     if strcmpi(FileFormat,'avi') == 1
-                        try MovieAttributes = aviinfo(fullfile(SpecifiedPathname, CurrentMovieFileName));
-                        catch error(['Image processing was canceled in the ', ModuleName, ' module because the file ',fullfile(SpecifiedPathname, CurrentMovieFileName),' was not readable as an uncompressed avi file.'])
+                        try 
+                        	MovieAttributes = aviinfo(fullfile(SpecifiedPathname, CurrentMovieFileName));
+                        catch 
+                        	error(['Image processing was canceled in the ', ModuleName, ' module because the file ',fullfile(SpecifiedPathname, CurrentMovieFileName),' was not readable as an uncompressed avi file.'])
                         end
                         NumFrames = MovieAttributes.NumFrames;
                         for FrameNumber = 1:NumFrames
@@ -792,7 +797,8 @@ for n = 1:length(ImageName)
             fieldname = ['Filename', ImageName{n}];
             handles.Pipeline.(fieldname)(SetBeingAnalyzed) = CurrentFileName;
             handles.Pipeline.(ImageName{n}) = LoadedImage;
-        catch ErrorMessage = lasterr;
+        catch 
+        	ErrorMessage = lasterr;
             ErrorNumber = {'first','second','third','fourth'};
             error(['Image processing was canceled in the ', ModuleName, ' module because an error occurred when trying to load the ', ErrorNumber{n}, ' set of images. Please check the settings. A common problem is that there are non-image files in the directory you are trying to analyze. Matlab says the problem is: ', ErrorMessage])
         end % Goes with: catch
@@ -831,7 +837,8 @@ for n = 1:length(ImageName)
             %%% substructure so it will be deleted at the end of the analysis batch.
             handles.Pipeline.(fieldname)(SetBeingAnalyzed) = {CurrentFileNameWithFrame};
             handles.Pipeline.(ImageName{n}) = LoadedImage;
-        catch ErrorMessage = lasterr;
+        catch 
+        	ErrorMessage = lasterr;
             ErrorNumber = {'first','second','third','fourth'};
             error(['Image processing was canceled in the ', ModuleName, ' module because an error occurred when trying to load the ', ErrorNumber{n}, ' set of movies. Please check the settings. A common problem is that there are non-image files in the directory you are trying to analyze, or that the image file is not in uncompressed avi format. Matlab says the problem is: ', ErrorMessage])
         end % Goes with: catch

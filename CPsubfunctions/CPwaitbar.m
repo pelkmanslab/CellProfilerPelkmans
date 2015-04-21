@@ -200,11 +200,13 @@ switch type
 
   try
       handles = guidata(gcbo);
-      try axFontSize = handles.Preferences.FontSize;
+      try 
+          axFontSize = handles.Preferences.FontSize;
           %%% We used to store the font size in Current, so this line makes old
           %%% output files compatible. Shouldn't be necessary with any files made
           %%% after November 15th, 2006.
-      catch axFontSize = handles.Current.FontSize;
+      catch 
+          axFontSize = handles.Current.FontSize;
       end
   end
 

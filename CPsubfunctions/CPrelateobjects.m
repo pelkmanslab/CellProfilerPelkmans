@@ -52,10 +52,12 @@ catch
         CroppedParentLabelMatrix = 0;
     end
     %%% And we try the original line again.
-    try ChildParentList = sortrows(unique([ChildLabelMatrix(:) CroppedParentLabelMatrix(:)],'rows'),1);
+    try 
+        ChildParentList = sortrows(unique([ChildLabelMatrix(:) CroppedParentLabelMatrix(:)],'rows'),1);
         clear ParentLabelMatrix
         ParentLabelMatrix = CroppedParentLabelMatrix;
-    catch error(['Image processing was canceled in the ',ModuleName, ' module because the parent and children objects you are trying to relate come from images that are not the same size.'])
+    catch 
+        error(['Image processing was canceled in the ',ModuleName, ' module because the parent and children objects you are trying to relate come from images that are not the same size.'])
     end
 end
 

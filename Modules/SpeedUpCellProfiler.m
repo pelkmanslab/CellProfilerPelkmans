@@ -179,8 +179,10 @@ end
 drawnow
 
 if handles.Current.SetBeingAnalyzed == 1
-    try SaveWhen = str2double(SaveWhen);
-    catch error(['Image processing was canceled in the ', ModuleName, ' module because the number of cycles must be entered as a number.'])
+    try 
+        SaveWhen = str2double(SaveWhen);
+    catch 
+        error(['Image processing was canceled in the ', ModuleName, ' module because the number of cycles must be entered as a number.'])
     end
     handles.Current.SaveOutputHowOften = SaveWhen;
 end

@@ -510,9 +510,11 @@ if strcmpi(SaveWhen,'Every cycle') || strcmpi(SaveWhen,'First cycle') && SetBein
 
         %%% Saves the Movie under the appropriate file name after the
         %%% appropriate cycle.
-        try MovieSavingIncrement = str2double(SaveMovieWhen);
+        try 
+            MovieSavingIncrement = str2double(SaveMovieWhen);
             MovieIsNumber = 1;
-        catch MovieIsNumber = 0;
+        catch 
+            MovieIsNumber = 0;
         end
         %%% Initializes this value in order to determine whether it's
         %%% time to save the movie file.
@@ -534,8 +536,10 @@ if strcmpi(SaveWhen,'Every cycle') || strcmpi(SaveWhen,'First cycle') && SetBein
             %%% have been calculated for each frame and are
             %%% already stored in Movie.colormap.
             if IsRGB == 1
-                try movie2avi(Movie,FileAndPathName)
-                catch error(['Image processing was canceled in the ', ModuleName, ' module because there was an error saving the movie to the hard drive.'])
+                try 
+                    movie2avi(Movie,FileAndPathName)
+                catch 
+                    error(['Image processing was canceled in the ', ModuleName, ' module because there was an error saving the movie to the hard drive.'])
                 end
             else
                 %%% Specifying the size of the colormap is critical
@@ -546,8 +550,10 @@ if strcmpi(SaveWhen,'Every cycle') || strcmpi(SaveWhen,'First cycle') && SetBein
                 %%% dependency report, I think, because the variable
                 %%% ChosenColormap will not exist until the eval function
                 %%% is carried out.
-                try movie2avi(Movie,FileAndPathName,'colormap',ChosenColormap)
-                catch error(['Image processing was canceled in the ', ModuleName, ' module because there was an error saving the movie to the hard drive.'])
+                try 
+                    movie2avi(Movie,FileAndPathName,'colormap',ChosenColormap)
+                catch 
+                    error(['Image processing was canceled in the ', ModuleName, ' module because there was an error saving the movie to the hard drive.'])
                 end
             end
         end
@@ -555,14 +561,16 @@ if strcmpi(SaveWhen,'Every cycle') || strcmpi(SaveWhen,'First cycle') && SetBein
         if strcmpi(ColorMap,'gray') || ndims(Image) == 3
             %%% For color images or for grayscale saved in gray format, we do
             %%% not want to alter the image by applying a colormap.
-            try eval(['imwrite(Image, FileAndPathName, FileFormat', FileSavingParameters,')']);
+            try 
+                eval(['imwrite(Image, FileAndPathName, FileFormat', FileSavingParameters,')']);
             catch
                 error(['Image processing was canceled in the ', ModuleName, ' module because the image could not be saved to the hard drive for some reason. Check your settings, and see the Matlab imwrite function for details about parameters for each file format.  The error is: ', lasterr])
             end
         else
             Image=Image/min(min(Image(Image~=0))); %#ok Ignore MLint
             eval(['ChosenColormap = colormap(',ColorMap,'(max(max(Image))));']);
-            try eval(['imwrite(Image, ChosenColormap, FileAndPathName, FileFormat', FileSavingParameters,')']);
+            try 
+                eval(['imwrite(Image, ChosenColormap, FileAndPathName, FileFormat', FileSavingParameters,')']);
             catch
                 error(['Image processing was canceled in the ', ModuleName, ' module because the image could not be saved to the hard drive for some reason. Check your settings, and see the Matlab imwrite function for details about parameters for each file format.  The error is: ', lasterr])
             end

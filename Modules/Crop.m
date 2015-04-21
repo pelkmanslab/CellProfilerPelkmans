@@ -222,14 +222,18 @@ if RecalculateFlag == 1
 
     if ~strcmp(Shape,'Ellipse') && ~strcmp(Shape,'Rectangle')
         if strcmp(PlateFix,'Yes')
-            try BinaryCropImage = handles.Pipeline.(Shape);
+            try 
+                BinaryCropImage = handles.Pipeline.(Shape);
             catch
                 fieldname = ['Segmented',Shape];
-                try BinaryCropImage = handles.Pipeline.(fieldname);
+                try 
+                    BinaryCropImage = handles.Pipeline.(fieldname);
                 catch
                     fieldname = ['Cropping',Shape];
-                    try BinaryCropImage = handles.Pipeline.(fieldname);
-                    catch error(['Image processing was canceled in the ', ModuleName, ' module because the image to be used for cropping cannot be found.']);
+                    try 
+                        BinaryCropImage = handles.Pipeline.(fieldname);
+                    catch
+                        error(['Image processing was canceled in the ', ModuleName, ' module because the image to be used for cropping cannot be found.']);
                     end
                 end
             end
@@ -310,15 +314,19 @@ if RecalculateFlag == 1
             CropFromObjectFlag = 1;
         else
             CropFromObjectFlag = 1;
-            try [handles, CroppedImage, BinaryCropImage,BinaryCropMaskImage] = CropImageBasedOnMaskInHandles(handles,OrigImage,Shape,ModuleName);
+            try 
+                [handles, CroppedImage, BinaryCropImage,BinaryCropMaskImage] = CropImageBasedOnMaskInHandles(handles,OrigImage,Shape,ModuleName);
                 handles.Pipeline.(['CropMask' CroppedImageName]) = BinaryCropMaskImage;
             catch
-                try [handles, CroppedImage, BinaryCropImage,BinaryCropMaskImage] = CropImageBasedOnMaskInHandles(handles,OrigImage,['Segmented',Shape],ModuleName);
+                try 
+                    [handles, CroppedImage, BinaryCropImage,BinaryCropMaskImage] = CropImageBasedOnMaskInHandles(handles,OrigImage,['Segmented',Shape],ModuleName);
                     handles.Pipeline.(['CropMask' CroppedImageName]) = BinaryCropMaskImage;
                 catch
-                    try [handles, CroppedImage, BinaryCropImage,BinaryCropMaskImage] = CropImageBasedOnMaskInHandles(handles,OrigImage,['Cropping',Shape],ModuleName);
+                    try 
+                        [handles, CroppedImage, BinaryCropImage,BinaryCropMaskImage] = CropImageBasedOnMaskInHandles(handles,OrigImage,['Cropping',Shape],ModuleName);
                         handles.Pipeline.(['CropMask' CroppedImageName]) = BinaryCropMaskImage;
-                    catch error(['Image processing was canceled in the ', ModuleName, ' module because the image to be used for cropping cannot be found.']);
+                    catch
+                        error(['Image processing was canceled in the ', ModuleName, ' module because the image to be used for cropping cannot be found.']);
                     end
                 end
             end
