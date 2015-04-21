@@ -214,7 +214,7 @@ UpdateFileOrNot = char(handles.Settings.VariableValues{CurrentModuleNum,13});
 Substituted = char(handles.Settings.VariableValues{CurrentModuleNum,14});
 
 %textVAR15 = What should be the replacement within the filename?
-%defaultVAR15 = Z01C01
+%defaultVAR15 = Z01C02
 Substitution = char(handles.Settings.VariableValues{CurrentModuleNum,15});
 
 %textVAR16 = Warning! It is possible to overwrite existing files using this module!

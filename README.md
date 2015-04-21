@@ -64,12 +64,15 @@ This will start the CellProfiler program and open the GUI window.
 
 ## Modules ##
 
-List of Cell Profiler (CP) modules available on [iBRAIN](https://github.com/pelkmanslab/iBRAIN).
+Below you find a list of available standard Cell Profiler (CP) modules.
 
+For documentation on these standard modules see [CellProfiler manual](http://cellprofiler.org/linked_files/Documentation/cp1_manual_9717.pdf).
+
+For documentation on custom modules please refer to [CellProfilerPelkmans wiki](https://github.com/pelkmanslab/CellProfilerPelkmans/wiki).
+
+Further documentation can be found in the actual Matlab functions (.m files). This information can also be queried from the GUI using the `?` button.
 
 ### Standard modules ###
-
-For documentation on standard modules see [CellProfiler manual](http://cellprofiler.org/linked_files/Documentation/cp1_manual_9717.pdf).
 
 ##### File Processing #####
 
@@ -120,71 +123,3 @@ For documentation on standard modules see [CellProfiler manual](http://cellprofi
 
 
 (+) indicates standard modules with custom improvements (e.g.: additional optional input arguments).
-
-
-### Custom modules ###
-
-For documentation on custom modules see [CellProfilerPelkmans wiki](https://github.com/pelkmanslab/CellProfilerPelkmans/wiki).
-
-##### File Processing #####
-
-* CreateBatchFiles
-* LoadImages
-* LoadSpotCorrection
-* Save Images
-
-##### Image Processing #####
-
-* IlluminationCorrection (TODO: combine existing modules)
-* IlluminationCorrectionPerSite
-* ImageProjection
-* ShiftImage
-* SubtractBackgroundPelkmans
-* TopImageProjection
-
-##### Object Processing #####
-
-* DiscardObjectBySize
-* IdentifySpots2D
-* IdentifyPrimaryIterative
-* IdentifySecondaryIterative
-* JoinObjectSegmentation
-* LeaveNChildren
-* MergeAndRelateChildren (TODO: check with related modules)
-* PropagateObjects
-* ScanSpotThresholds
-* SeparateObjects
-* ShrinkObjectsSafely
-
-##### Measurements #####
-
-* BorderNeighborAnalysis
-* MeasureChildren
-* MeasureLocalizationOfSpots
-* MeasureNucleiSpots
-* MeasureObjectEnvironment
-* MeasureObjectRobustIntensity
-* MeasureObjectColocalization
-* MeasureSingerFeatures
-
-##### Other #####
-
-* LoadSegmentedCells
-* SaveSegmentedCells
-* LoadCP3DStack
-* LoadSegmentedObjectsCP3
-* IdentifySpotsCP3D
-* InitializeCP3DStack
-* IntensityProjectionCP3D
-* RelateCP3D
-* SaveSegmentedObjectsCP3D
-* UnLoadCP3DStack
-* VolumeObjectToImageCP3D
-* AlignOjbects_MPcycle
-* LoadSegmentedObjects_MPcycle
-* SaveSegmentedCells_MPcycle
-* SubtractPreImage_MPcycle
-
-
-More documentation can be found in the actual Matlab functions (.m files). This information can also be queried from the GUI using the `?` button.
-
