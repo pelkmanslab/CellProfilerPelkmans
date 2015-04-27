@@ -1,4 +1,4 @@
-function handles = LoadMoreImages(handles)
+function handles = LoadImages(handles)
 
 % Help for the Load More Images module:
 % Category: File Processing
