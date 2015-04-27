@@ -4,5 +4,7 @@
 #
 # Expects to be run from the top-level folder of CellProfilerPelkmans
 #
-$filename = 'runAllTests.m'
+# The Matlab script, however, will run in the startup folder Tests/
+#
+filename='./Tests/runAllTests.m'
 matlab -nodesktop -nosplash -nodisplay -r "run ./$filename ; quit;" 

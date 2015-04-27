@@ -8,12 +8,14 @@ import matlab.unittest.plugins.ToFile
 % See:
 % http://ch.mathworks.com/help/matlab/ref/matlab.unittest.plugins.tapplugin-class.html
 %
+% Expects to be run from the Tests/ directory
+%
 
 suite   = TestSuite.fromClass(?ExampleTest);
 
 runner = TestRunner.withTextOutput;
 
-tapFile = 'testsOutput.tap';
+tapFile = '../testsOutput.tap';
 plugin = TAPPlugin.producingOriginalFormat(ToFile(tapFile));
 
 runner.addPlugin(plugin)
