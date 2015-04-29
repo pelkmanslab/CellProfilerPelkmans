@@ -104,10 +104,6 @@ function handles = IdentifyPrimaryIterative(handles)
 % Displays curvature, convex/concave, equivalent radius and segment of each object.
 % Pick values from images to fine tune settings.
 %
-% Selection method for identification of watershed nodes:
-% 'quickNdirty' uses only a few nodes within a concave region -> fast, but less accurate
-% 'niceNslow' uses all nodes within a concave region -> slow, but more accurate
-% 
 % DEPENDENCIES:
 % PerimeterAnalysis.m
 % PerimeterWatershedSegmentation.m
