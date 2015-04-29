@@ -50,12 +50,10 @@ ObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 
 %textVAR02 = How many pixels do you maximally expand away from object?
 %defaultVAR02 = 2
-%infotypeVAR02 = objectgroup indep
 distanceToObjectMax = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 
 %textVAR03 = How many pixels do you minimally expand away from object?
 %defaultVAR03 = 2
-%infotypeVAR03 = objectgroup indep
 distanceToObjectMin = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 
 %%%VariableRevisionNumber = 4
