@@ -336,11 +336,7 @@ if ~CPisHeadless()
     try
         CPimagesc(ImageOutputPlot,handles);
         colormap('JET')
-        if strncmpi(AplyBackgroundSubtraction,'y',1)
-            title(sprintf('Corrected Image\n+Background Subtraction'),'FontSize',7)
-        else
-            title('Corrected Image')
-        end
+        title('Corrected Image')
     end
     subplot(2,4,4);
     try
