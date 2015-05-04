@@ -6,50 +6,15 @@ A fork of [CellProfiler1.0](http://cellprofiler.org/previousReleases.shtml) main
 Major differences to the original version:
 * many additional custom modules
 
+## How to install?
 
-## Installation ##
-
-First, you need to clone this repository:
-
-```{bash}
-git clone git@github.com:pelkmanslab/CellProfilerPelkmans.git ~/cellprofiler
-```
-
-In order to be able to start CellProfiler from Matlab, you have to put the location of the local copy of this repository on the Matlab path.
-To this end, add the following line to your `startup.m` file:
-
-```{matlab}
-addpath(genpath('~/cellprofiler'))
-```
-
-Note that this file has to reside in your *initial working folder*. For more information see [Matlab startup](http://ch.mathworks.com/help/matlab/ref/startup.html).
+CellProfilerPelkmans is part of each [iBRAIN_UZH release](https://github.com/pelkmanslab/iBRAIN_UZH/releases). Please follow the instructions in the [iBRAIN_UZH User Guide](https://github.com/pelkmanslab/iBRAIN_UZH/blob/master/USER_GUIDE.md)
 
 ## Dependencies ##
 
-Some CP modules depend on Matlab code that resides outside of this repository. This code is located at [PelkmansLibrary](https://github.com/pelkmanslab/PelkmansLibrary).
+Some CP modules depend on Matlab code that resides outside of this repository - specifically in [PelkmansLibrary](https://github.com/pelkmanslab/PelkmansLibrary). This is also part of each iBRAIN_UZH release.
 
-To use *CellProfilerPelkmans* you thus also have to put the location of the local copy of the *iBRAINdependencies* repository on the Matlab path.
-
-To this end, first clone the repository:
-
-```{bash}
-git clone git@github.com:pelkmanslab/iBRAINDependencies.git ~/pelkmanslibrary
-```
-
-Then add the following line to your `startup.m` file:
-
-```{matlab}
-addpath(genpath('~/pelkmanslibrary/matlab'))
-```
-
-On unix systems you can alternatively define the `MATLABPATH` environment variable. To this end, add the following line to your `.bash_profile` file:
-
-```{bash}
-export MATLABPATH=$MATLABPATH:$HOME/pelkmanslibrary/matlab
-```
-
-
-## How to ##
+## After installation
 
 Now you are ready to go.
 
