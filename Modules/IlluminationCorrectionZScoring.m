@@ -175,7 +175,7 @@ ImageOutput = ImageOutput/65535;
 f = ImageOutput(:)>1;
 HighPixels = sum(f);
 if HighPixels > 0
-    warning('%.3d pixels with values higher than 1 were found.\nAll these will be set to 1.\n',HighPixels)
+    fprintf('%s: %.3d pixels with values higher than 1 were found.\nAll these will be set to 1.\n', mfilename, HighPixels)
     ImageOutput(f) = 1;
 end
 
