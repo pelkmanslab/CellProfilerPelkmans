@@ -366,7 +366,7 @@ if ~isempty(imInputObjects)
         tmpSelected = (imSelected(:,:,i));
         ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
         CPfigure(handles,'Image',ThisModuleFigureNumber);
-        subplot(2,2,2), CPimagesc(logical(tmpSelected==1),handles),
+        subplot(2,2,2); CPimagesc(logical(tmpSelected==1),handles),
         title(['Cut lines on selected original objects, cycle # ',num2str(handles.Current.SetBeingAnalyzed)]);
         hold on
         L = bwboundaries(logical(imCutMask(:,:,i)), 'noholes');
@@ -376,10 +376,10 @@ if ~isempty(imInputObjects)
         end
         hold off
         freezeColors
-        subplot(2,2,1), CPimagesc(imSelected(:,:,i),handles), colormap('jet'),
+        subplot(2,2,1); CPimagesc(imSelected(:,:,i),handles), colormap('jet'),
         title(['Selected original objects, cycle # ',num2str(handles.Current.SetBeingAnalyzed)]);
         freezeColors
-        subplot(2,2,3), CPimagesc(imOutlineShapeSeparatedOverlay,handles),
+        subplot(2,2,3); CPimagesc(imOutlineShapeSeparatedOverlay,handles),
         title(['Outlines of Separated objects, cycle # ',num2str(handles.Current.SetBeingAnalyzed)]);
         hold on
         for k = 1:length(B)
@@ -388,7 +388,7 @@ if ~isempty(imInputObjects)
         end
         hold off
         freezeColors
-        subplot(2,2,4), CPimagesc(imCutShapeObjectsLabel,handles),
+        subplot(2,2,4); CPimagesc(imCutShapeObjectsLabel,handles),
         title(['Separated objects, cycle # ',num2str(handles.Current.SetBeingAnalyzed)]);
         freezeColors
         
