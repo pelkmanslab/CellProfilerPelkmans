@@ -12,7 +12,7 @@ CellProfilerPelkmans is part of each [iBRAIN_UZH release](https://github.com/pel
 
 ## Dependencies ##
 
-Some CP modules depend on Matlab code that resides outside of this repository - specifically in [PelkmansLibrary](https://github.com/pelkmanslab/PelkmansLibrary). This is also part of each iBRAIN_UZH release.
+Some CellProfilerPelkmans modules depend on Matlab code that resides outside of this repository - specifically in [PelkmansLibrary](https://github.com/pelkmanslab/PelkmansLibrary). This is also part of each iBRAIN_UZH release.
 
 ## After installation
 
