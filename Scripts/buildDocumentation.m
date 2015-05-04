@@ -4,6 +4,9 @@
 % Expects to be run from the Scripts/ directory
 %
 % This particular script is GPL as it references m2html
+%
+% GraphViz should be installed for the mdoc command
+%
 
 % PARAMETERS START
 
