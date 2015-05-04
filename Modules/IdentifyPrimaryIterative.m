@@ -139,11 +139,11 @@ ImageName = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 %inputtypeVAR02 = popupmenu
 
 %textVAR03 = Intensity thresholding: Threshold correction factor
-%defaultVAR03 = 1
+%defaultVAR03 = 1.02
 ThresholdCorrection = str2num(char(handles.Settings.VariableValues{CurrentModuleNum,3}));
 
 %textVAR04 = Intensity thresholding: Lower and upper bounds on threshold, in the range [0,1]
-%defaultVAR04 = 0,1
+%defaultVAR04 = 0.0019,0.02
 ThresholdRange = char(handles.Settings.VariableValues{CurrentModuleNum,4});
 
 %textVAR05 = Cutting passes (0 = no cutting)
@@ -165,7 +165,7 @@ SolidityThres = str2double(char(handles.Settings.VariableValues{CurrentModuleNum
 FormFactorThres = str2double(char(handles.Settings.VariableValues{CurrentModuleNum,8}));
 
 %textVAR09 = Object selection: Maximal AREA of objects, which should be cut (0 = area independent)
-%defaultVAR09 = 50000
+%defaultVAR09 = 500000
 UpperSizeThres = str2double(char(handles.Settings.VariableValues{CurrentModuleNum,9}));
 
 %textVAR10 = Object selection: Minimal AREA of objects, which should be cut (0 = area independent)
@@ -183,7 +183,7 @@ TestMode2 = char(handles.Settings.VariableValues{CurrentModuleNum,12});
 %inputtypeVAR12 = popupmenu
 
 %textVAR13 = Perimeter analysis: SLIDING WINDOW size for curvature calculation
-%defaultVAR13 = 8
+%defaultVAR13 = 9
 WindowSize = str2double(char(handles.Settings.VariableValues{CurrentModuleNum,13}));
 
 %textVAR14 = Perimeter analysis: FILTER SIZE for smoothing objects
@@ -191,7 +191,7 @@ WindowSize = str2double(char(handles.Settings.VariableValues{CurrentModuleNum,13
 smoothingDiskSize = str2double(char(handles.Settings.VariableValues{CurrentModuleNum,14}));
 
 %textVAR15 = Perimeter analysis: Maximum concave region equivalent RADIUS
-%defaultVAR15 = 30
+%defaultVAR15 = 20
 PerimSegEqRadius = str2double(char(handles.Settings.VariableValues{CurrentModuleNum,15}));
 
 %textVAR16 = Perimeter analysis: Minimum concave region equivalent CIRCULAR SEGMENT (degree)
