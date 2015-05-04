@@ -32,15 +32,15 @@ drawnow
 %inputtypeVAR01 = popupmenu
 ObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 
-%textVAR02 = What is the minimum allowed object area?
-%defaultVAR02 = 2000
+%textVAR02 = What is the minimum allowed object area away from the border?
+%defaultVAR02 = 900
 MinAreaSize = str2double(handles.Settings.VariableValues{CurrentModuleNum,2});
 
 %textVAR03 = What is the minimum allowed object area at the border?
-%defaultVAR03 = 1000
+%defaultVAR03 = 700
 MinAreaSizeBorder = str2double(handles.Settings.VariableValues{CurrentModuleNum,3});
 
-%textVAR04 = How large is the expected border?
+%textVAR04 = What is the width and height of the border (in pixels)?
 %defaultVAR04 = 50
 BorderSize = str2double(handles.Settings.VariableValues{CurrentModuleNum,4});
 
