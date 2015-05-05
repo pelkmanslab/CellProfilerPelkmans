@@ -11,20 +11,29 @@ import matlab.unittest.plugins.ToFile
 % Expects to be run from the Tests/ directory
 %
 
-suite   = TestSuite.fromClass(?ExampleTest);
+topLevelMatlabFolder = '../Modules/Tests';
+outFilePathRelative = '../testsOutput.tap';
+
+% All tests from the main library folder (recursively)
+suites = matlab.unittest.TestSuite.fromFolder(topLevelMatlabFolder, 'IncludingSubfolders', true);
 
 runner = TestRunner.withTextOutput;
 
-tapFile = '../testsOutput.tap';
+
+
+% NOTE: It is critically important that an absolute file path is passed to
+%   TAPPlugin.producingOriginalFormat as otherwise test entries become
+%   missing in the output TAP file
+outFileResolved = fullfile(pwd(),outFilePathRelative);
 
 % We delete the existing tapFile as TAPPlugin.producingOriginalFormat
 %   appends to any existing files, and we need it to be only a s
 %    single test case for Jenkins.
 delete(tapFile);
-plugin = TAPPlugin.producingOriginalFormat(ToFile(tapFile));
+plugin = TAPPlugin.producingOriginalFormat(ToFile(outFileResolved));
 
 runner.addPlugin(plugin)
-result = runner.run(suite);
+result = runner.run(suites);
 
 % Display TAP file
-%disp(fileread(tapFile))
+disp(fileread(outFileResolved))

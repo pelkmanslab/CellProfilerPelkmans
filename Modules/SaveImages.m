@@ -117,6 +117,7 @@ ImageFileName = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 Appendage = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 
 %textVAR04 = In what file format do you want to save images (figures must be saved as fig, which is only openable in Matlab)?
+%choiceVAR04 = png
 %choiceVAR04 = bmp
 %choiceVAR04 = gif
 %choiceVAR04 = hdf
@@ -125,7 +126,6 @@ Appendage = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 %choiceVAR04 = pbm
 %choiceVAR04 = pcx
 %choiceVAR04 = pgm
-%choiceVAR04 = png
 %choiceVAR04 = pnm
 %choiceVAR04 = ppm
 %choiceVAR04 = ras
@@ -148,9 +148,9 @@ FileFormat = char(handles.Settings.VariableValues{CurrentModuleNum,4});
 FileDirectory = char(handles.Settings.VariableValues{CurrentModuleNum,5});
 
 %textVAR06 = Enter the bit depth at which to save the images (Note: some image formats do not support saving at a bit depth of 12 or 16; see Matlab's imwrite function for more details.)
+%choiceVAR06 = 16
 %choiceVAR06 = 8
 %choiceVAR06 = 12
-%choiceVAR06 = 16
 BitDepth = char(handles.Settings.VariableValues{CurrentModuleNum,6});
 %inputtypeVAR06 = popupmenu
 

@@ -32,15 +32,15 @@ drawnow
 %inputtypeVAR01 = popupmenu
 ObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 
-%textVAR02 = What is the minimum allowed object area?
-%defaultVAR02 = 2000
+%textVAR02 = What is the minimum allowed object area outside the border region?
+%defaultVAR02 = 900
 MinAreaSize = str2double(handles.Settings.VariableValues{CurrentModuleNum,2});
 
-%textVAR03 = What is the minimum allowed object area at the border?
-%defaultVAR03 = 1000
+%textVAR03 = What is the minimum allowed object area within the border region?
+%defaultVAR03 = 700
 MinAreaSizeBorder = str2double(handles.Settings.VariableValues{CurrentModuleNum,3});
 
-%textVAR04 = How large is the expected border?
+%textVAR04 = What is the width and height of the border region?
 %defaultVAR04 = 50
 BorderSize = str2double(handles.Settings.VariableValues{CurrentModuleNum,4});
 
@@ -54,6 +54,13 @@ drawnow
 TargetName = ObjectName;
 
 LabelMatrixImage = CPretrieveimage(handles,['Segmented' ObjectName],ModuleName,'MustBeGray','DontCheckScale');
+UseAsLabelInCaseNoBackgroundPresent = LabelMatrixImage;
+
+if any(LabelMatrixImage(:) == 0)
+    originalSegmentationHasBackground = true;
+else
+    originalSegmentationHasBackground = false;
+end
 
 matObjectSizes = regionprops(LabelMatrixImage,'Area');
 matObjectSizes = cat(1,matObjectSizes.Area);
@@ -63,9 +70,9 @@ matObjectSizes = cat(1,matObjectSizes.Area);
 %%%%%%%%%%%%%%%%%%%%%%
 drawnow
   
-%first get position of objects, make a list of those objects 
-
+% Determine object centroids that are close to the border of the image
 positionofobject=handles.Measurements.Nuclei.Location{handles.Current.SetBeingAnalyzed};
+
 atBorder=[];
 imagesizeforborder=size(LabelMatrixImage);
 for i=1:length(positionofobject(:,1))
@@ -74,8 +81,7 @@ for i=1:length(positionofobject(:,1))
    end
 end
 
-%make a distinction between objects at the border and not at the border for
-%size comparison
+% Identify objects, whose area is below the requested minimal area
 Filter = [];
 for index = 1:length(positionofobject(:,1))
     if find(index ==atBorder)
@@ -83,7 +89,7 @@ for index = 1:length(positionofobject(:,1))
         Filter = [Filter;index];
         end
     else
-        if matObjectSizes(index)<MinAreaSize
+        if matObjectSizes(index) < MinAreaSize
             Filter = [Filter;index];
         end
     end
@@ -102,7 +108,23 @@ x = sortrows(unique([LabelMatrixImage(:) FinalLabelMatrixImage(:)],'rows'),1);
 x(x(:,2)>0,2)=1:sum(x(:,2)>0);
 LookUpColumn = x(:,2);
 
-FinalLabelMatrixImage = LookUpColumn(FinalLabelMatrixImage+1);
+if originalSegmentationHasBackground == true % default / CP's original code
+    FinalLabelMatrixImage = LookUpColumn(FinalLabelMatrixImage+1);
+else
+    % [TS 150504: There is a rare bug (also in CP's original
+    % DiscardSinglePixelObjects) that causes a crash if no pixel belongs to
+    % a backround; I have tested the seemingly obvious fix to remove the +1
+    % so that the upper command is
+    % FinalLabelMatrixImage = LookUpColumn(FinalLabelMatrixImage);
+    % but unfortunately noted that this can cause other bugs, if a small
+    % object is completely embedded in one large object that fills all
+    % remaining pixels of the site
+    FinalLabelMatrixImage = UseAsLabelInCaseNoBackgroundPresent;
+    warning('%s: Preserve original segmentation since every pixel belongs to an object.\n', mfilename);
+end
+
+
+
 % 
 % %%% Note: these outlines are not perfectly accurate; for some reason it
 % %%% produces more objects than in the original image.  But it is OK for

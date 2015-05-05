@@ -4,7 +4,7 @@
 #
 # Expects to be run from the top-level folder of CellProfilerPelkmans
 #
-# The Matlab script, however, will run in the startup folder Tests/
+# The Matlab script, however, will run in the folder Scripts/
 #
 filepath='./Scripts/runAllTests.m'
 matlab -nodesktop -nosplash -nodisplay -r "run $filepath ; quit;" 

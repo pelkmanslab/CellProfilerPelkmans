@@ -1,7 +1,7 @@
 function handles = RelateCP3D(handles)
 
 % Help for the RelateCP3D module:
-% Category: Object Processing
+% Category: Other
 %
 % SHORT DESCRIPTION:
 % Assigns relationships: All objects (e.g. speckles) within a parent object

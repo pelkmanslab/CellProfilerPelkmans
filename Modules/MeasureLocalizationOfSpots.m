@@ -98,23 +98,20 @@ drawnow
 [CurrentModule, CurrentModuleNum, ModuleName] = CPwhichmodule(handles);
 
 %textVAR01 = What are the parent objects? e.g Cells.
+%choiceVAR01 = Do not use
 %infotypeVAR01 = objectgroup
-%defaultVAR01 = Cells
-%choiceVAR01 =
 ParentObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 %inputtypeVAR01 = popupmenu
 
 %textVAR02 = What are the children objects for which you what to compute distances?
+%choiceVAR02 = Do not use
 %infotypeVAR02 = objectgroup
-%defaultVAR02 = Spots
-%choiceVAR02 =
 ChildrenObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 %inputtypeVAR02 = popupmenu
 
 %textVAR03 = What are the objects for which you what to compute distance to the children objects? (note: this object must be a direct child or a direct parent of the 'Parent' inputed above, e.g. Nuclei)
+%choiceVAR03 = Do not use
 %infotypeVAR03 = objectgroup
-%defaultVAR03 = Nuclei
-%choiceVAR03 =
 ThirdObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 %inputtypeVAR03 = popupmenu
 
@@ -137,18 +134,18 @@ RadiousVect = (handles.Settings.VariableValues{CurrentModuleNum,6});
 %%%%%%%%%%%%%%%%%%%%
 
 %%% check the parent object
-if isempty(ParentObjectName)
+if isempty(ParentObjectName) || isequal(ParentObjectName, 'Do not use')
     error('%s: Please enter a Parent object.',mfilename);
 end
 
 %%% check the child object
-if isempty(ChildrenObjectName)
+if isempty(ChildrenObjectName) || isequal(ChildrenObjectName, 'Do not use')
     error('%s: Please enter a Child object.',mfilename);
 end
 
 %%% check for any third refernce object, if abscent give a warning
 ThirdStatus = true;
-if isempty(ThirdObjectName)
+if isempty(ThirdObjectName) || isequal(ThirdObjectName, 'Do not use')
     warning('%s: No third object entered.',mfilename);
     ThirdStatus = false;
 end

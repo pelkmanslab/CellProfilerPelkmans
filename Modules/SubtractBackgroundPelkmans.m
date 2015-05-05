@@ -1,4 +1,4 @@
-function handles = SubtractBackgroundInSitu(handles)
+function handles = SubtractBackgroundPelkmans(handles)
 
 % Help for the Substract Background InSitu module:
 % Category: Image Processing
