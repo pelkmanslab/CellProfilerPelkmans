@@ -1,0 +1,3 @@
+[submodule "lib/PelkmansLibrary"]
+	path = lib/PelkmansLibrary
+	url = git@github.com:pelkmanslab/PelkmansLibrary
