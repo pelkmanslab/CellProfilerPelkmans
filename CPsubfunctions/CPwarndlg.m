@@ -61,7 +61,7 @@ end
 
 WarnStringCell = cell(0);
 for i = 1:length(WarnString)
-    WarnStringCell{end+1} = xlate(WarnString{i});
+    WarnStringCell{end+1} = WarnString{i};
 end
 
 handle = CPmsgbox(WarnStringCell,DlgName,'warn',Replace);

@@ -68,7 +68,7 @@ end
 
 ErrorStringCell = cell(0);
 for i = 1:length(ErrorString)
-    ErrorStringCell{end+1} = xlate(ErrorString{i});
+    ErrorStringCell{end+1} = ErrorString{i};
 end
 
 handle = CPmsgbox(ErrorStringCell,DlgName,'error',Replace);

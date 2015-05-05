@@ -55,7 +55,7 @@ end
 
 HelpStringCell = cell(0);
 for i = 1:length(HelpString)
-    HelpStringCell{end+1} = xlate(HelpString{i});
+    HelpStringCell{end+1} = HelpString{i};
 end
 
 handle = CPmsgbox(HelpStringCell,DlgName,'help','replace');
