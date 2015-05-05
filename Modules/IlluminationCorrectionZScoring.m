@@ -6,16 +6,16 @@ function handles = IlluminationCorrectionZScoring(handles)
 % Uses std and mean illumination function calculated by iBrain to correct
 % uneven illumination/lighting/shading via Z-scoring.
 % *************************************************************************
-% 
-% Illumination correction of raw images is essential for subsequent steps 
-% in the image analysis pipeline. It ensures correct object detection and 
-% accurate measurements of intensity features, reducing biases due to 
-% uneven illumination of the sample as well as positional differences in 
-% the signal gain resulting from the detection system. This illumination 
+%
+% Illumination correction of raw images is essential for subsequent steps
+% in the image analysis pipeline. It ensures correct object detection and
+% accurate measurements of intensity features, reducing biases due to
+% uneven illumination of the sample as well as positional differences in
+% the signal gain resulting from the detection system. This illumination
 % correction algorithm exploit the statistical power of the large number of
-% images acquired per channel to learn pixel-wise illumination and signal 
-% gain biases. Briefly, This module uses the standard deviation and mean 
-% intensity values per pixel in a channel calculated by iBrain to correct 
+% images acquired per channel to learn pixel-wise illumination and signal
+% gain biases. Briefly, This module uses the standard deviation and mean
+% intensity values per pixel in a channel calculated by iBrain to correct
 % the illumination bias using per-pixel z-scoring. For more information see
 % Battich et al. 2013 (Supplementary Info.), and Stoeger et al. 2015.
 %
@@ -73,8 +73,8 @@ AlternativeIllCorrFolder = char(handles.Settings.VariableValues{CurrentModuleNum
 drawnow
 
 % The illumination correction image was calculated using all the incoming
-% images by iBRAIN. Load the mean and std statistics assuming iBrain file 
-% structure. 
+% images by iBRAIN. Load the mean and std statistics assuming iBrain file
+% structure.
 
 
 % Get the channel of the image.
@@ -85,9 +85,9 @@ fprintf('Applying illumination correction on channel number: %d\n', intChannelNu
 % Store the stat in the Measurement field, with channel and szstack
 % specific fieldnames.
 if strcmp(AlternativeIllCorrFolder,'Pre')
-   strStatFieldName = sprintf('illcor_ch%03dz%03d_Pre',intChannelNumber,intZstackNumber);
+    strStatFieldName = sprintf('illcor_ch%03dz%03d_Pre',intChannelNumber,intZstackNumber);
 else
-   strStatFieldName = sprintf('illcor_ch%03dz%03d',intChannelNumber,intZstackNumber);
+    strStatFieldName = sprintf('illcor_ch%03dz%03d',intChannelNumber,intZstackNumber);
 end
 
 if handles.Current.SetBeingAnalyzed == 1
@@ -100,25 +100,25 @@ if handles.Current.SetBeingAnalyzed == 1
         else
             VarPathname = fullfile(handles.Current.DefaultOutputDirectory,AlternativeIllCorrFolder(2:end));
             fprintf(['=================================================' ...
-                     '=================================================' ...
-                     '=================================================' ...
-                     '\n\n%s: You specified an alternative path:\n%s\n\n' ...
-                     '=================================================' ...
-                     '=================================================' ...
-                     '=================================================' ...
-                     '\n'],mfilename,VarPathname);        
+                '=================================================' ...
+                '=================================================' ...
+                '\n\n%s: You specified an alternative path:\n%s\n\n' ...
+                '=================================================' ...
+                '=================================================' ...
+                '=================================================' ...
+                '\n'],mfilename,VarPathname);
         end
     elseif strcmp(AlternativeIllCorrFolder,'Pre')
         if isfield(handles.Pipeline,['Pathname',InputName])
             VarPathname = fullfile(strrep(handles.Pipeline.(['Pathname',InputName]),'TIFF','BATCH'));
             fprintf(['=================================================' ...
-                     '=================================================' ...
-                     '=================================================' ...
-                     '\n\n%s: You specified an alternative path in the LoadImages module:\n%s\n\n' ...
-                     '=================================================' ...
-                     '=================================================' ...
-                     '=================================================' ...
-                     '\n'],mfilename,VarPathname);
+                '=================================================' ...
+                '=================================================' ...
+                '\n\n%s: You specified an alternative path in the LoadImages module:\n%s\n\n' ...
+                '=================================================' ...
+                '=================================================' ...
+                '=================================================' ...
+                '\n'],mfilename,VarPathname);
         else
             error(['Image processing was canceled in the ', ModuleName, ' module because the fieldname "',['Pathname',InputName],'" does not exist within handles.Pipeline. Be sure that you have saved it correctly using the LoadImages module'])
         end
@@ -127,11 +127,11 @@ if handles.Current.SetBeingAnalyzed == 1
     if ~exist(strBatchDir,'dir')
         error(['Image processing was canceled in the ', ModuleName, ' module because the directory "',strBatchDir,'" does not exist. Be sure that no spaces or unusual characters exist in your typed entry and that the pathname of the directory begins with /.'])
     end
-    TempStats = load(fullfile(strBatchDir,sprintf('Measurements_batch_illcor_channel%03d_zstack%03d.mat',intChannelNumber,intZstackNumber)));    
+    TempStats = load(fullfile(strBatchDir,sprintf('Measurements_batch_illcor_channel%03d_zstack%03d.mat',intChannelNumber,intZstackNumber)));
     
     TempStats.stat_values.mean = double(TempStats.stat_values.mean);
     TempStats.stat_values.std = double(TempStats.stat_values.std);
-
+    
     % Optional smoothing of illumination statistics computed by iBRAIN.
     switch DoMeanStdSmoothing
         case 'Yes'
@@ -154,7 +154,7 @@ strImageToImport = fullfile( ...
     handles.Pipeline.(strcat('Pathname',InputName)), ...
     handles.Pipeline.(strcat('FileList',InputName)){handles.Current.SetBeingAnalyzed});
 OrigImage = double(imread(strImageToImport));
-         
+
 
 %%%%%%%%%%%%%%%%%%
 %%% CORRECTION %%%
@@ -199,48 +199,48 @@ drawnow
 ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
 
 if any(findobj == ThisModuleFigureNumber)
-      if CPisHeadless ==  false    
-      CPfigure(handles,'Image',ThisModuleFigureNumber);
-      CPresizefigure(OrigImage,'TwoByTwo',ThisModuleFigureNumber);
-      subplot(2,2,1);    
-   
-      CPimagesc(IllumFilt_Mean,handles);
-      colormap('JET')
-      colorbar
-      title('Mean Intensity Filter [Log10(intensity)]')
-    
-      subplot(2,2,3);    
-      CPimagesc(IllumFilt_STD,handles);
-      colormap('JET')
-      colorbar
-      title('STD Intensity Filter [Log10(intensity)]')    
-
-      subplot(2,4,3);    
-      CPimagesc(OrigImage,handles);
-      colormap('JET')
-      title('Original Image')
-    
-      subplot(2,4,4);
-      CPimagesc(ImageOutputPlot,handles);
-      colormap('JET')
-      title('Corrected Image')    
-
-      subplot(2,4,7);    
-      hold on
-      hist(OrigImage(:),round(length(OrigImage(:))/20))    
-      hold off
-      set(gca,'xlim',[quantile(OrigImage(:), 0.001) quantile(OrigImage(:), 0.95)])
-      ylabel('Pixel Count')
-      xlabel('Intensity')
-      title('Original Image Histogram')
-
-      subplot(2,4,8);
-      hist(ImageOutputPlot(:),round(length(ImageOutputPlot(:))/20))
-      set(gca,'xlim',[quantile(OrigImage(:), 0.001) quantile(OrigImage(:), 0.95)])
-      title('Corrected Image Histogram')    
-      ylabel('Pixel Count')
-      xlabel('Intensity')
-    
-      drawnow
+    if CPisHeadless ==  false
+        CPfigure(handles,'Image',ThisModuleFigureNumber);
+        CPresizefigure(OrigImage,'TwoByTwo',ThisModuleFigureNumber);
+        subplot(2,2,1);
+        
+        CPimagesc(IllumFilt_Mean,handles);
+        colormap('JET')
+        colorbar
+        title('Mean Intensity Filter [Log10(intensity)]')
+        
+        subplot(2,2,3);
+        CPimagesc(IllumFilt_STD,handles);
+        colormap('JET')
+        colorbar
+        title('STD Intensity Filter [Log10(intensity)]')
+        
+        subplot(2,4,3);
+        CPimagesc(OrigImage,handles);
+        colormap('JET')
+        title('Original Image')
+        
+        subplot(2,4,4);
+        CPimagesc(ImageOutputPlot,handles);
+        colormap('JET')
+        title('Corrected Image')
+        
+        subplot(2,4,7);
+        hold on
+        hist(OrigImage(:),round(length(OrigImage(:))/20))
+        hold off
+        set(gca,'xlim',[quantile(OrigImage(:), 0.001) quantile(OrigImage(:), 0.95)])
+        ylabel('Pixel Count')
+        xlabel('Intensity')
+        title('Original Image Histogram')
+        
+        subplot(2,4,8);
+        hist(ImageOutputPlot(:),round(length(ImageOutputPlot(:))/20))
+        set(gca,'xlim',[quantile(OrigImage(:), 0.001) quantile(OrigImage(:), 0.95)])
+        title('Corrected Image Histogram')
+        ylabel('Pixel Count')
+        xlabel('Intensity')
+        
+        drawnow
     end
-end    
+end
