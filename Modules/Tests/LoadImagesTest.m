@@ -1,4 +1,4 @@
-classdef DiscardObjectsBySizeTest < matlab.unittest.TestCase
+classdef LoadImagesTest < matlab.unittest.TestCase
     
     properties
         A1_HandlesIn
@@ -7,7 +7,7 @@ classdef DiscardObjectsBySizeTest < matlab.unittest.TestCase
  
     methods(TestMethodSetup)
         function createHandles(testCase)
-            dirTestsSub = 'DiscardObjectsBySize';
+            dirTestsSub = 'LoadImages';
             testCase.A1_HandlesIn = getTestSavedHandles(dirTestsSub,'A1_handles_in');
             testCase.A1_HandlesOut = getTestSavedHandles(dirTestsSub,'A1_handles_out');
         end
@@ -22,7 +22,7 @@ classdef DiscardObjectsBySizeTest < matlab.unittest.TestCase
     
     methods(Test)
         function handlesMatchA(testCase)
-            testResult = DiscardObjectsBySize( testCase.A1_HandlesIn );
+            testResult = LoadImages( testCase.A1_HandlesIn );
             testCase.verifyTrue( isequal(testResult, testCase.A1_HandlesOut) );
         end
     end
