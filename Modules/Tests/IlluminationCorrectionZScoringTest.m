@@ -9,15 +9,11 @@ classdef IlluminationCorrectionZScoringTest < matlab.unittest.TestCase
         function createHandles(testCase)
             dirTestsSub = 'State/IlluminationCorrectionZScoring';
             
-            pathOld = 'S:\Data\Users\Owen\TestDatasets\Dataset 3\TIFF';
-            pathNew = absolutePathFromRelative('Input/A/TIFF');
+            pathOld = 'S:\Data\Users\Owen\TestDatasets\Dataset 3';
+            pathNew = absolutePathFromRelative('Input/A');
             
-            %testCase.A1_HandlesIn = getRewrittenTestHandles(dirTestsSub,'A/1_handles_in', pathOld, pathNew);
-            %testCase.A1_HandlesOut = getRewrittenTestHandles(dirTestsSub,'A/1_handles_out', pathOld, pathNew);
-            
-            testCase.A1_HandlesIn = getTestHandles(dirTestsSub,'A/1_handles_in');
-            testCase.A1_HandlesOut = getTestHandles(dirTestsSub,'A/1_handles_out');
-
+            testCase.A1_HandlesIn = getRewrittenTestHandles(dirTestsSub,'A/1_handles_in', pathOld, pathNew);
+            testCase.A1_HandlesOut = getRewrittenTestHandles(dirTestsSub,'A/1_handles_out', pathOld, pathNew);
         end
     end
  
