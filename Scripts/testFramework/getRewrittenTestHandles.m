@@ -4,7 +4,7 @@ function [ handles ] = getRewrittenTestHandles( subFolderPath, handlesName, path
 
     handles = getTestHandles( subFolderPath, handlesName );
     handles = struct_string_replace(  handles, pathOld, pathNew );
-    handles = struct_string_replace(  handles, '\\', '/' );
+    handles = struct_string_replace(  handles, '\', '/' );
 
 end
 
