@@ -915,8 +915,6 @@ handles.Measurements.Image.FileNames(SetBeingAnalyzed)         = {FileNames};
 handles.Measurements.Image.PathNamesText                   = PathNamesText;
 handles.Measurements.Image.PathNames(SetBeingAnalyzed)         = {PathNames};
 
-sdsdsasda = 7;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% SUBFUNCTIONS FOR READING STK FILES %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
