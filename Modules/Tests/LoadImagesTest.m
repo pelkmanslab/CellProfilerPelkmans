@@ -7,14 +7,14 @@ classdef LoadImagesTest < matlab.unittest.TestCase
  
     methods(TestMethodSetup)
         function createHandles(testCase)
-            dirTestsSub = 'LoadImages';
+            dirTestsSub = 'State/LoadImages';
             
             pathOld = 'S:\Data\Users\Owen\TestDatasets\Dataset 3\TIFF';
-            pathNew = absolutePathFromRelative('Sets/A/TIFF');
+            pathNew = absolutePathFromRelative('Input/A/TIFF');
             
-            testCase.A1_HandlesIn = getRewrittenTestHandles(dirTestsSub,'A1_handles_in', pathOld, pathNew);
+            testCase.A1_HandlesIn = getRewrittenTestHandles(dirTestsSub,'A/1_handles_in', pathOld, pathNew);
             
-            testCase.A1_HandlesOut = getRewrittenTestHandles(dirTestsSub,'A1_handles_out', pathOld, pathNew);
+            testCase.A1_HandlesOut = getRewrittenTestHandles(dirTestsSub,'A/1_handles_out', pathOld, pathNew);
 
         end
     end
