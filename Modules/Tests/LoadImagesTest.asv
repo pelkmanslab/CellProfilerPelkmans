@@ -9,13 +9,14 @@ classdef LoadImagesTest < matlab.unittest.TestCase
         function createHandles(testCase)
             dirTestsSub = 'LoadImages';
             
-            pathOld = 'S:\Data\Users\Owen\TestDatasets\Dataset 3\TIFF';
-            pathNew = absolutePathFromRelative('Sets/A/TIFF');
+            testCase.A1_HandlesIn = getTestSavedHandles(dirTestsSub,'A1_handles_in');
             
-            testCase.A1_HandlesIn = getRewrittenTestHandles(dirTestsSub,'A1_handles_in', pathOld, pathNew);
+            testCase.A1_HandlesOut = getTestSavedHandles(dirTestsSub,'A1_handles_out');
             
-            testCase.A1_HandlesOut = getRewrittenTestHandles(dirTestsSub,'A1_handles_out', pathOld, pathNew);
-
+                        
+            % Change input path to point to our test
+            testCase.A1_HandlesIn = rewritePaths(  testCase.A1_HandlesIn, 'Sets/A/TIFF' );
+            testCase.A1_HandlesOut = rewritePaths(  testCase.A1_HandlesOut, 'Sets/A/TIFF' );
         end
     end
  
@@ -32,5 +33,11 @@ classdef LoadImagesTest < matlab.unittest.TestCase
             testCase.verifyTrue( isequal(testResult, testCase.A1_HandlesOut) );
         end
     end
-
+    
+    methods(Access = private)
+        function handles = rewritePaths( handles, newPath )
+            handles.Current.DefaultImageDirectory = newPath;
+            handles.Measurements.Image.Pathn
+        end
+    end
 end
