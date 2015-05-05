@@ -199,47 +199,48 @@ drawnow
 ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
 
 if any(findobj == ThisModuleFigureNumber)
-       
-    CPfigure(handles,'Image',ThisModuleFigureNumber);
-    CPresizefigure(OrigImage,'TwoByTwo',ThisModuleFigureNumber);
-    subplot(2,2,1);    
+      if CPisHeadless ==  false    
+      CPfigure(handles,'Image',ThisModuleFigureNumber);
+      CPresizefigure(OrigImage,'TwoByTwo',ThisModuleFigureNumber);
+      subplot(2,2,1);    
    
-    CPimagesc(IllumFilt_Mean,handles);
-    colormap('JET')
-    colorbar
-    title('Mean Intensity Filter [Log10(intensity)]')
+      CPimagesc(IllumFilt_Mean,handles);
+      colormap('JET')
+      colorbar
+      title('Mean Intensity Filter [Log10(intensity)]')
     
-    subplot(2,2,3);    
-    CPimagesc(IllumFilt_STD,handles);
-    colormap('JET')
-    colorbar
-    title('STD Intensity Filter [Log10(intensity)]')    
+      subplot(2,2,3);    
+      CPimagesc(IllumFilt_STD,handles);
+      colormap('JET')
+      colorbar
+      title('STD Intensity Filter [Log10(intensity)]')    
 
-    subplot(2,4,3);    
-    CPimagesc(OrigImage,handles);
-    colormap('JET')
-    title('Original Image')
+      subplot(2,4,3);    
+      CPimagesc(OrigImage,handles);
+      colormap('JET')
+      title('Original Image')
     
-    subplot(2,4,4);
-    CPimagesc(ImageOutputPlot,handles);
-    colormap('JET')
-    title('Corrected Image')    
+      subplot(2,4,4);
+      CPimagesc(ImageOutputPlot,handles);
+      colormap('JET')
+      title('Corrected Image')    
 
-    subplot(2,4,7);    
-    hold on
-    hist(OrigImage(:),round(length(OrigImage(:))/20))    
-    hold off
-    set(gca,'xlim',[quantile(OrigImage(:), 0.001) quantile(OrigImage(:), 0.95)])
-    ylabel('Pixel Count')
-    xlabel('Intensity')
-    title('Original Image Histogram')
+      subplot(2,4,7);    
+      hold on
+      hist(OrigImage(:),round(length(OrigImage(:))/20))    
+      hold off
+      set(gca,'xlim',[quantile(OrigImage(:), 0.001) quantile(OrigImage(:), 0.95)])
+      ylabel('Pixel Count')
+      xlabel('Intensity')
+      title('Original Image Histogram')
 
-    subplot(2,4,8);
-    hist(ImageOutputPlot(:),round(length(ImageOutputPlot(:))/20))
-    set(gca,'xlim',[quantile(OrigImage(:), 0.001) quantile(OrigImage(:), 0.95)])
-    title('Corrected Image Histogram')    
-    ylabel('Pixel Count')
-    xlabel('Intensity')
+      subplot(2,4,8);
+      hist(ImageOutputPlot(:),round(length(ImageOutputPlot(:))/20))
+      set(gca,'xlim',[quantile(OrigImage(:), 0.001) quantile(OrigImage(:), 0.95)])
+      title('Corrected Image Histogram')    
+      ylabel('Pixel Count')
+      xlabel('Intensity')
     
-    drawnow
+      drawnow
+    end
 end    
