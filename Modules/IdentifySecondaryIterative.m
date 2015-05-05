@@ -872,103 +872,106 @@ drawnow
 ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
 if any(findobj == ThisModuleFigureNumber)
     
-    %%%% [PLab] %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Code for visualization  %%%%%%%%%%%
-    %%%%%%% Rearranged: Inculde visualization into a conditional statement starting
-    %%%%%%% only on local machine, but not CPCluster
-    
-    
-    %%% Calculates the ColoredLabelMatrixImage for displaying in the figure
-    %%% window in subplot(2,2,2).
-    ColoredLabelMatrixImage = CPlabel2rgb(handles,FinalLabelMatrixImage);
-    %%% Calculates OutlinesOnOrigImage for displaying in the figure
-    %%% window in subplot(2,2,3).
-    %%% Note: these outlines are not perfectly accurate; for some reason it
-    %%% produces more objects than in the original image.  But it is OK for
-    %%% display purposes.
-    %%% Maximum filters the image with a 3x3 neighborhood.
-    MaxFilteredImage = ordfilt2(FinalLabelMatrixImage,9,ones(3,3),'symmetric');
-    %%% Determines the outlines.
-    IntensityOutlines = FinalLabelMatrixImage - MaxFilteredImage;
-    %%% [PLab] hack.s ave memory.
-    clear MaxFilteredImage;
-    %%% Converts to logical.
-    warning off MATLAB:conversionToLogical
-    LogicalOutlines = logical(IntensityOutlines);
-    %%% [PLab] hack.s ave memory.
-    clear IntensityOutlines;
-    warning on MATLAB:conversionToLogical
-    
-    % Determines the grayscale intensity to use for the cell outlines.
-    %[PLab-HACK] so that images are not so dim!!!!
-    ObjectOutlinesOnOrigImage = OrigImage;
-    ObjectOutlinesOnOrigImage=ObjectOutlinesOnOrigImage-quantile(OrigImage(:), 0.025);
-    ObjectOutlinesOnOrigImage(ObjectOutlinesOnOrigImage<0)=0;
-    ObjectOutlinesOnOrigImage(ObjectOutlinesOnOrigImage>quantile(ObjectOutlinesOnOrigImage(:), 0.95))=quantile(ObjectOutlinesOnOrigImage(:), 0.95);
-    LineIntensity = quantile(ObjectOutlinesOnOrigImage(:), 0.99);
-    
-    
-    ObjectOutlinesOnOrigImage(LogicalOutlines) = LineIntensity;
-    %%% Calculates BothOutlinesOnOrigImage for displaying in the figure
-    %%% window in subplot(2,2,4).
-    %%% Creates the structuring element that will be used for dilation.
-    StructuringElement = strel('square',3);
-    %%% Dilates the Primary Binary Image by one pixel (8 neighborhood).
-    DilatedPrimaryBinaryImage = imdilate(EditedPrimaryBinaryImage, StructuringElement);
-    %%% Subtracts the PrelimPrimaryBinaryImage from the DilatedPrimaryBinaryImage,
-    %%% which leaves the PrimaryObjectOutlines.
-    PrimaryObjectOutlines = DilatedPrimaryBinaryImage - EditedPrimaryBinaryImage;
-    %%% [PLab] hack. save memory.
-    clear DilatedPrimaryBinaryImage EditedPrimaryBinaryImage;
-    BothOutlinesOnOrigImage = ObjectOutlinesOnOrigImage;
-    BothOutlinesOnOrigImage(PrimaryObjectOutlines == 1) = LineIntensity;
-    %%% [PLab] hack. save memory.
-    clear PrimaryObjectOutlines LineIntensity;
-    
-    %%%%%%%%%%%%%%%%%%%%%%%% END OF INITIATION OF VISUALIZATION
-    %%%%%%%%%%%%%%%%%%%%%%%% (rearrangement)
-    
-    
-    %%% Activates the appropriate figure window.
-    CPfigure(handles,'Image',ThisModuleFigureNumber);
-    if handles.Current.SetBeingAnalyzed == handles.Current.StartingImageSet
-        CPresizefigure(OrigImage,'TwoByTwo',ThisModuleFigureNumber);
+    if CPisHeadless == false
+        
+        %%%% [PLab] %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Code for visualization  %%%%%%%%%%%
+        %%%%%%% Rearranged: Inculde visualization into a conditional statement starting
+        %%%%%%% only on local machine, but not CPCluster
+        
+        
+        %%% Calculates the ColoredLabelMatrixImage for displaying in the figure
+        %%% window in subplot(2,2,2).
+        ColoredLabelMatrixImage = CPlabel2rgb(handles,FinalLabelMatrixImage);
+        %%% Calculates OutlinesOnOrigImage for displaying in the figure
+        %%% window in subplot(2,2,3).
+        %%% Note: these outlines are not perfectly accurate; for some reason it
+        %%% produces more objects than in the original image.  But it is OK for
+        %%% display purposes.
+        %%% Maximum filters the image with a 3x3 neighborhood.
+        MaxFilteredImage = ordfilt2(FinalLabelMatrixImage,9,ones(3,3),'symmetric');
+        %%% Determines the outlines.
+        IntensityOutlines = FinalLabelMatrixImage - MaxFilteredImage;
+        %%% [PLab] hack.s ave memory.
+        clear MaxFilteredImage;
+        %%% Converts to logical.
+        warning off MATLAB:conversionToLogical
+        LogicalOutlines = logical(IntensityOutlines);
+        %%% [PLab] hack.s ave memory.
+        clear IntensityOutlines;
+        warning on MATLAB:conversionToLogical
+        
+        % Determines the grayscale intensity to use for the cell outlines.
+        %[PLab-HACK] so that images are not so dim!!!!
+        ObjectOutlinesOnOrigImage = OrigImage;
+        ObjectOutlinesOnOrigImage=ObjectOutlinesOnOrigImage-quantile(OrigImage(:), 0.025);
+        ObjectOutlinesOnOrigImage(ObjectOutlinesOnOrigImage<0)=0;
+        ObjectOutlinesOnOrigImage(ObjectOutlinesOnOrigImage>quantile(ObjectOutlinesOnOrigImage(:), 0.95))=quantile(ObjectOutlinesOnOrigImage(:), 0.95);
+        LineIntensity = quantile(ObjectOutlinesOnOrigImage(:), 0.99);
+        
+        
+        ObjectOutlinesOnOrigImage(LogicalOutlines) = LineIntensity;
+        %%% Calculates BothOutlinesOnOrigImage for displaying in the figure
+        %%% window in subplot(2,2,4).
+        %%% Creates the structuring element that will be used for dilation.
+        StructuringElement = strel('square',3);
+        %%% Dilates the Primary Binary Image by one pixel (8 neighborhood).
+        DilatedPrimaryBinaryImage = imdilate(EditedPrimaryBinaryImage, StructuringElement);
+        %%% Subtracts the PrelimPrimaryBinaryImage from the DilatedPrimaryBinaryImage,
+        %%% which leaves the PrimaryObjectOutlines.
+        PrimaryObjectOutlines = DilatedPrimaryBinaryImage - EditedPrimaryBinaryImage;
+        %%% [PLab] hack. save memory.
+        clear DilatedPrimaryBinaryImage EditedPrimaryBinaryImage;
+        BothOutlinesOnOrigImage = ObjectOutlinesOnOrigImage;
+        BothOutlinesOnOrigImage(PrimaryObjectOutlines == 1) = LineIntensity;
+        %%% [PLab] hack. save memory.
+        clear PrimaryObjectOutlines LineIntensity;
+        
+        %%%%%%%%%%%%%%%%%%%%%%%% END OF INITIATION OF VISUALIZATION
+        %%%%%%%%%%%%%%%%%%%%%%%% (rearrangement)
+        
+        
+        %%% Activates the appropriate figure window.
+        CPfigure(handles,'Image',ThisModuleFigureNumber);
+        if handles.Current.SetBeingAnalyzed == handles.Current.StartingImageSet
+            CPresizefigure(OrigImage,'TwoByTwo',ThisModuleFigureNumber);
+        end
+        ObjectCoverage = 100*sum(sum(FinalLabelMatrixImage > 0))/numel(FinalLabelMatrixImage);
+        
+        %[PLab] display range of thresholds. Which is useful if limits for treshold
+        %should be used
+        %     uicontrol(ThisModuleFigureNumber,'Style','Text','Units','Normalized','Position',[0.25 0.01 .6 0.04],...
+        %         'BackgroundColor',[.7 .7 .9],'HorizontalAlignment','Left','String',sprintf('Threshold:  %0.3f               %0.1f%% of image consists of objects',Threshold,ObjectCoverage),'FontSize',handles.Preferences.FontSize);
+        
+        
+        ThresholdFirst  = ThresholdArray{1};
+        ThresholdLast = ThresholdArray{numThresholdsToTest};
+        uicontrol(ThisModuleFigureNumber,'Style','Text','Units','Normalized','Position',[0.25 0.01 .6 0.04],...
+            'BackgroundColor',[.7 .7 .9],'HorizontalAlignment','Left','String',sprintf('Threshold: Start %0.5f End %0.5f                %0.1f%% of image consists of objects',ThresholdFirst,ThresholdLast,ObjectCoverage),'FontSize',handles.Preferences.FontSize);
+        
+        %%% A subplot of the figure window is set to display the original image.
+        subplot(2,2,1);
+        CPimagesc(OrigImage,handles);
+        title(['Input Image, cycle # ',num2str(handles.Current.SetBeingAnalyzed)]);
+        %%% A subplot of the figure window is set to display the colored label
+        %%% matrix image.
+        subplot(2,2,2);
+        CPimagesc(ColoredLabelMatrixImage,handles);
+        clear ColoredLabelMatrixImage
+        title(['Outlined ',SecondaryObjectName]);
+        %%% A subplot of the figure window is set to display the original image
+        %%% with secondary object outlines drawn on top.
+        subplot(2,2,3);
+        CPimagesc(ObjectOutlinesOnOrigImage,handles);
+        clear ObjectOutlinesOnOrigImage
+        title([SecondaryObjectName, ' Outlines on Input Image']);
+        %%% A subplot of the figure window is set to display the original
+        %%% image with outlines drawn for both the primary and secondary
+        %%% objects.
+        subplot(2,2,4);
+        CPimagesc(BothOutlinesOnOrigImage,handles);
+        clear BothOutlinesOnOrigImage;
+        title(['Outlines of ', PrimaryObjectName, ' and ', SecondaryObjectName, ' on Input Image']);
     end
-    ObjectCoverage = 100*sum(sum(FinalLabelMatrixImage > 0))/numel(FinalLabelMatrixImage);
-    
-    %[PLab] display range of thresholds. Which is useful if limits for treshold
-    %should be used
-    %     uicontrol(ThisModuleFigureNumber,'Style','Text','Units','Normalized','Position',[0.25 0.01 .6 0.04],...
-    %         'BackgroundColor',[.7 .7 .9],'HorizontalAlignment','Left','String',sprintf('Threshold:  %0.3f               %0.1f%% of image consists of objects',Threshold,ObjectCoverage),'FontSize',handles.Preferences.FontSize);
-    
-    
-    ThresholdFirst  = ThresholdArray{1};
-    ThresholdLast = ThresholdArray{numThresholdsToTest};
-    uicontrol(ThisModuleFigureNumber,'Style','Text','Units','Normalized','Position',[0.25 0.01 .6 0.04],...
-        'BackgroundColor',[.7 .7 .9],'HorizontalAlignment','Left','String',sprintf('Threshold: Start %0.5f End %0.5f                %0.1f%% of image consists of objects',ThresholdFirst,ThresholdLast,ObjectCoverage),'FontSize',handles.Preferences.FontSize);
-    
-    %%% A subplot of the figure window is set to display the original image.
-    subplot(2,2,1);
-    CPimagesc(OrigImage,handles);
-    title(['Input Image, cycle # ',num2str(handles.Current.SetBeingAnalyzed)]);
-    %%% A subplot of the figure window is set to display the colored label
-    %%% matrix image.
-    subplot(2,2,2);
-    CPimagesc(ColoredLabelMatrixImage,handles);
-    clear ColoredLabelMatrixImage
-    title(['Outlined ',SecondaryObjectName]);
-    %%% A subplot of the figure window is set to display the original image
-    %%% with secondary object outlines drawn on top.
-    subplot(2,2,3);
-    CPimagesc(ObjectOutlinesOnOrigImage,handles);
-    clear ObjectOutlinesOnOrigImage
-    title([SecondaryObjectName, ' Outlines on Input Image']);
-    %%% A subplot of the figure window is set to display the original
-    %%% image with outlines drawn for both the primary and secondary
-    %%% objects.
-    subplot(2,2,4);
-    CPimagesc(BothOutlinesOnOrigImage,handles);
-    clear BothOutlinesOnOrigImage;
-    title(['Outlines of ', PrimaryObjectName, ' and ', SecondaryObjectName, ' on Input Image']);
 end
 
 
