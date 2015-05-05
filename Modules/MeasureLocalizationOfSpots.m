@@ -35,7 +35,7 @@ function handles = MeasureLocalizationOfSpots(handles)
 % Fraction of all other children at y distances from child | 8+x+1->8+x+y
 %
 %
-% Note: all distances are calculated in pixels. 
+% Note: all distances are calculated in pixels.
 %
 % Two sets of outputs are generated:
 % x raw Measurments
@@ -47,7 +47,7 @@ function handles = MeasureLocalizationOfSpots(handles)
 % This module has been designed for large scale image based
 % transcriptomics. Lower throughput analysis might require two changes
 % depending on microscopic / computational infrastructure. You can find
-% these position in the code by searching for 
+% these position in the code by searching for
 %    1) Exclusion of false cells
 %    and
 %    2) Number of randomizations
@@ -55,9 +55,9 @@ function handles = MeasureLocalizationOfSpots(handles)
 % ad 1): If a cell is larger than half of the image it is excluded. On
 % large field of view cameras, there is not a single real cell which is as
 % large (as screening setups will include approx. 50-200 cells per image).
-% The only "cell" objects of that size, which we observed, were very rare, 
+% The only "cell" objects of that size, which we observed, were very rare,
 % falsely identified objects / background. Running this module will
-% increase memory requiremt by around 30GB for such objects (causing 
+% increase memory requiremt by around 30GB for such objects (causing
 % unnecessary resubmission to more powerful computational nodes / inability
 % to continue calculation).
 % With high magnification lenses and small field of view cameras,
@@ -320,7 +320,7 @@ if ImageEmpty == false
     if LisOfObjects(1) == 0 % remove background, if present
         LisOfObjects = LisOfObjects(2:end);
     end
-        
+    
     
     %%% Obtain pixels at inner periphery of cells. note that this will
     %%% reduce the computing time of spot features by more than 50% since much
@@ -367,7 +367,7 @@ if ImageEmpty == false
             [r c] = find(dpadbwR);
             
             % get indices for final image (note that mini image might have
-            % permitted regions of other cells and thus boxes can not be 
+            % permitted regions of other cells and thus boxes can not be
             % directly overlaid).
             r = r-1+N(k);
             c = c-1+W(k);
@@ -443,7 +443,7 @@ if ImageEmpty == false
             if(tmpAreaOfCells(jj).Area/totpixel) > 0.5  % 1) Exclusion of false cells: replace 0.5 by 1 to prevent any discarding
                 forbiddenObjectIDs(end+1) = jj; %#ok<AGROW>
                 fprintf('At least one parent object is larger than half of the image. This Objcect will be excluded from analysis. \n')
-
+                
             end
         end
         clear tmpAreaOfCells;
@@ -500,7 +500,7 @@ if ImageEmpty == false
                         IX = IX(randperm(length(IX)));
                         randIX = randIX(IX(1:tempTotalChildren));
                     else % If not, permute all pixels. Note that this would be slow, if executed for all cells
-                        randIX = randperm(numParentPixels); 
+                        randIX = randperm(numParentPixels);
                         randIX  = randIX(1:tempTotalChildren);
                     end
                     tempRandomChildLocation = CurrParentsPixels(randIX,:);
@@ -612,89 +612,93 @@ handles.Measurements.(ChildrenObjectName).ChildLocalizationZScored{handles.Curre
 
 
 try
+    
     %Visuallize outputs
     ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
     if any(findobj == ThisModuleFigureNumber)
-        CPresizefigure(SegmentedParentObjectImage,'TwoByTwo',ThisModuleFigureNumber);
-        hold on
-        matHalfSize = floor(size(SegmentedChildrenObjectImage)/2);
-        VisualizationSize = floor(size(SegmentedChildrenObjectImage)/6);
         
-        subplot(2,2,1);
-        %     matDistancesToOutline_Temp = [0;matDistancesToOutline];
-        matDistancesToOutline_Temp = [0;matLocMeasurementsZScored(:,1)];
-        ChildenColorCode_Temp = reshape(matDistancesToOutline_Temp(SegmentedChildrenObjectImage(:)+1),size(SegmentedChildrenObjectImage,1),size(SegmentedChildrenObjectImage,2));
-        [CurrentObjNhood,CurrentObjLabels] = bwdist(ChildenColorCode_Temp);
-        ChildenColorCode_Temp  = (CurrentObjNhood < 4).*ChildenColorCode_Temp(CurrentObjLabels);
-        
-        
-        ChildenColorCode_Temp(matEdgeImagesIX) = quantile(ChildenColorCode_Temp(:),0.999);
-        imagesc(ChildenColorCode_Temp(matHalfSize(1)-VisualizationSize(1):matHalfSize(1)+VisualizationSize(1),...
-            matHalfSize(2)-VisualizationSize(2):matHalfSize(2)+VisualizationSize(2)), [max(-3,quantile(ChildenColorCode_Temp(:),0.001)) max(1,quantile(ChildenColorCode_Temp(:),0.999))])
-        
-        matColorMap = jet; matColorMap(1,:) = 1;
-        colormap(matColorMap)
-        colorbar
-        title('Min DistToCell Membr.')
-        
-        subplot(2,2,3);
-        %     matDistancesToOutline_Temp = [0;matDisToOutlineThirdLine];
-        matDistancesToOutline_Temp = [0;matLocMeasurementsZScored(:,5)];
-        
-        ChildenColorCode_Temp = reshape(matDistancesToOutline_Temp(SegmentedChildrenObjectImage(:)+1),size(SegmentedChildrenObjectImage,1),size(SegmentedChildrenObjectImage,2));
-        [CurrentObjNhood,CurrentObjLabels] = bwdist(ChildenColorCode_Temp);
-        ChildenColorCode_Temp  = (CurrentObjNhood < 4).*ChildenColorCode_Temp(CurrentObjLabels);
-        
-        
-        ChildenColorCode_Temp(matEdgeImagesIX) = quantile(ChildenColorCode_Temp(:),0.999);
-        imagesc(ChildenColorCode_Temp(matHalfSize(1)-VisualizationSize(1):matHalfSize(1)+VisualizationSize(1),...
-            matHalfSize(2)-VisualizationSize(2):matHalfSize(2)+VisualizationSize(2)), [max(-3,quantile(ChildenColorCode_Temp(:),0.001)) max(1,quantile(ChildenColorCode_Temp(:),0.999))])
-        matColorMap = jet; matColorMap(1,:) = 1;
-        colormap(matColorMap)
-        colorbar
-        title('Centroid Tangent DistToCell Membr.')
-        
-        
-        
-        
-        subplot(2,2,2);
-        
-        %     matDistancesToOutline_Temp = [0;matDisPerX1(:,1)];
-        matDistancesToOutline_Temp = [0;matLocMeasurementsZScored(:,9)];
-        
-        ChildenColorCode_Temp = reshape(matDistancesToOutline_Temp(SegmentedChildrenObjectImage(:)+1),size(SegmentedChildrenObjectImage,1),size(SegmentedChildrenObjectImage,2));
-        [CurrentObjNhood,CurrentObjLabels] = bwdist(ChildenColorCode_Temp);
-        ChildenColorCode_Temp  = (CurrentObjNhood < 4).*ChildenColorCode_Temp(CurrentObjLabels);
-        
-        
-        ChildenColorCode_Temp(matEdgeImagesIX) = quantile(ChildenColorCode_Temp(:),0.999);
-        imagesc(ChildenColorCode_Temp(matHalfSize(1)-VisualizationSize(1):matHalfSize(1)+VisualizationSize(1),...
-            matHalfSize(2)-VisualizationSize(2):matHalfSize(2)+VisualizationSize(2)), [max(-3,quantile(ChildenColorCode_Temp(:),0.001)) max(1,quantile(ChildenColorCode_Temp(:),0.999))])
-        matColorMap = jet; matColorMap(1,:) = 1;
-        colormap(matColorMap)
-        colorbar
-        title('Radious for first percentage')
-        
-        
-        
-        subplot(2,2,4);
-        
-        %     matDistancesToOutline_Temp = [0;matMeanDis];
-        matDistancesToOutline_Temp = [0;matLocMeasurementsZScored(:,6)];
-        
-        ChildenColorCode_Temp = reshape(matDistancesToOutline_Temp(SegmentedChildrenObjectImage(:)+1),size(SegmentedChildrenObjectImage,1),size(SegmentedChildrenObjectImage,2));
-        [CurrentObjNhood,CurrentObjLabels] = bwdist(ChildenColorCode_Temp);
-        ChildenColorCode_Temp  = (CurrentObjNhood < 4).*ChildenColorCode_Temp(CurrentObjLabels);
-        
-        ChildenColorCode_Temp(matEdgeImagesIX) = quantile(ChildenColorCode_Temp(:),0.999);
-        imagesc(ChildenColorCode_Temp(matHalfSize(1)-VisualizationSize(1):matHalfSize(1)+VisualizationSize(1),...
-            matHalfSize(2)-VisualizationSize(2):matHalfSize(2)+VisualizationSize(2)), [max(-3,quantile(ChildenColorCode_Temp(:),0.001)) max(1,quantile(ChildenColorCode_Temp(:),0.999))])
-        matColorMap = jet; matColorMap(1,:) = 1;
-        colormap(matColorMap)
-        colorbar
-        title('Mean distance to spots')
-        
-        
+        if CPisHeadless == false
+            
+            CPresizefigure(SegmentedParentObjectImage,'TwoByTwo',ThisModuleFigureNumber);
+            hold on
+            matHalfSize = floor(size(SegmentedChildrenObjectImage)/2);
+            VisualizationSize = floor(size(SegmentedChildrenObjectImage)/6);
+            
+            subplot(2,2,1);
+            %     matDistancesToOutline_Temp = [0;matDistancesToOutline];
+            matDistancesToOutline_Temp = [0;matLocMeasurementsZScored(:,1)];
+            ChildenColorCode_Temp = reshape(matDistancesToOutline_Temp(SegmentedChildrenObjectImage(:)+1),size(SegmentedChildrenObjectImage,1),size(SegmentedChildrenObjectImage,2));
+            [CurrentObjNhood,CurrentObjLabels] = bwdist(ChildenColorCode_Temp);
+            ChildenColorCode_Temp  = (CurrentObjNhood < 4).*ChildenColorCode_Temp(CurrentObjLabels);
+            
+            
+            ChildenColorCode_Temp(matEdgeImagesIX) = quantile(ChildenColorCode_Temp(:),0.999);
+            imagesc(ChildenColorCode_Temp(matHalfSize(1)-VisualizationSize(1):matHalfSize(1)+VisualizationSize(1),...
+                matHalfSize(2)-VisualizationSize(2):matHalfSize(2)+VisualizationSize(2)), [max(-3,quantile(ChildenColorCode_Temp(:),0.001)) max(1,quantile(ChildenColorCode_Temp(:),0.999))])
+            
+            matColorMap = jet; matColorMap(1,:) = 1;
+            colormap(matColorMap)
+            colorbar
+            title('Min DistToCell Membr.')
+            
+            subplot(2,2,3);
+            %     matDistancesToOutline_Temp = [0;matDisToOutlineThirdLine];
+            matDistancesToOutline_Temp = [0;matLocMeasurementsZScored(:,5)];
+            
+            ChildenColorCode_Temp = reshape(matDistancesToOutline_Temp(SegmentedChildrenObjectImage(:)+1),size(SegmentedChildrenObjectImage,1),size(SegmentedChildrenObjectImage,2));
+            [CurrentObjNhood,CurrentObjLabels] = bwdist(ChildenColorCode_Temp);
+            ChildenColorCode_Temp  = (CurrentObjNhood < 4).*ChildenColorCode_Temp(CurrentObjLabels);
+            
+            
+            ChildenColorCode_Temp(matEdgeImagesIX) = quantile(ChildenColorCode_Temp(:),0.999);
+            imagesc(ChildenColorCode_Temp(matHalfSize(1)-VisualizationSize(1):matHalfSize(1)+VisualizationSize(1),...
+                matHalfSize(2)-VisualizationSize(2):matHalfSize(2)+VisualizationSize(2)), [max(-3,quantile(ChildenColorCode_Temp(:),0.001)) max(1,quantile(ChildenColorCode_Temp(:),0.999))])
+            matColorMap = jet; matColorMap(1,:) = 1;
+            colormap(matColorMap)
+            colorbar
+            title('Centroid Tangent DistToCell Membr.')
+            
+            
+            
+            
+            subplot(2,2,2);
+            
+            %     matDistancesToOutline_Temp = [0;matDisPerX1(:,1)];
+            matDistancesToOutline_Temp = [0;matLocMeasurementsZScored(:,9)];
+            
+            ChildenColorCode_Temp = reshape(matDistancesToOutline_Temp(SegmentedChildrenObjectImage(:)+1),size(SegmentedChildrenObjectImage,1),size(SegmentedChildrenObjectImage,2));
+            [CurrentObjNhood,CurrentObjLabels] = bwdist(ChildenColorCode_Temp);
+            ChildenColorCode_Temp  = (CurrentObjNhood < 4).*ChildenColorCode_Temp(CurrentObjLabels);
+            
+            
+            ChildenColorCode_Temp(matEdgeImagesIX) = quantile(ChildenColorCode_Temp(:),0.999);
+            imagesc(ChildenColorCode_Temp(matHalfSize(1)-VisualizationSize(1):matHalfSize(1)+VisualizationSize(1),...
+                matHalfSize(2)-VisualizationSize(2):matHalfSize(2)+VisualizationSize(2)), [max(-3,quantile(ChildenColorCode_Temp(:),0.001)) max(1,quantile(ChildenColorCode_Temp(:),0.999))])
+            matColorMap = jet; matColorMap(1,:) = 1;
+            colormap(matColorMap)
+            colorbar
+            title('Radious for first percentage')
+            
+            
+            
+            subplot(2,2,4);
+            
+            %     matDistancesToOutline_Temp = [0;matMeanDis];
+            matDistancesToOutline_Temp = [0;matLocMeasurementsZScored(:,6)];
+            
+            ChildenColorCode_Temp = reshape(matDistancesToOutline_Temp(SegmentedChildrenObjectImage(:)+1),size(SegmentedChildrenObjectImage,1),size(SegmentedChildrenObjectImage,2));
+            [CurrentObjNhood,CurrentObjLabels] = bwdist(ChildenColorCode_Temp);
+            ChildenColorCode_Temp  = (CurrentObjNhood < 4).*ChildenColorCode_Temp(CurrentObjLabels);
+            
+            ChildenColorCode_Temp(matEdgeImagesIX) = quantile(ChildenColorCode_Temp(:),0.999);
+            imagesc(ChildenColorCode_Temp(matHalfSize(1)-VisualizationSize(1):matHalfSize(1)+VisualizationSize(1),...
+                matHalfSize(2)-VisualizationSize(2):matHalfSize(2)+VisualizationSize(2)), [max(-3,quantile(ChildenColorCode_Temp(:),0.001)) max(1,quantile(ChildenColorCode_Temp(:),0.999))])
+            matColorMap = jet; matColorMap(1,:) = 1;
+            colormap(matColorMap)
+            colorbar
+            title('Mean distance to spots')
+            
+        end
     end
     drawnow
 catch

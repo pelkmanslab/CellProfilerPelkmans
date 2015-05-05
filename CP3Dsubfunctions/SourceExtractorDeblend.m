@@ -93,10 +93,10 @@ end
 
 
 fprintf('%s: Calculating all thresholded images. Total Number %d. ',mfilename,Options.StepNumber)
-tic
+
 [~, structSegCC] = ObjByFilter(Image,Options.Filter,matThresToTest,...
     Options.limQuant,Options.ObjSizeThr,Options.ObjIntensityThr,false,Options.ObjSizeThr,Options.DetectBias);
-toc
+
 
 % calculating all centroid for higly expressed gene takes too much memory
 % fprintf('%s: Calculating all centroids. ',mfilename)
