@@ -7,7 +7,7 @@ classdef DiscardObjectsBySizeTest < matlab.unittest.TestCase
  
     methods(TestMethodSetup)
         function createHandles(testCase)
-            dirTestsSub = '\DiscardObjectsBySize\TestA\';
+            dirTestsSub = 'DiscardObjectsBySize/TestA';
             testCase.HandlesIn = getTestSavedHandles(dirTestsSub,'DiscardObjectsBySize_In');
             testCase.HandlesOut = getTestSavedHandles(dirTestsSub,'DiscardObjectsBySize_Out');
         end

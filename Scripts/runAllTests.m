@@ -8,9 +8,11 @@ import matlab.unittest.plugins.ToFile
 % See:
 % http://ch.mathworks.com/help/matlab/ref/matlab.unittest.plugins.tapplugin-class.html
 %
-% Expects to be run from the Tests/ directory
+% Expects to be run from the Scripts/ directory
 %
-
+% An environmental variable CELLPROFILER_PELKMANS_TESTS_DIR must be set
+%   with location of test data
+%
 topLevelMatlabFolder = '../Modules/Tests';
 outFilePathRelative = '../testsOutput.tap';
 
@@ -19,9 +21,16 @@ if isempty(getenv('CELLPROFILER_PELKMANS_TESTS_DIR'))
     error('Please set the environmental variable CELLPROFILER_PELKMANS_TESTS_DIR with the location of test data');
 end
 
-% Adds the testFramework to the current path
+
+% Check that we are in right directory
+[upperPath, deepestFolder, ignoreThisStr] = fileparts(pwd());
+if (strcmp(deepestFolder,'Scripts')==0)
+   error('Not in Scripts/ directory');
+end
+
+
+% Adds the CellProfilerPelkmans base dir, and all sub-folders to the current path
 mfilepath=fileparts(which(mfilename));
-%addpath(fullfile(mfilepath,'testFramework'));
 projectBaseDir=fullfile(mfilepath,'../');
 addpath(genpath(projectBaseDir));
 
