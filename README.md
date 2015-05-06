@@ -14,13 +14,6 @@ CellProfilerPelkmans is part of each [iBRAIN_UZH release](https://github.com/pel
 
 Some CellProfilerPelkmans modules depend on Matlab code that resides outside of this repository - specifically in [PelkmansLibrary](https://github.com/pelkmanslab/PelkmansLibrary). This is also part of each iBRAIN_UZH release.
 
-## Module reference documentation
-
-Current reference documentation is found in serveral locations:
-* [Modules API Documentation](http://jenkins.pelkmanslab.org/job/CellProfilerPelkmans_Master/CellProfilerPelkmans_API_Documentation/workspace/Modules/index.html). It is updated automatically daily, and contails all modules.
-* [CellProfilerPelkmans Wiki](https://github.com/pelkmanslab/CellProfilerPelkmans/wiki)
-* [iBRAIN_BRUTUS Wiki - core module help](https://github.com/pelkmanslab/iBRAIN_BRUTUS/wiki/iBRAIN_BRUTUS-core-module-help)
-
 ## After installation
 
 Now you are ready to go.
@@ -34,6 +27,15 @@ This will start the CellProfiler program and open the GUI window.
 
 
 ## Modules ##
+
+#### All modules (standard + Pelkmans)
+
+Current reference documentation is found in serveral locations:
+* [Modules API Documentation](http://jenkins.pelkmanslab.org/job/CellProfilerPelkmans_Master/CellProfilerPelkmans_API_Documentation/workspace/Modules/index.html). It is updated automatically daily, and contails all modules.
+* [CellProfilerPelkmans Wiki](https://github.com/pelkmanslab/CellProfilerPelkmans/wiki)
+* [iBRAIN_BRUTUS Wiki - core module help](https://github.com/pelkmanslab/iBRAIN_BRUTUS/wiki/iBRAIN_BRUTUS-core-module-help)
+ 
+#### Standard Modules
 
 Below you find a list of available standard Cell Profiler (CP) modules.
 
