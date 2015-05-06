@@ -28,17 +28,15 @@ This will start the CellProfiler program and open the GUI window.
 
 ## Modules ##
 
-#### All modules (standard + custom)
-
 Current reference documentation is found in serveral locations:
 * [Modules API Documentation](http://jenkins.pelkmanslab.org/job/CellProfilerPelkmans_Master/CellProfilerPelkmans_API_Documentation/workspace/Modules/index.html). It is updated automatically daily, and contails all modules.
-* [iBRAIN_BRUTUS Wiki - core module help](https://github.com/pelkmanslab/iBRAIN_BRUTUS/wiki/iBRAIN_BRUTUS-core-module-help)
+* [Core Module help](https://github.com/pelkmanslab/iBRAIN_BRUTUS/wiki/iBRAIN_BRUTUS-core-module-help) - a subset of *core* modules
 * [CellProfiler manual](http://cellprofiler.org/linked_files/Documentation/cp1_manual_9717.pdf). Standard modules only.
 * [CellProfilerPelkmans Wiki](https://github.com/pelkmanslab/CellProfilerPelkmans/wiki). Custom modules only.
 
 Further documentation can be found in the actual Matlab functions (.m files). This information can also be queried from the GUI using the `?` button.
 
-#### Standard Modules
+## List of Standard Modules
 
 Below you find a list of available standard Cell Profiler (CP) modules.
 
