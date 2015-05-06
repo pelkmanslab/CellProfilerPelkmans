@@ -8,7 +8,7 @@ Major differences to the original version:
 
 ## How to install?
 
-CellProfilerPelkmans is part of each [iBRAIN_UZH release](https://github.com/pelkmanslab/iBRAIN_UZH/releases). Please follow the instructions in the [iBRAIN_UZH User Guide](https://github.com/pelkmanslab/iBRAIN_UZH/blob/master/USER_GUIDE.md)
+CellProfilerPelkmans is part of each [iBRAIN_UZH release](https://github.com/pelkmanslab/iBRAIN_UZH/releases). Please follow the instructions in the [iBRAIN_UZH User Guide](https://github.com/pelkmanslab/iBRAIN_UZH/blob/master/doc/USER_GUIDE.md)
 
 ## Dependencies ##
 
