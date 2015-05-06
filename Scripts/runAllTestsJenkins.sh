@@ -7,5 +7,5 @@
 # The Matlab script, however, will run in the folder Scripts/
 #
 filepath='./Scripts/runAllTests.m'
-export CELLPROFILER_PELKMANS_TESTS_DIR='/mnt/camelot-share3/Data/Users/Owen/CellProfilerPelkmansTestData/';
+export CELLPROFILER_PELKMANS_TESTS_DIR='/mnt/camelot-share3/Data/Datasets/GitHubTests/CellProfilerPelkmans/';
 matlab -nodesktop -nosplash -nodisplay -r "run $filepath ; quit;" 
