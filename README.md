@@ -8,7 +8,7 @@ Major differences to the original version:
 
 ## How to install?
 
-CellProfilerPelkmans is part of each [iBRAIN_UZH release](https://github.com/pelkmanslab/iBRAIN_UZH/releases). Please follow the instructions in the [iBRAIN_UZH User Guide](https://github.com/pelkmanslab/iBRAIN_UZH/blob/master/USER_GUIDE.md)
+CellProfilerPelkmans is part of each [iBRAIN_UZH release](https://github.com/pelkmanslab/iBRAIN_UZH/releases). Please follow the instructions in the [iBRAIN_UZH User Guide](https://github.com/pelkmanslab/iBRAIN_UZH/blob/master/doc/USER_GUIDE.md)
 
 ## Dependencies ##
 
@@ -28,62 +28,11 @@ This will start the CellProfiler program and open the GUI window.
 
 ## Modules ##
 
-Below you find a list of available standard Cell Profiler (CP) modules.
-
-For documentation on these standard modules see [CellProfiler manual](http://cellprofiler.org/linked_files/Documentation/cp1_manual_9717.pdf).
-
-For documentation on custom modules please refer to [CellProfilerPelkmans wiki](https://github.com/pelkmanslab/CellProfilerPelkmans/wiki).
+Current reference documentation is found in several locations:
+* [Modules API Documentation](http://jenkins.pelkmanslab.org/job/CellProfilerPelkmans_Master/CellProfilerPelkmans_API_Documentation/workspace/Modules/index.html). It is updated automatically daily, and contails all modules.
+* [Core Module help](https://github.com/pelkmanslab/iBRAIN_BRUTUS/wiki/iBRAIN_BRUTUS-core-module-help). A subset of *core* modules
+* [CellProfiler manual](http://cellprofiler.org/linked_files/Documentation/cp1_manual_9717.pdf). Standard modules only.
+* [CellProfilerPelkmans Wiki](https://github.com/pelkmanslab/CellProfilerPelkmans/wiki). Custom modules only.
+* [List of Standard Modules](doc/LIST_OF_STANDARD_MODULES.md). Standard modules only.
 
 Further documentation can be found in the actual Matlab functions (.m files). This information can also be queried from the GUI using the `?` button.
-
-### Standard modules ###
-
-##### File Processing #####
-
-* ExportToExcel
-* LoadSingleImage
-* SaveImages (+)
-
-##### Image Processing #####
-
-* ApplyThreshold
-* Combine
-* Crop
-* RescaleIntensities
-* Resize
-* Smooth
-* Subtract
-* SubtractBackground
-
-##### Object Processing #####
-
-* ExandOrShrink
-* FilterByObjectMeasurement
-* IdentifyPrimAutomatic
-* IdentifyPrimLoG
-* IdentifyPrimManual
-* IdentifySecondary
-* IdentifyTertiarySubregion
-* Relate
-* MergeAndRelateChildren
-
-##### Measurements #####
-
-* MeasureCorrelation
-* MeasureImageGranularity
-* MeasureImageIntensity
-* MeasureObjectAreaShape
-* MeasureObjectIntensity
-* MeasureObjectNeighbors
-* MeasureRadialDistribution
-* MeasureTexture
-* MeasureGPperSingleCell
-* MeasureObjectColocalisation
-
-
-##### Other #####
-
-* SpeedUpCellprofiler
-
-
-(+) indicates standard modules with custom improvements (e.g.: additional optional input arguments).
