@@ -33,59 +33,6 @@ Current reference documentation is found in several locations:
 * [Core Module help](https://github.com/pelkmanslab/iBRAIN_BRUTUS/wiki/iBRAIN_BRUTUS-core-module-help). A subset of *core* modules
 * [CellProfiler manual](http://cellprofiler.org/linked_files/Documentation/cp1_manual_9717.pdf). Standard modules only.
 * [CellProfilerPelkmans Wiki](https://github.com/pelkmanslab/CellProfilerPelkmans/wiki). Custom modules only.
+* [List of Standard Modules](doc/LIST_OF_STANDARD_MODULES.md). Standard modules only.
 
 Further documentation can be found in the actual Matlab functions (.m files). This information can also be queried from the GUI using the `?` button.
-
-### List of Standard modules ###
-
-Below you find a list of available standard Cell Profiler (CP) modules.
-
-##### File Processing #####
-
-* ExportToExcel
-* LoadSingleImage
-* SaveImages (+)
-
-##### Image Processing #####
-
-* ApplyThreshold
-* Combine
-* Crop
-* RescaleIntensities
-* Resize
-* Smooth
-* Subtract
-* SubtractBackground
-
-##### Object Processing #####
-
-* ExandOrShrink
-* FilterByObjectMeasurement
-* IdentifyPrimAutomatic
-* IdentifyPrimLoG
-* IdentifyPrimManual
-* IdentifySecondary
-* IdentifyTertiarySubregion
-* Relate
-* MergeAndRelateChildren
-
-##### Measurements #####
-
-* MeasureCorrelation
-* MeasureImageGranularity
-* MeasureImageIntensity
-* MeasureObjectAreaShape
-* MeasureObjectIntensity
-* MeasureObjectNeighbors
-* MeasureRadialDistribution
-* MeasureTexture
-* MeasureGPperSingleCell
-* MeasureObjectColocalisation
-
-
-##### Other #####
-
-* SpeedUpCellprofiler
-
-
-(+) indicates standard modules with custom improvements (e.g.: additional optional input arguments).
