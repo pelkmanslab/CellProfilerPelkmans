@@ -3,7 +3,7 @@ function handles = RelateAndJoinSegmentation(handles)
 % Help for the Relate module:
 % Category: Object Processing
 % This module take all separate objects (e.g. vesicles) and join them in a
-% unique object for further measurment extraction
+% unique object for further measurement extraction
 % Website: http://www.cellprofiler.org
 %
 % $Revision: 1725 $
