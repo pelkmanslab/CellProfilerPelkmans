@@ -1,6 +1,6 @@
 function handles = ProjectSegmentationCP3D(handles)
 % Help for the ProjectSegmentationCP3D module:
-% Category: Object Processing
+% Category: Other
 %
 % SHORT DESCRIPTION:
 % Will project Segementation of 3D objects into a single plane and creates
@@ -9,6 +9,8 @@ function handles = ProjectSegmentationCP3D(handles)
 % Combine with RelateCP3D to link 2D objects, derived from a 3D object,
 % back to the initial 3D object
 % *************************************************************************
+%
+% $Revision: 1879 $
 
 
 drawnow
@@ -35,6 +37,7 @@ iMethod = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 %defaultVAR04 = /
 iMinOccPlanes = char(handles.Settings.VariableValues{CurrentModuleNum,4});
 
+%%%VariableRevisionNumber = 10
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%  CHECK INPUT   %%%%%%%%%%%%%%%%%
