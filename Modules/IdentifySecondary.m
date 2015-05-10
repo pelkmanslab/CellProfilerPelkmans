@@ -285,6 +285,15 @@ PrelimPrimaryLabelMatrixImage = CPretrieveimage(handles,['SmallRemovedSegmented'
 %%% limits. Checks first to see whether the appropriate image exists.
 EditedPrimaryLabelMatrixImage = CPretrieveimage(handles,['Segmented', PrimaryObjectName],ModuleName,'DontCheckColor','DontCheckScale',size(OrigImage));
 
+
+UseAsLabelInCaseNoBackgroundPresent = EditedPrimaryLabelMatrixImage;
+if any(EditedPrimaryLabelMatrixImage(:) == 0)
+    originalSegmentationHasBackground = true;
+else
+    originalSegmentationHasBackground = false;
+end
+
+
 %%% Chooses the first word of the method name (removing 'Global' or 'Adaptive').
 ThresholdMethod = strtok(Threshold);
 %%% Checks if a custom entry was selected for Threshold, which means we are using an incoming binary image rather than calculating a threshold.
@@ -336,426 +345,430 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
     
     IdentChoice = IdentChoiceList{IdentChoiceNumber};
     
-    if strncmp(IdentChoice,'Distance',8)
-        if strcmp(IdentChoice(12),'N')
-            %%% Creates the structuring element using the user-specified size.
-            StructuringElement = strel('disk', DistanceToDilate);
-            %%% Dilates the preliminary label matrix image (edited for small only).
-            DilatedPrelimSecObjectLabelMatrixImage = imdilate(PrelimPrimaryLabelMatrixImage, StructuringElement);
-            %%% Converts to binary.
-            DilatedPrelimSecObjectBinaryImage = im2bw(DilatedPrelimSecObjectLabelMatrixImage,.5);
-            %%% Computes nearest neighbor image of nuclei centers so that the dividing
-            %%% line between secondary objects is halfway between them rather than
-            %%% favoring the primary object with the greater label number.
-            [ignore, Labels] = bwdist(full(PrelimPrimaryLabelMatrixImage>0)); %#ok We want to ignore MLint error checking for this line.
-            drawnow
-            %%% Remaps labels in Labels to labels in PrelimPrimaryLabelMatrixImage.
-            if max(Labels(:)) == 0,
-                Labels = ones(size(Labels));
+    if originalSegmentationHasBackground == false
+        FinalLabelMatrixImage = UseAsLabelInCaseNoBackgroundPresent;
+    else  % default scenario.
+        
+        if strncmp(IdentChoice,'Distance',8)
+            if strcmp(IdentChoice(12),'N')
+                %%% Creates the structuring element using the user-specified size.
+                StructuringElement = strel('disk', DistanceToDilate);
+                %%% Dilates the preliminary label matrix image (edited for small only).
+                DilatedPrelimSecObjectLabelMatrixImage = imdilate(PrelimPrimaryLabelMatrixImage, StructuringElement);
+                %%% Converts to binary.
+                DilatedPrelimSecObjectBinaryImage = im2bw(DilatedPrelimSecObjectLabelMatrixImage,.5);
+                %%% Computes nearest neighbor image of nuclei centers so that the dividing
+                %%% line between secondary objects is halfway between them rather than
+                %%% favoring the primary object with the greater label number.
+                [ignore, Labels] = bwdist(full(PrelimPrimaryLabelMatrixImage>0)); %#ok We want to ignore MLint error checking for this line.
+                drawnow
+                %%% Remaps labels in Labels to labels in PrelimPrimaryLabelMatrixImage.
+                if max(Labels(:)) == 0,
+                    Labels = ones(size(Labels));
+                end
+                ExpandedRelabeledDilatedPrelimSecObjectImage = PrelimPrimaryLabelMatrixImage(Labels);
+                %%% Removes the background pixels (those not labeled as foreground in the
+                %%% DilatedPrelimSecObjectBinaryImage). This is necessary because the
+                %%% nearest neighbor function assigns *every* pixel to a nucleus, not just
+                %%% the pixels that are part of a secondary object.
+                RelabeledDilatedPrelimSecObjectImage = zeros(size(ExpandedRelabeledDilatedPrelimSecObjectImage));
+                RelabeledDilatedPrelimSecObjectImage(DilatedPrelimSecObjectBinaryImage) = ExpandedRelabeledDilatedPrelimSecObjectImage(DilatedPrelimSecObjectBinaryImage);
+                drawnow
+            elseif strcmp(IdentChoice(12),'B')
+                [labels_out,d]=IdentifySecPropagateSubfunction(PrelimPrimaryLabelMatrixImage,OrigImage,ThresholdedOrigImage,1.0);
+                labels_out(d>DistanceToDilate) = 0;
+                labels_out((PrelimPrimaryLabelMatrixImage > 0)) = PrelimPrimaryLabelMatrixImage((PrelimPrimaryLabelMatrixImage > 0));
+                RelabeledDilatedPrelimSecObjectImage = labels_out;
             end
-            ExpandedRelabeledDilatedPrelimSecObjectImage = PrelimPrimaryLabelMatrixImage(Labels);
-            %%% Removes the background pixels (those not labeled as foreground in the
-            %%% DilatedPrelimSecObjectBinaryImage). This is necessary because the
-            %%% nearest neighbor function assigns *every* pixel to a nucleus, not just
-            %%% the pixels that are part of a secondary object.
-            RelabeledDilatedPrelimSecObjectImage = zeros(size(ExpandedRelabeledDilatedPrelimSecObjectImage));
-            RelabeledDilatedPrelimSecObjectImage(DilatedPrelimSecObjectBinaryImage) = ExpandedRelabeledDilatedPrelimSecObjectImage(DilatedPrelimSecObjectBinaryImage);
+            
+            EditedPrimaryBinaryImage = im2bw(EditedPrimaryLabelMatrixImage,.5);
+            
+            %%% Removes objects that are not in the edited EditedPrimaryLabelMatrixImage.
+            LookUpTable = sortrows(unique([PrelimPrimaryLabelMatrixImage(:) EditedPrimaryLabelMatrixImage(:)],'rows'),1);
+            b=zeros(max(LookUpTable(:,1)+1),2);
+            b(LookUpTable(:,1)+1,1)=LookUpTable(:,1);
+            b(LookUpTable(:,1)+1,2)=LookUpTable(:,2);
+            b(:,1) = 0:size(b,1)-1;
+            LookUpColumn = b(:,2);
+            FinalLabelMatrixImage = LookUpColumn(RelabeledDilatedPrelimSecObjectImage+1);
+            
+        elseif strcmp(IdentChoice,'Propagation')
+            %%% STEP 2: Starting from the identified primary objects, the secondary
+            %%% objects are identified using the propagate function, written by Thouis
+            %%% R. Jones. Calls the function
+            %%% "IdentifySecPropagateSubfunction.mexmac" (or whichever version is
+            %%% appropriate for the computer platform being used), which consists of C
+            %%% code that has been compiled to run quickly within Matlab.
+            PropagatedImage = IdentifySecPropagateSubfunction(PrelimPrimaryLabelMatrixImage,OrigImage,ThresholdedOrigImage,RegularizationFactor);
             drawnow
-        elseif strcmp(IdentChoice(12),'B')
-            [labels_out,d]=IdentifySecPropagateSubfunction(PrelimPrimaryLabelMatrixImage,OrigImage,ThresholdedOrigImage,1.0);
-            labels_out(d>DistanceToDilate) = 0;
-            labels_out((PrelimPrimaryLabelMatrixImage > 0)) = PrelimPrimaryLabelMatrixImage((PrelimPrimaryLabelMatrixImage > 0));
-            RelabeledDilatedPrelimSecObjectImage = labels_out;
-        end
-        
-        EditedPrimaryBinaryImage = im2bw(EditedPrimaryLabelMatrixImage,.5);
-        
-        %%% Removes objects that are not in the edited EditedPrimaryLabelMatrixImage.
-        LookUpTable = sortrows(unique([PrelimPrimaryLabelMatrixImage(:) EditedPrimaryLabelMatrixImage(:)],'rows'),1);
-        b=zeros(max(LookUpTable(:,1)+1),2);
-        b(LookUpTable(:,1)+1,1)=LookUpTable(:,1);
-        b(LookUpTable(:,1)+1,2)=LookUpTable(:,2);
-        b(:,1) = 0:size(b,1)-1;
-        LookUpColumn = b(:,2);
-        FinalLabelMatrixImage = LookUpColumn(RelabeledDilatedPrelimSecObjectImage+1);
-        
-    elseif strcmp(IdentChoice,'Propagation')
-        %%% STEP 2: Starting from the identified primary objects, the secondary
-        %%% objects are identified using the propagate function, written by Thouis
-        %%% R. Jones. Calls the function
-        %%% "IdentifySecPropagateSubfunction.mexmac" (or whichever version is
-        %%% appropriate for the computer platform being used), which consists of C
-        %%% code that has been compiled to run quickly within Matlab.
-        PropagatedImage = IdentifySecPropagateSubfunction(PrelimPrimaryLabelMatrixImage,OrigImage,ThresholdedOrigImage,RegularizationFactor);
-        drawnow
-        
-        %%% STEP 3: Remove objects that are not desired, edited objects.  The
-        %%% edited primary object image is used rather than the preliminary one, so
-        %%% that objects whose nuclei are on the edge of the image and who are
-        %%% larger or smaller than the specified size are discarded.
-        %%% Converts the EditedPrimaryBinaryImage to binary.
-        EditedPrimaryBinaryImage = im2bw(EditedPrimaryLabelMatrixImage,.5);
-        %%% Finds the locations and labels for different regions.
-        area_locations2 = find(PropagatedImage);
-        area_labels2 = PropagatedImage(area_locations2);
-        drawnow
-        %%% Creates a sparse matrix with column as label and row as location,
-        %%% with the value of the center at (I,J) if location I has label J.
-        %%% Taking the maximum of this matrix gives the largest valued center
-        %%% overlapping a particular label.  Tacking on a zero and pushing
-        %%% labels through the resulting map removes any background regions.
-        map2 = [0 full(max(sparse(area_locations2, area_labels2, EditedPrimaryLabelMatrixImage(area_locations2))))];
-        HoleyPrelimLabelMatrixImage = map2(PropagatedImage + 1);
-        %%% Fills in holes in the HoleyPrelimLabelMatrixImage image.
-        %%% Filters the image for maxima (Plus sign neighborhood, ignoring zeros).
-        MaximaImage = ordfilt2(HoleyPrelimLabelMatrixImage, 5, [0 1 0; 1 1 1 ; 0 1 0]);
-        %%% This is a pain.  On sparse matrices, min returns zero almost always
-        %%% (because the matrices are mostly zero, of course).  So we need to invert
-        %%% the labels so we can use max to find the minimum adjacent label as well,
-        %%% below.  This also takes care of boundaries, which otherwise return zero
-        %%% in the min filter.
-        LargestLabelImage = max(HoleyPrelimLabelMatrixImage(:));
-        TempImage = HoleyPrelimLabelMatrixImage;
-        TempImage(HoleyPrelimLabelMatrixImage > 0) = LargestLabelImage - TempImage(HoleyPrelimLabelMatrixImage > 0) + 1;
-        %%% Filters the image for minima (Plus sign neighborhood).
-        MinimaImage = ordfilt2(TempImage, 5, [0 1 0; 1 1 1 ; 0 1 0]);
-        %%% Marks and labels the zero regions.
-        ZeroRegionImage = CPclearborder(bwlabel(HoleyPrelimLabelMatrixImage==0, 4));
-        drawnow
-        %%% Uses sparse matrices to find the minimum and maximum label adjacent
-        %%% to each zero-region.
-        ZeroLocations = find(ZeroRegionImage);
-        ZeroLabels = ZeroRegionImage(ZeroLocations);
-        MinByRegion = full(max(sparse(ZeroLocations, ZeroLabels, MinimaImage(ZeroLocations))));
-        %%% Remaps to correct order (see above).
-        MinByRegion = LargestLabelImage - MinByRegion + 1;
-        MaxByRegion = full(max(sparse(ZeroLocations, ZeroLabels, MaximaImage(ZeroLocations))));
-        %%% Anywhere the min and max are the same is a region surrounded by a
-        %%% single value.
-        Surrounded = (MinByRegion == MaxByRegion);
-        %%% Creates a map that turns a labelled zero-region into the surrounding
-        %%% label if it's surrounded, and into zero if it's not surrounded.
-        %%% (Pad by a leading zero so 0 maps to 0 when 1 is added.)
-        Remap = [ 0 (Surrounded .* MinByRegion)];
-        ZeroRegionImage = Remap(ZeroRegionImage + 1);
-        %%% Now all surrounded zeroregions should have been remapped to their
-        %%% new value, or zero if not surrounded.
-        PrelimLabelMatrixImage = max(HoleyPrelimLabelMatrixImage, ZeroRegionImage);
-        drawnow
-        
-        %%% STEP 4: Relabels the final objects so that their numbers
-        %%% correspond to the numbers used for nuclei.
-        %%% For each object, one label and one label location is acquired and
-        %%% stored.
-        [LabelsUsed,LabelLocations] = unique(EditedPrimaryLabelMatrixImage);
-        %%% The +1 increment accounts for the fact that there are zeros in the
-        %%% image, while the LabelsUsed starts at 1.
-        LabelsUsed(PrelimLabelMatrixImage(LabelLocations(2:end))+1) = EditedPrimaryLabelMatrixImage(LabelLocations(2:end));
-        FinalLabelMatrixImage = LabelsUsed(PrelimLabelMatrixImage+1);
-    elseif strcmp(IdentChoice,'Watershed')
-        %%% In order to use the watershed transform to find dividing lines between
-        %%% the secondary objects, it is necessary to identify the foreground
-        %%% objects and to identify a portion of the background.  The foreground
-        %%% objects are retrieved as the binary image of primary objects from the
-        %%% previously run image analysis module.   This forces the secondary
-        %%% object's outline to extend at least as far as the edge of the primary
-        %%% objects.
-        
-        %%% Inverts the image.
-        InvertedThresholdedOrigImage = imcomplement(ThresholdedOrigImage);
-        %%% [NB] hack. save memory.
-        clear ThresholdedOrigImage;
-        
-        %%% NOTE: There are two other ways to mark the background prior to
-        %%% watershedding; I think the method used above is best, but I have
-        %%% included the ideas for two alternate methods.
-        %%% METHOD (2): Threshold the original image (or a smoothed image)
-        %%% so that background pixels are black.  This is overly strong, so instead
-        %%% of weakly thresholding the image as is done in METHOD (1),  you can then "thin"
-        %%% the background pixels by computing the SKIZ
-        %%% (skeleton of influence zones), which is done by watershedding the
-        %%% distance transform of the thresholded image.  These watershed lines are
-        %%% then superimposed on the marked image that will be watershedded to
-        %%% segment the objects.  I think this would not produce results different
-        %%% from METHOD 1 (the one used above), since METHOD 1 overlays the
-        %%% outlines of the primary objects anyway.
-        %%% This method is based on the Mathworks Image Processing Toolbox demo
-        %%% "Marker-Controlled Watershed Segmentation".  I found it online; I don't
-        %%% think it is in the Matlab Demos that are found through help.  It uses
-        %%% an image of a box of oranges.
-        %%%
-        %%% METHOD (3):  (I think this method does not work well for clustered
-        %%% objects.)  The distance transformed image containing the marked objects
-        %%% is watershedded, which produces lines midway between the marked
-        %%% objects.  These lines are superimposed on the marked image that will be
-        %%% watershedded to segment the objects. But if marked objects are
-        %%% clustered and not a uniform distance from each other, this will produce
-        %%% background lines on top of actual objects.
-        %%% This method is based on Gonzalez, et al. Digital Image Processing using
-        %%% Matlab, page 422-425.
-        
-        %%% STEP 2: Identify the outlines of each primary object, so that each
-        %%% primary object can be definitely separated from the background.  This
-        %%% solves the problem of some primary objects running
-        %%% right up against the background pixels and therefore getting skipped.
-        %%% Note: it is less accurate and less fast to use edge detection (sobel)
-        %%% to identify the edges of the primary objects.
-        drawnow
-        %%% Converts the PrelimPrimaryLabelMatrixImage to binary.
-        PrelimPrimaryBinaryImage = im2bw(PrelimPrimaryLabelMatrixImage,.5);
-        %%% [NB] hack. save memory
-        clear PrelimPrimaryLabelMatrixImage;
-        %%% Creates the structuring element that will be used for dilation.
-        StructuringElement = strel('square',3);
-        %%% Dilates the Primary Binary Image by one pixel (8 neighborhood).
-        DilatedPrimaryBinaryImage = imdilate(PrelimPrimaryBinaryImage, StructuringElement);
-        %%% Subtracts the PrelimPrimaryBinaryImage from the DilatedPrimaryBinaryImage,
-        %%% which leaves the PrimaryObjectOutlines.
-        PrimaryObjectOutlines = DilatedPrimaryBinaryImage - PrelimPrimaryBinaryImage;
-        
-        %%% STEP 3: Produce the marker image which will be used for the first
-        %%% watershed.
-        drawnow
-        %%% Combines the foreground markers and the background markers.
-        BinaryMarkerImagePre = PrelimPrimaryBinaryImage | InvertedThresholdedOrigImage;
-        %%% Overlays the PrimaryObjectOutlines to maintain distinctions between each
-        %%% primary object and the background.
-        BinaryMarkerImage = BinaryMarkerImagePre;
-        %%% [NB] hack. save memory.
-        clear BinaryMarkerImagePre;
-        BinaryMarkerImage(PrimaryObjectOutlines == 1) = 0;
-        
-        %%% STEP 4: Calculate the Sobel image, which reflects gradients, which will
-        %%% be used for the watershedding function.
-        drawnow
-        %%% Calculates the 2 sobel filters.  The sobel filter is directional, so it
-        %%% is used in both the horizontal & vertical directions and then the
-        %%% results are combined.
-        filter1 = fspecial('sobel');
-        filter2 = filter1';
-        %%% Applies each of the sobel filters to the original image.
-        I1 = imfilter(OrigImage, filter1);
-        I2 = imfilter(OrigImage, filter2);
-        %%% Adds the two images.
-        %%% The Sobel operator results in negative values, so the absolute values
-        %%% are calculated to prevent errors in future steps.
-        AbsSobeledImage = abs(I1) + abs(I2);
-        %%% [NB] hack. save memory
-        clear I1; clear I2;
-        
-        %%% STEP 5: Perform the first watershed.
-        drawnow
-        
-        %%% Overlays the foreground and background markers onto the
-        %%% absolute value of the Sobel Image, so there are black nuclei on top of
-        %%% each dark object, with black background.
-        Overlaid = imimposemin(AbsSobeledImage, BinaryMarkerImage);
-        %%% [NB] hack. save memory.
-        clear AbsSobeledImage BinaryMarkerImage;
-        %%% Perform the watershed on the marked absolute-value Sobel Image.
-        BlackWatershedLinesPre = watershed(Overlaid);
-        %%% [NB] hack. save memory.
-        clear Overlaid;
-        %%% Bug workaround (see step 9).
-        %%% [NB, WATERSHED BUG IN VERSION 2011A OR HIGHER HAS BEEN FIXED. SO CHECK VERSION FIRST]
-        if verLessThan('matlab', '7.12.0') && ispc()
-            BlackWatershedLinesPre2 = im2bw(BlackWatershedLinesPre,.5);
-            BlackWatershedLines = bwlabel(BlackWatershedLinesPre2);
+            
+            %%% STEP 3: Remove objects that are not desired, edited objects.  The
+            %%% edited primary object image is used rather than the preliminary one, so
+            %%% that objects whose nuclei are on the edge of the image and who are
+            %%% larger or smaller than the specified size are discarded.
+            %%% Converts the EditedPrimaryBinaryImage to binary.
+            EditedPrimaryBinaryImage = im2bw(EditedPrimaryLabelMatrixImage,.5);
+            %%% Finds the locations and labels for different regions.
+            area_locations2 = find(PropagatedImage);
+            area_labels2 = PropagatedImage(area_locations2);
+            drawnow
+            %%% Creates a sparse matrix with column as label and row as location,
+            %%% with the value of the center at (I,J) if location I has label J.
+            %%% Taking the maximum of this matrix gives the largest valued center
+            %%% overlapping a particular label.  Tacking on a zero and pushing
+            %%% labels through the resulting map removes any background regions.
+            map2 = [0 full(max(sparse(area_locations2, area_labels2, EditedPrimaryLabelMatrixImage(area_locations2))))];
+            HoleyPrelimLabelMatrixImage = map2(PropagatedImage + 1);
+            %%% Fills in holes in the HoleyPrelimLabelMatrixImage image.
+            %%% Filters the image for maxima (Plus sign neighborhood, ignoring zeros).
+            MaximaImage = ordfilt2(HoleyPrelimLabelMatrixImage, 5, [0 1 0; 1 1 1 ; 0 1 0]);
+            %%% This is a pain.  On sparse matrices, min returns zero almost always
+            %%% (because the matrices are mostly zero, of course).  So we need to invert
+            %%% the labels so we can use max to find the minimum adjacent label as well,
+            %%% below.  This also takes care of boundaries, which otherwise return zero
+            %%% in the min filter.
+            LargestLabelImage = max(HoleyPrelimLabelMatrixImage(:));
+            TempImage = HoleyPrelimLabelMatrixImage;
+            TempImage(HoleyPrelimLabelMatrixImage > 0) = LargestLabelImage - TempImage(HoleyPrelimLabelMatrixImage > 0) + 1;
+            %%% Filters the image for minima (Plus sign neighborhood).
+            MinimaImage = ordfilt2(TempImage, 5, [0 1 0; 1 1 1 ; 0 1 0]);
+            %%% Marks and labels the zero regions.
+            ZeroRegionImage = CPclearborder(bwlabel(HoleyPrelimLabelMatrixImage==0, 4));
+            drawnow
+            %%% Uses sparse matrices to find the minimum and maximum label adjacent
+            %%% to each zero-region.
+            ZeroLocations = find(ZeroRegionImage);
+            ZeroLabels = ZeroRegionImage(ZeroLocations);
+            MinByRegion = full(max(sparse(ZeroLocations, ZeroLabels, MinimaImage(ZeroLocations))));
+            %%% Remaps to correct order (see above).
+            MinByRegion = LargestLabelImage - MinByRegion + 1;
+            MaxByRegion = full(max(sparse(ZeroLocations, ZeroLabels, MaximaImage(ZeroLocations))));
+            %%% Anywhere the min and max are the same is a region surrounded by a
+            %%% single value.
+            Surrounded = (MinByRegion == MaxByRegion);
+            %%% Creates a map that turns a labelled zero-region into the surrounding
+            %%% label if it's surrounded, and into zero if it's not surrounded.
+            %%% (Pad by a leading zero so 0 maps to 0 when 1 is added.)
+            Remap = [ 0 (Surrounded .* MinByRegion)];
+            ZeroRegionImage = Remap(ZeroRegionImage + 1);
+            %%% Now all surrounded zeroregions should have been remapped to their
+            %%% new value, or zero if not surrounded.
+            PrelimLabelMatrixImage = max(HoleyPrelimLabelMatrixImage, ZeroRegionImage);
+            drawnow
+            
+            %%% STEP 4: Relabels the final objects so that their numbers
+            %%% correspond to the numbers used for nuclei.
+            %%% For each object, one label and one label location is acquired and
+            %%% stored.
+            [LabelsUsed,LabelLocations] = unique(EditedPrimaryLabelMatrixImage);
+            %%% The +1 increment accounts for the fact that there are zeros in the
+            %%% image, while the LabelsUsed starts at 1.
+            LabelsUsed(PrelimLabelMatrixImage(LabelLocations(2:end))+1) = EditedPrimaryLabelMatrixImage(LabelLocations(2:end));
+            FinalLabelMatrixImage = LabelsUsed(PrelimLabelMatrixImage+1);
+        elseif strcmp(IdentChoice,'Watershed')
+            %%% In order to use the watershed transform to find dividing lines between
+            %%% the secondary objects, it is necessary to identify the foreground
+            %%% objects and to identify a portion of the background.  The foreground
+            %%% objects are retrieved as the binary image of primary objects from the
+            %%% previously run image analysis module.   This forces the secondary
+            %%% object's outline to extend at least as far as the edge of the primary
+            %%% objects.
+            
+            %%% Inverts the image.
+            InvertedThresholdedOrigImage = imcomplement(ThresholdedOrigImage);
             %%% [NB] hack. save memory.
-            clear BlackWatershedLinesPre2 BlackWatershedLinesPre;
-        else
-            %%% [BS, QUICK AND DIRTY HACK FROM PEKLMANS]
-            BlackWatershedLines = double(BlackWatershedLinesPre);
+            clear ThresholdedOrigImage;
+            
+            %%% NOTE: There are two other ways to mark the background prior to
+            %%% watershedding; I think the method used above is best, but I have
+            %%% included the ideas for two alternate methods.
+            %%% METHOD (2): Threshold the original image (or a smoothed image)
+            %%% so that background pixels are black.  This is overly strong, so instead
+            %%% of weakly thresholding the image as is done in METHOD (1),  you can then "thin"
+            %%% the background pixels by computing the SKIZ
+            %%% (skeleton of influence zones), which is done by watershedding the
+            %%% distance transform of the thresholded image.  These watershed lines are
+            %%% then superimposed on the marked image that will be watershedded to
+            %%% segment the objects.  I think this would not produce results different
+            %%% from METHOD 1 (the one used above), since METHOD 1 overlays the
+            %%% outlines of the primary objects anyway.
+            %%% This method is based on the Mathworks Image Processing Toolbox demo
+            %%% "Marker-Controlled Watershed Segmentation".  I found it online; I don't
+            %%% think it is in the Matlab Demos that are found through help.  It uses
+            %%% an image of a box of oranges.
+            %%%
+            %%% METHOD (3):  (I think this method does not work well for clustered
+            %%% objects.)  The distance transformed image containing the marked objects
+            %%% is watershedded, which produces lines midway between the marked
+            %%% objects.  These lines are superimposed on the marked image that will be
+            %%% watershedded to segment the objects. But if marked objects are
+            %%% clustered and not a uniform distance from each other, this will produce
+            %%% background lines on top of actual objects.
+            %%% This method is based on Gonzalez, et al. Digital Image Processing using
+            %%% Matlab, page 422-425.
+            
+            %%% STEP 2: Identify the outlines of each primary object, so that each
+            %%% primary object can be definitely separated from the background.  This
+            %%% solves the problem of some primary objects running
+            %%% right up against the background pixels and therefore getting skipped.
+            %%% Note: it is less accurate and less fast to use edge detection (sobel)
+            %%% to identify the edges of the primary objects.
+            drawnow
+            %%% Converts the PrelimPrimaryLabelMatrixImage to binary.
+            PrelimPrimaryBinaryImage = im2bw(PrelimPrimaryLabelMatrixImage,.5);
+            %%% [NB] hack. save memory
+            clear PrelimPrimaryLabelMatrixImage;
+            %%% Creates the structuring element that will be used for dilation.
+            StructuringElement = strel('square',3);
+            %%% Dilates the Primary Binary Image by one pixel (8 neighborhood).
+            DilatedPrimaryBinaryImage = imdilate(PrelimPrimaryBinaryImage, StructuringElement);
+            %%% Subtracts the PrelimPrimaryBinaryImage from the DilatedPrimaryBinaryImage,
+            %%% which leaves the PrimaryObjectOutlines.
+            PrimaryObjectOutlines = DilatedPrimaryBinaryImage - PrelimPrimaryBinaryImage;
+            
+            %%% STEP 3: Produce the marker image which will be used for the first
+            %%% watershed.
+            drawnow
+            %%% Combines the foreground markers and the background markers.
+            BinaryMarkerImagePre = PrelimPrimaryBinaryImage | InvertedThresholdedOrigImage;
+            %%% Overlays the PrimaryObjectOutlines to maintain distinctions between each
+            %%% primary object and the background.
+            BinaryMarkerImage = BinaryMarkerImagePre;
             %%% [NB] hack. save memory.
-            clear BlackWatershedLinesPre;
-            %%% END OF BS-HACK BUGFIX FOR VERSION 2011 AND LATER?
-        end
-        
-        %%% STEP 6: Identify and extract the secondary objects, using the watershed
-        %%% lines.
-        drawnow
-        %%% The BlackWatershedLines image is a label matrix where the watershed
-        %%% lines = 0 and each distinct object is assigned a number starting at 1.
-        %%% This image is converted to a binary image where all the objects = 1.
-        SecondaryObjects1 = im2bw(BlackWatershedLines,.5);
-        %%% [NB] hack. save memory.
-        clear BlackWatershedLines;
-        %%% Identifies objects in the binary image using bwlabel.
-        %%% Note: Matlab suggests that in some circumstances bwlabeln is faster
-        %%% than bwlabel, even for 2D images.  I found that in this case it is
-        %%% about 10 times slower.
-        LabelMatrixImage1 = bwlabel(SecondaryObjects1,4);
-        %%% [NB] hack. save memory.
-        clear SecondaryObjects1;
-        drawnow
-        
-        %%% STEP 7: Discarding background "objects".  The first watershed function
-        %%% simply divides up the image into regions.  Most of these regions
-        %%% correspond to actual objects, but there are big blocks of background
-        %%% that are recognized as objects. These can be distinguished from actual
-        %%% objects because they do not overlap a primary object.
-        
-        %%% The following changes all the labels in LabelMatrixImage1 to match the
-        %%% centers they enclose (from PrelimPrimaryBinaryImage), and marks as background
-        %%% any labeled regions that don't overlap a center. This function assumes
-        %%% that every center is entirely contained in one labeled area.  The
-        %%% results if otherwise may not be well-defined. The non-background labels
-        %%% will be renumbered according to the center they enclose.
-        
-        %%% Finds the locations and labels for different regions.
-        area_locations = find(LabelMatrixImage1);
-        area_labels = LabelMatrixImage1(area_locations);
-        %%% Creates a sparse matrix with column as label and row as location,
-        %%% with the value of the center at (I,J) if location I has label J.
-        %%% Taking the maximum of this matrix gives the largest valued center
-        %%% overlapping a particular label.  Tacking on a zero and pushing
-        %%% labels through the resulting map removes any background regions.
-        map = [0 full(max(sparse(area_locations, area_labels, PrelimPrimaryBinaryImage(area_locations))))];
-        
-        ActualObjectsBinaryImage = map(LabelMatrixImage1 + 1);
-        %%% [NB] hack. save memory.
-        clear PrelimPrimaryBinaryImage area_labels area_locations map;
-        
-        %%% STEP 8: Produce the marker image which will be used for the second
-        %%% watershed.
-        drawnow
-        %%% The module has now produced a binary image of actual secondary
-        %%% objects.  The gradient (Sobel) image was used for watershedding, which
-        %%% produces very nice divisions between objects that are clumped, but it
-        %%% is too stringent at the edges of objects that are isolated, and at the
-        %%% edges of clumps of objects. Therefore, the stringently identified
-        %%% secondary objects are used as markers for a second round of
-        %%% watershedding, this time based on the original (intensity) image rather
-        %%% than the gradient image.
-        
-        %%% Creates the structuring element that will be used for dilation.
-        StructuringElement = strel('square',3);
-        %%% Dilates the Primary Binary Image by one pixel (8 neighborhood).
-        DilatedActualObjectsBinaryImage = imdilate(ActualObjectsBinaryImage, StructuringElement);
-        %%% Subtracts the PrelimPrimaryBinaryImage from the DilatedPrimaryBinaryImage,
-        %%% which leaves the PrimaryObjectOutlines.
-        ActualObjectOutlines = DilatedActualObjectsBinaryImage - ActualObjectsBinaryImage;
-        %%% [NB] hack. save memory.
-        clear DilatedActualObjectsBinaryImage;
-        %%% Produces the marker image which will be used for the watershed. The
-        %%% foreground markers are taken from the ActualObjectsBinaryImage; the
-        %%% background markers are taken from the same image as used in the first
-        %%% round of watershedding: InvertedThresholdedOrigImage.
-        BinaryMarkerImagePre2 = ActualObjectsBinaryImage | InvertedThresholdedOrigImage;
-        %%% [NB] hack. save memory.
-        clear InvertedThresholdedOrigImage ActualObjectsBinaryImage;
-        %%% Overlays the ActualObjectOutlines to maintain distinctions between each
-        %%% secondary object and the background.
-        BinaryMarkerImage2 = BinaryMarkerImagePre2;
-        %%% [NB] hack. save memory.
-        clear BinaryMarkerImagePre2;
-        
-        BinaryMarkerImage2(ActualObjectOutlines == 1) = 0;
-        
-        %%% STEP 9: Perform the second watershed.
-        %%% As described above, the second watershed is performed on the original
-        %%% intensity image rather than on a gradient (Sobel) image.
-        drawnow
-        %%% Inverts the original image.
-        InvertedOrigImage = imcomplement(OrigImage);
-        %%% Overlays the foreground and background markers onto the
-        %%% InvertedOrigImage, so there are black secondary object markers on top
-        %%% of each dark secondary object, with black background.
-        MarkedInvertedOrigImage = imimposemin(InvertedOrigImage, BinaryMarkerImage2);
-        %%% [NB] hack. save memory.
-        clear BinaryMarkerImage2 BinaryMarkerImage2;
-        
-        %%% Performs the watershed on the MarkedInvertedOrigImage.
-        SecondWatershedPre = watershed(MarkedInvertedOrigImage);
-        %%% [NB] hack.save memory
-        clear MarkedInvertedOrigImage;
-        %%% BUG WORKAROUND:
-        %%% There is a bug in the watershed function of Matlab that often results in
-        %%% the label matrix result having two objects labeled with the same label.
-        %%% I am not sure whether it is a bug in how the watershed image is
-        %%% produced (it seems so: the resulting objects often are nowhere near the
-        %%% regional minima) or whether it is simply a problem in the final label
-        %%% matrix calculation. Matlab has been informed of this issue and has
-        %%% confirmed that it is a bug (February 2004). I think that it is a
-        %%% reasonable fix to convert the result of the watershed to binary and
-        %%% remake the label matrix so that each label is used only once. In later
-        %%% steps, inappropriate regions are weeded out anyway.
-        
-        %%% [NB, WATERSHED BUG IN VERSION 2011A OR HIGHER HAS BEEN FIXED. SO CHECK VERSION FIRST]
-        if verLessThan('matlab', '7.12.0')
-            SecondWatershedPre2 = im2bw(SecondWatershedPre,.5);
-            SecondWatershed = bwlabel(SecondWatershedPre2);
+            clear BinaryMarkerImagePre;
+            BinaryMarkerImage(PrimaryObjectOutlines == 1) = 0;
+            
+            %%% STEP 4: Calculate the Sobel image, which reflects gradients, which will
+            %%% be used for the watershedding function.
+            drawnow
+            %%% Calculates the 2 sobel filters.  The sobel filter is directional, so it
+            %%% is used in both the horizontal & vertical directions and then the
+            %%% results are combined.
+            filter1 = fspecial('sobel');
+            filter2 = filter1';
+            %%% Applies each of the sobel filters to the original image.
+            I1 = imfilter(OrigImage, filter1);
+            I2 = imfilter(OrigImage, filter2);
+            %%% Adds the two images.
+            %%% The Sobel operator results in negative values, so the absolute values
+            %%% are calculated to prevent errors in future steps.
+            AbsSobeledImage = abs(I1) + abs(I2);
+            %%% [NB] hack. save memory
+            clear I1; clear I2;
+            
+            %%% STEP 5: Perform the first watershed.
+            drawnow
+            
+            %%% Overlays the foreground and background markers onto the
+            %%% absolute value of the Sobel Image, so there are black nuclei on top of
+            %%% each dark object, with black background.
+            Overlaid = imimposemin(AbsSobeledImage, BinaryMarkerImage);
+            %%% [NB] hack. save memory.
+            clear AbsSobeledImage BinaryMarkerImage;
+            %%% Perform the watershed on the marked absolute-value Sobel Image.
+            BlackWatershedLinesPre = watershed(Overlaid);
+            %%% [NB] hack. save memory.
+            clear Overlaid;
+            %%% Bug workaround (see step 9).
+            %%% [NB, WATERSHED BUG IN VERSION 2011A OR HIGHER HAS BEEN FIXED. SO CHECK VERSION FIRST]
+            if verLessThan('matlab', '7.12.0') && ispc()
+                BlackWatershedLinesPre2 = im2bw(BlackWatershedLinesPre,.5);
+                BlackWatershedLines = bwlabel(BlackWatershedLinesPre2);
+                %%% [NB] hack. save memory.
+                clear BlackWatershedLinesPre2 BlackWatershedLinesPre;
+            else
+                %%% [BS, QUICK AND DIRTY HACK FROM PEKLMANS]
+                BlackWatershedLines = double(BlackWatershedLinesPre);
+                %%% [NB] hack. save memory.
+                clear BlackWatershedLinesPre;
+                %%% END OF BS-HACK BUGFIX FOR VERSION 2011 AND LATER?
+            end
+            
+            %%% STEP 6: Identify and extract the secondary objects, using the watershed
+            %%% lines.
+            drawnow
+            %%% The BlackWatershedLines image is a label matrix where the watershed
+            %%% lines = 0 and each distinct object is assigned a number starting at 1.
+            %%% This image is converted to a binary image where all the objects = 1.
+            SecondaryObjects1 = im2bw(BlackWatershedLines,.5);
+            %%% [NB] hack. save memory.
+            clear BlackWatershedLines;
+            %%% Identifies objects in the binary image using bwlabel.
+            %%% Note: Matlab suggests that in some circumstances bwlabeln is faster
+            %%% than bwlabel, even for 2D images.  I found that in this case it is
+            %%% about 10 times slower.
+            LabelMatrixImage1 = bwlabel(SecondaryObjects1,4);
+            %%% [NB] hack. save memory.
+            clear SecondaryObjects1;
+            drawnow
+            
+            %%% STEP 7: Discarding background "objects".  The first watershed function
+            %%% simply divides up the image into regions.  Most of these regions
+            %%% correspond to actual objects, but there are big blocks of background
+            %%% that are recognized as objects. These can be distinguished from actual
+            %%% objects because they do not overlap a primary object.
+            
+            %%% The following changes all the labels in LabelMatrixImage1 to match the
+            %%% centers they enclose (from PrelimPrimaryBinaryImage), and marks as background
+            %%% any labeled regions that don't overlap a center. This function assumes
+            %%% that every center is entirely contained in one labeled area.  The
+            %%% results if otherwise may not be well-defined. The non-background labels
+            %%% will be renumbered according to the center they enclose.
+            
+            %%% Finds the locations and labels for different regions.
+            area_locations = find(LabelMatrixImage1);
+            area_labels = LabelMatrixImage1(area_locations);
+            %%% Creates a sparse matrix with column as label and row as location,
+            %%% with the value of the center at (I,J) if location I has label J.
+            %%% Taking the maximum of this matrix gives the largest valued center
+            %%% overlapping a particular label.  Tacking on a zero and pushing
+            %%% labels through the resulting map removes any background regions.
+            map = [0 full(max(sparse(area_locations, area_labels, PrelimPrimaryBinaryImage(area_locations))))];
+            
+            ActualObjectsBinaryImage = map(LabelMatrixImage1 + 1);
+            %%% [NB] hack. save memory.
+            clear PrelimPrimaryBinaryImage area_labels area_locations map;
+            
+            %%% STEP 8: Produce the marker image which will be used for the second
+            %%% watershed.
+            drawnow
+            %%% The module has now produced a binary image of actual secondary
+            %%% objects.  The gradient (Sobel) image was used for watershedding, which
+            %%% produces very nice divisions between objects that are clumped, but it
+            %%% is too stringent at the edges of objects that are isolated, and at the
+            %%% edges of clumps of objects. Therefore, the stringently identified
+            %%% secondary objects are used as markers for a second round of
+            %%% watershedding, this time based on the original (intensity) image rather
+            %%% than the gradient image.
+            
+            %%% Creates the structuring element that will be used for dilation.
+            StructuringElement = strel('square',3);
+            %%% Dilates the Primary Binary Image by one pixel (8 neighborhood).
+            DilatedActualObjectsBinaryImage = imdilate(ActualObjectsBinaryImage, StructuringElement);
+            %%% Subtracts the PrelimPrimaryBinaryImage from the DilatedPrimaryBinaryImage,
+            %%% which leaves the PrimaryObjectOutlines.
+            ActualObjectOutlines = DilatedActualObjectsBinaryImage - ActualObjectsBinaryImage;
+            %%% [NB] hack. save memory.
+            clear DilatedActualObjectsBinaryImage;
+            %%% Produces the marker image which will be used for the watershed. The
+            %%% foreground markers are taken from the ActualObjectsBinaryImage; the
+            %%% background markers are taken from the same image as used in the first
+            %%% round of watershedding: InvertedThresholdedOrigImage.
+            BinaryMarkerImagePre2 = ActualObjectsBinaryImage | InvertedThresholdedOrigImage;
+            %%% [NB] hack. save memory.
+            clear InvertedThresholdedOrigImage ActualObjectsBinaryImage;
+            %%% Overlays the ActualObjectOutlines to maintain distinctions between each
+            %%% secondary object and the background.
+            BinaryMarkerImage2 = BinaryMarkerImagePre2;
+            %%% [NB] hack. save memory.
+            clear BinaryMarkerImagePre2;
+            
+            BinaryMarkerImage2(ActualObjectOutlines == 1) = 0;
+            
+            %%% STEP 9: Perform the second watershed.
+            %%% As described above, the second watershed is performed on the original
+            %%% intensity image rather than on a gradient (Sobel) image.
+            drawnow
+            %%% Inverts the original image.
+            InvertedOrigImage = imcomplement(OrigImage);
+            %%% Overlays the foreground and background markers onto the
+            %%% InvertedOrigImage, so there are black secondary object markers on top
+            %%% of each dark secondary object, with black background.
+            MarkedInvertedOrigImage = imimposemin(InvertedOrigImage, BinaryMarkerImage2);
+            %%% [NB] hack. save memory.
+            clear BinaryMarkerImage2 BinaryMarkerImage2;
+            
+            %%% Performs the watershed on the MarkedInvertedOrigImage.
+            SecondWatershedPre = watershed(MarkedInvertedOrigImage);
             %%% [NB] hack.save memory
-            clear SecondWatershedPre2;
-        else
-            %%% [BS, QUICK AND DIRTY HACK FROM PEKLMANS]
-            SecondWatershed = double(SecondWatershedPre);
-            %%% END OF BS-HACK BUGFIX FOR VERSION 2011 AND LATER?
+            clear MarkedInvertedOrigImage;
+            %%% BUG WORKAROUND:
+            %%% There is a bug in the watershed function of Matlab that often results in
+            %%% the label matrix result having two objects labeled with the same label.
+            %%% I am not sure whether it is a bug in how the watershed image is
+            %%% produced (it seems so: the resulting objects often are nowhere near the
+            %%% regional minima) or whether it is simply a problem in the final label
+            %%% matrix calculation. Matlab has been informed of this issue and has
+            %%% confirmed that it is a bug (February 2004). I think that it is a
+            %%% reasonable fix to convert the result of the watershed to binary and
+            %%% remake the label matrix so that each label is used only once. In later
+            %%% steps, inappropriate regions are weeded out anyway.
+            
+            %%% [NB, WATERSHED BUG IN VERSION 2011A OR HIGHER HAS BEEN FIXED. SO CHECK VERSION FIRST]
+            if verLessThan('matlab', '7.12.0')
+                SecondWatershedPre2 = im2bw(SecondWatershedPre,.5);
+                SecondWatershed = bwlabel(SecondWatershedPre2);
+                %%% [NB] hack.save memory
+                clear SecondWatershedPre2;
+            else
+                %%% [BS, QUICK AND DIRTY HACK FROM PEKLMANS]
+                SecondWatershed = double(SecondWatershedPre);
+                %%% END OF BS-HACK BUGFIX FOR VERSION 2011 AND LATER?
+            end
+            %%% [NB] hack.save memory
+            clear SecondWatershedPre;
+            drawnow
+            
+            %%% STEP 10: As in step 7, remove objects that are actually background
+            %%% objects.  See step 7 for description. This time, the edited primary object image is
+            %%% used rather than the preliminary one, so that objects whose nuclei are
+            %%% on the edge of the image and who are larger or smaller than the
+            %%% specified size are discarded.
+            
+            %%% Converts the EditedPrimaryBinaryImage to binary.
+            EditedPrimaryBinaryImage = im2bw(EditedPrimaryLabelMatrixImage,.5);
+            %%% Finds the locations and labels for different regions.
+            area_locations2 = find(SecondWatershed);
+            area_labels2 = SecondWatershed(area_locations2);
+            %%% Creates a sparse matrix with column as label and row as location,
+            %%% with the value of the center at (I,J) if location I has label J.
+            %%% Taking the maximum of this matrix gives the largest valued center
+            %%% overlapping a particular label.  Tacking on a zero and pushing
+            %%% labels through the resulting map removes any background regions.
+            map2 = [0 full(max(sparse(area_locations2, area_labels2, EditedPrimaryBinaryImage(area_locations2))))];
+            FinalBinaryImagePre = map2(SecondWatershed + 1);
+            %%% [NB] hack. save memory
+            clear SecondWatershed area_labels2 map2;
+            
+            %%% Fills holes in the FinalBinaryPre image.
+            FinalBinaryImage = imfill(FinalBinaryImagePre, 'holes');
+            %%% [NB] hack. save memory
+            clear FinalBinaryImagePre;
+            %%% Converts the image to label matrix format. Even if the above step
+            %%% is excluded (filling holes), it is still necessary to do this in order
+            %%% to "compact" the label matrix: this way, each number corresponds to an
+            %%% object, with no numbers skipped.
+            ActualObjectsLabelMatrixImage3 = bwlabel(FinalBinaryImage);
+            %%% [NB] hack. save memory
+            clear FinalBinaryImage;
+            %%% The final objects are relabeled so that their numbers
+            %%% correspond to the numbers used for nuclei.
+            %%% For each object, one label and one label location is acquired and
+            %%% stored.
+            [LabelsUsed,LabelLocations] = unique(EditedPrimaryLabelMatrixImage);
+            %%% The +1 increment accounts for the fact that there are zeros in the
+            %%% image, while the LabelsUsed starts at 1.
+            LabelsUsed(ActualObjectsLabelMatrixImage3(LabelLocations(2:end))+1) = EditedPrimaryLabelMatrixImage(LabelLocations(2:end));
+            FinalLabelMatrixImagePre = LabelsUsed(ActualObjectsLabelMatrixImage3+1);
+            %%% [NB] hack. save memory
+            clear FinalBinaryImage LabelsUsed LabelLocations;
+            %%% The following is a workaround for what seems to be a bug in the
+            %%% watershed function: very very rarely two nuclei end up sharing one
+            %%% "cell" object, so that one of the nuclei ends up without a
+            %%% corresponding cell.  I am trying to determine why this happens exactly.
+            %%% When the cell is measured, the area (and other
+            %%% measurements) are recorded as [], which causes problems when dependent
+            %%% measurements (e.g. perimeter/area) are attempted.  It results in divide
+            %%% by zero errors and the mean area = NaN and so on.  So, the Primary
+            %%% label matrix image (where it is nonzero) is written onto the Final cell
+            %%% label matrix image pre so that every primary object has at least some
+            %%% pixels of secondary object.
+            FinalLabelMatrixImage = FinalLabelMatrixImagePre;
+            %%% [NB] hack. save memory
+            clear FinalLabelMatrixImagePre;
+            FinalLabelMatrixImage(EditedPrimaryLabelMatrixImage ~= 0) = EditedPrimaryLabelMatrixImage(EditedPrimaryLabelMatrixImage ~= 0);
         end
-        %%% [NB] hack.save memory
-        clear SecondWatershedPre;
-        drawnow
-        
-        %%% STEP 10: As in step 7, remove objects that are actually background
-        %%% objects.  See step 7 for description. This time, the edited primary object image is
-        %%% used rather than the preliminary one, so that objects whose nuclei are
-        %%% on the edge of the image and who are larger or smaller than the
-        %%% specified size are discarded.
-        
-        %%% Converts the EditedPrimaryBinaryImage to binary.
-        EditedPrimaryBinaryImage = im2bw(EditedPrimaryLabelMatrixImage,.5);
-        %%% Finds the locations and labels for different regions.
-        area_locations2 = find(SecondWatershed);
-        area_labels2 = SecondWatershed(area_locations2);
-        %%% Creates a sparse matrix with column as label and row as location,
-        %%% with the value of the center at (I,J) if location I has label J.
-        %%% Taking the maximum of this matrix gives the largest valued center
-        %%% overlapping a particular label.  Tacking on a zero and pushing
-        %%% labels through the resulting map removes any background regions.
-        map2 = [0 full(max(sparse(area_locations2, area_labels2, EditedPrimaryBinaryImage(area_locations2))))];
-        FinalBinaryImagePre = map2(SecondWatershed + 1);
-        %%% [NB] hack. save memory
-        clear SecondWatershed area_labels2 map2;
-        
-        %%% Fills holes in the FinalBinaryPre image.
-        FinalBinaryImage = imfill(FinalBinaryImagePre, 'holes');
-        %%% [NB] hack. save memory
-        clear FinalBinaryImagePre;
-        %%% Converts the image to label matrix format. Even if the above step
-        %%% is excluded (filling holes), it is still necessary to do this in order
-        %%% to "compact" the label matrix: this way, each number corresponds to an
-        %%% object, with no numbers skipped.
-        ActualObjectsLabelMatrixImage3 = bwlabel(FinalBinaryImage);
-        %%% [NB] hack. save memory
-        clear FinalBinaryImage;
-        %%% The final objects are relabeled so that their numbers
-        %%% correspond to the numbers used for nuclei.
-        %%% For each object, one label and one label location is acquired and
-        %%% stored.
-        [LabelsUsed,LabelLocations] = unique(EditedPrimaryLabelMatrixImage);
-        %%% The +1 increment accounts for the fact that there are zeros in the
-        %%% image, while the LabelsUsed starts at 1.
-        LabelsUsed(ActualObjectsLabelMatrixImage3(LabelLocations(2:end))+1) = EditedPrimaryLabelMatrixImage(LabelLocations(2:end));
-        FinalLabelMatrixImagePre = LabelsUsed(ActualObjectsLabelMatrixImage3+1);
-        %%% [NB] hack. save memory
-        clear FinalBinaryImage LabelsUsed LabelLocations;
-        %%% The following is a workaround for what seems to be a bug in the
-        %%% watershed function: very very rarely two nuclei end up sharing one
-        %%% "cell" object, so that one of the nuclei ends up without a
-        %%% corresponding cell.  I am trying to determine why this happens exactly.
-        %%% When the cell is measured, the area (and other
-        %%% measurements) are recorded as [], which causes problems when dependent
-        %%% measurements (e.g. perimeter/area) are attempted.  It results in divide
-        %%% by zero errors and the mean area = NaN and so on.  So, the Primary
-        %%% label matrix image (where it is nonzero) is written onto the Final cell
-        %%% label matrix image pre so that every primary object has at least some
-        %%% pixels of secondary object.
-        FinalLabelMatrixImage = FinalLabelMatrixImagePre;
-        %%% [NB] hack. save memory
-        clear FinalLabelMatrixImagePre;
-        FinalLabelMatrixImage(EditedPrimaryLabelMatrixImage ~= 0) = EditedPrimaryLabelMatrixImage(EditedPrimaryLabelMatrixImage ~= 0);
     end
-    
     %%% Calculates the ColoredLabelMatrixImage for displaying in the figure
     %%% window in subplot(2,2,2).
     ColoredLabelMatrixImage = CPlabel2rgb(handles,FinalLabelMatrixImage);
