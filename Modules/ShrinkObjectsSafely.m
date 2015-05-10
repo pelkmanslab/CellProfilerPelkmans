@@ -1,6 +1,6 @@
-function handles = ShrinkObjectSafely(handles)
+function handles = ShrinkObjectsSafely(handles)
 
-% Help for the ShrinkObjectSafely module:
+% Help for the ShrinkObjectsSafely module:
 % Category: Object Processing
 %
 % SHORT DESCRIPTION:
