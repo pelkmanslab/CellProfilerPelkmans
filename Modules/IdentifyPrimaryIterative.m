@@ -577,7 +577,12 @@ if strcmp(TestMode2,'Yes')
     end
 end
 
-
+% [TS - Monkeypatch on 150509: if there is no background pixel: remove all
+% objects - otherwise one widespread assumption of CP is broken, leading to
+% various errors and problems in later modules]
+if ~any(imFinalObjects(:) == 0)
+   imFinalObjects = zeros(size(imFinalObjects));
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% SAVE DATA TO HANDLES STRUCTURE %%
@@ -596,6 +601,9 @@ handles.Pipeline.(fieldname) = imFinalObjects;
 handles.Measurements.(ObjectName).LocationFeatures = {'CenterX','CenterY'};
 tmp = regionprops(imFinalObjects,'Centroid');
 Centroid = cat(1,tmp.Centroid);
+if isempty(Centroid)
+    Centroid = [0 0];   % follow CP's convention to save 0s if no object
+end
 handles.Measurements.(ObjectName).Location(handles.Current.SetBeingAnalyzed) = {Centroid};
 
 %%% Saves ObjectCount, i.e. number of segmented objects.
