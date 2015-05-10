@@ -13,8 +13,9 @@ function handles = DiscardObjectsBySize(handles)
 % larger objects at the border.
 %
 % Authors:
-%   Berend Snijder
 %   Stephan Daetwyler
+%   Thomas Stoeger
+%   Berend Snijder
 %
 % Website: http://www.cellprofiler.org
 %
@@ -70,60 +71,64 @@ matObjectSizes = cat(1,matObjectSizes.Area);
 %%%%%%%%%%%%%%%%%%%%%%
 drawnow
 
-% Determine object centroids that are close to the border of the image
-positionofobject=handles.Measurements.Nuclei.Location{handles.Current.SetBeingAnalyzed};
-
-atBorder=[];
-imagesizeforborder=size(LabelMatrixImage);
-for i=1:length(positionofobject(:,1))
-    if find(positionofobject(i,1)<BorderSize | positionofobject(i,2)<BorderSize | positionofobject(i,1)>imagesizeforborder(1,1)-BorderSize | positionofobject(i,2)> imagesizeforborder(1,2)-BorderSize)
-        atBorder = [atBorder;i];
-    end
-end
-
-% Identify objects, whose area is below the requested minimal area
-Filter = [];
-for index = 1:length(positionofobject(:,1))
-    if find(index ==atBorder)
-        if matObjectSizes(index) < MinAreaSizeBorder
-            Filter = [Filter;index];
+if ~any(LabelMatrixImage(:) > 0) 
+    FinalLabelMatrixImage = LabelMatrixImage;    
+else % only process segmentation, if at least one object is present
+    
+    % Determine object centroids that are close to the border of the image
+    positionofobject=handles.Measurements.Nuclei.Location{handles.Current.SetBeingAnalyzed};
+    
+    atBorder=[];
+    imagesizeforborder=size(LabelMatrixImage);
+    for i=1:length(positionofobject(:,1))
+        if find(positionofobject(i,1)<BorderSize | positionofobject(i,2)<BorderSize | positionofobject(i,1)>imagesizeforborder(1,1)-BorderSize | positionofobject(i,2)> imagesizeforborder(1,2)-BorderSize)
+            atBorder = [atBorder;i];
         end
+    end
+    
+    % Identify objects, whose area is below the requested minimal area
+    Filter = [];
+    for index = 1:length(positionofobject(:,1))
+        if find(index ==atBorder)
+            if matObjectSizes(index) < MinAreaSizeBorder
+                Filter = [Filter;index];
+            end
+        else
+            if matObjectSizes(index) < MinAreaSize
+                Filter = [Filter;index];
+            end
+        end
+    end
+    clear atBorder
+    clear positionofobject
+    
+    FinalLabelMatrixImage = LabelMatrixImage;
+    for i=1:numel(Filter)
+        FinalLabelMatrixImage(FinalLabelMatrixImage == Filter(i)) = 0;
+    end
+    
+    clear Filter
+    
+    x = sortrows(unique([LabelMatrixImage(:) FinalLabelMatrixImage(:)],'rows'),1);
+    x(x(:,2)>0,2)=1:sum(x(:,2)>0);
+    LookUpColumn = x(:,2);
+    
+    if originalSegmentationHasBackground == true % default / CP's original code
+        FinalLabelMatrixImage = LookUpColumn(FinalLabelMatrixImage+1);
     else
-        if matObjectSizes(index) < MinAreaSize
-            Filter = [Filter;index];
-        end
+        % [TS 150504: There is a rare bug (also in CP's original
+        % DiscardSinglePixelObjects) that causes a crash if no pixel belongs to
+        % a backround; I have tested the seemingly obvious fix to remove the +1
+        % so that the upper command is
+        % FinalLabelMatrixImage = LookUpColumn(FinalLabelMatrixImage);
+        % but unfortunately noted that this can cause other bugs, if a small
+        % object is completely embedded in one large object that fills all
+        % remaining pixels of the site
+        FinalLabelMatrixImage = UseAsLabelInCaseNoBackgroundPresent;
+        warning('%s: Preserve original segmentation since every pixel belongs to an object.\n', mfilename);
     end
+    
 end
-clear atBorder
-clear positionofobject
-
-FinalLabelMatrixImage = LabelMatrixImage;
-for i=1:numel(Filter)
-    FinalLabelMatrixImage(FinalLabelMatrixImage == Filter(i)) = 0;
-end
-
-clear Filter
-
-x = sortrows(unique([LabelMatrixImage(:) FinalLabelMatrixImage(:)],'rows'),1);
-x(x(:,2)>0,2)=1:sum(x(:,2)>0);
-LookUpColumn = x(:,2);
-
-if originalSegmentationHasBackground == true % default / CP's original code
-    FinalLabelMatrixImage = LookUpColumn(FinalLabelMatrixImage+1);
-else
-    % [TS 150504: There is a rare bug (also in CP's original
-    % DiscardSinglePixelObjects) that causes a crash if no pixel belongs to
-    % a backround; I have tested the seemingly obvious fix to remove the +1
-    % so that the upper command is
-    % FinalLabelMatrixImage = LookUpColumn(FinalLabelMatrixImage);
-    % but unfortunately noted that this can cause other bugs, if a small
-    % object is completely embedded in one large object that fills all
-    % remaining pixels of the site
-    FinalLabelMatrixImage = UseAsLabelInCaseNoBackgroundPresent;
-    warning('%s: Preserve original segmentation since every pixel belongs to an object.\n', mfilename);
-end
-
-
 
 %
 % %%% Note: these outlines are not perfectly accurate; for some reason it
@@ -214,11 +219,3 @@ handles.Measurements.(TargetName).Location(handles.Current.SetBeingAnalyzed) = {
 %%% Saves how many spots were discarded
 handles.Measurements.(TargetName).DiscardedTooSmallObjectsFeatures = {'discarded'};
 handles.Measurements.(TargetName).DiscardedTooSmallObjects(handles.Current.SetBeingAnalyzed) = {(max(LabelMatrixImage(:)) -  max(FinalLabelMatrixImage(:)))};
-
-
-% if ~strcmp(SaveOutlines,'Do not save')
-%     try handles.Pipeline.(SaveOutlines) = LogicalOutlines;
-%     catch
-%         error(['The object outlines were not calculated by the ', ModuleName, ' module so these images were not saved to the handles structure. Image processing is still in progress, but the Save Images module will fail if you attempted to save these images.'])
-%     end
-% end
