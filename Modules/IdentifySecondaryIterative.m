@@ -34,15 +34,7 @@ function handles = IdentifySecondaryIterative(handles)
 % to 0.0019 (125/2^16)
 %
 % SUGGESTION TO FIND MINIMAL BACKGROUND - VIA IDENTIFYSECONDARY
-% a) change IdentifySecondary module
-% go to the code of the intial IdentifySecondary module and look for
-% 'Threshold:  %0.3f               %0.1f%% of image consists of objects'
-% change it to
-% 'Threshold:  %0.5f               %0.1f%% of image consists of objects'
-% This way the graphical user interface will display a very precise value
-% of the chosen threshold.
-%
-% b) Get lowest threshold, which does not yet recognize background as
+% Get lowest threshold, which does not yet recognize background as
 % cells.
 % Make a CP pipeline with several IdentifySecondary modules. In each one
 % select a different threshold correction value. Use OTSU GLOBAL and
@@ -94,10 +86,6 @@ function handles = IdentifySecondaryIterative(handles)
 % the maximal value at 1 has worked fine for us all the time. Setting a
 % minimal value will prevent recognition of the background as an object
 %
-% THRESHOLD SELECTION METHOD
-% NOTE THAT this module was only tested with the Otsu Global method. Other
-% options have been disabled, but might be reactivated easily by adjusting
-% the code.
 %
 % *************************************************************************
 %
@@ -125,8 +113,8 @@ function handles = IdentifySecondaryIterative(handles)
 % includes the primary object, are set to background
 %
 % Authors:
-%   Nico Battich
 %   Thomas Stoeger
+%   Nico Battich
 %   Lucas Pelkmans
 %
 %
@@ -154,32 +142,13 @@ SecondaryObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 ImageName = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 %inputtypeVAR03 = popupmenu
 
-%textVAR04 = Select an automatic thresholding method.
-%choiceVAR04 = Otsu Global
-iThreshold = char(handles.Settings.VariableValues{CurrentModuleNum,4});
-%inputtypeVAR04 = popupmenu custom
+%textVAR04 = Lower and upper bounds on threshold, in the range [0,1]. Pixels with an intensity below the lower bound will never be part of a secondary object.
+%defaultVAR04 = 0.0019,1
+ThresholdRange = char(handles.Settings.VariableValues{CurrentModuleNum,4});
 
 %textVAR05 = Threshold correction factors. In descending ranking. eg 0.9 0.8 0.7
-%defaultVAR05 = 0.9 0.7 0.6 0.58 0.55 0.50 0.45 0.4 0.35 0.3 0.25
+%defaultVAR05 = 2 1.5 1.3 0.9 0.7 0.6 0.58 0.55 0.50 0.45 0.4 0.35 0.3 0.25
 iThresholdCorrection = char(handles.Settings.VariableValues{CurrentModuleNum,5});
-
-%textVAR06 = Lower and upper bounds on threshold, in the range [0,1].
-%defaultVAR06 = 0.0019,1
-ThresholdRange = char(handles.Settings.VariableValues{CurrentModuleNum,6});
-
-%textVAR07 = What is the approximate percentage of image covered by objects?
-%choiceVAR07 = 10%
-%choiceVAR07 = 20%
-%choiceVAR07 = 30%
-%choiceVAR07 = 40%
-%choiceVAR07 = 50%
-%choiceVAR07 = 60%
-%choiceVAR07 = 70%
-%choiceVAR07 = 80%
-%choiceVAR07 = 90%
-pObject = char(handles.Settings.VariableValues{CurrentModuleNum,7});
-%inputtypeVAR07 = popupmenu
-
 
 %%%VariableRevisionNumber = 3
 
@@ -188,6 +157,9 @@ pObject = char(handles.Settings.VariableValues{CurrentModuleNum,7});
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 drawnow
 
+% Former optional inputs, which in practice have lost any relevance
+iThreshold = char('Otsu Global');
+pObject = char('10%');
 
 %%% Reads (opens) the image you want to analyze and assigns it to a
 %%% variable.
