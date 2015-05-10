@@ -1,6 +1,6 @@
-function handles = SaveSegmentedCells(handles)
+function handles = SaveSegmentedObjects(handles)
 
-% Help for the SaveSegmentedCells module:
+% Help for the SaveSegmentedObjects module:
 % Category: Other
 %
 % SHORT DESCRIPTION:
