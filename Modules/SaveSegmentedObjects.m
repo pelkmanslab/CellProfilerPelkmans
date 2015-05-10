@@ -1,7 +1,7 @@
 function handles = SaveSegmentedObjects(handles)
 
 % Help for the SaveSegmentedObjects module:
-% Category: Other
+% Category: Object Processing
 %
 % SHORT DESCRIPTION:
 % Identifies objects (e.g. cell edges) using "seed" objects identified by
