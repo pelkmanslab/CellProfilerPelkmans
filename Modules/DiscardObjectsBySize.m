@@ -33,17 +33,23 @@ drawnow
 %inputtypeVAR01 = popupmenu
 ObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 
-%textVAR02 = What is the minimum allowed object area outside the border region?
+%textVAR02 = What is the minimum allowed object area?
 %defaultVAR02 = 900
 MinAreaSize = str2double(handles.Settings.VariableValues{CurrentModuleNum,2});
 
-%textVAR03 = What is the minimum allowed object area within the border region?
-%defaultVAR03 = 700
-MinAreaSizeBorder = str2double(handles.Settings.VariableValues{CurrentModuleNum,3});
+%textVAR03 = Do you want to set a different minimum allowed object area for objects touching the border?
+%choiceVAR03 = No
+%choiceVAR03 = Yes
+useAdditionalThresholdAtBorder = char(handles.Settings.VariableValues{CurrentModuleNum,3});
+%inputtypeVAR03 = popupmenu
 
-%textVAR04 = What is the width and height of the border region?
+%textVAR04 = If yes, enter the number of pixels that define the border region.
 %defaultVAR04 = 50
-BorderSize = str2double(handles.Settings.VariableValues{CurrentModuleNum,4});
+BorderSize = char(handles.Settings.VariableValues{CurrentModuleNum,4});
+
+%textVAR05 = If yes, what is the minimum allowed object area for objects within the border region?
+%defaultVAR05 = 0
+MinAreaSizeBorder = str2double(handles.Settings.VariableValues{CurrentModuleNum,5});
 
 %%%VariableRevisionNumber = 1
 
@@ -71,9 +77,27 @@ matObjectSizes = cat(1,matObjectSizes.Area);
 %%%%%%%%%%%%%%%%%%%%%%
 drawnow
 
-if ~any(LabelMatrixImage(:) > 0) 
-    FinalLabelMatrixImage = LabelMatrixImage;    
+if ~any(LabelMatrixImage(:) > 0)
+    FinalLabelMatrixImage = LabelMatrixImage;
 else % only process segmentation, if at least one object is present
+    
+    
+    % Input check
+    if isequal(useAdditionalThresholdAtBorder,'No')
+        useAdditionalThresholdAtBorder = false;
+    elseif isequal(useAdditionalThresholdAtBorder,'Yes')
+        useAdditionalThresholdAtBorder = true;
+    else
+        error('Only options, which are allowed for useAdditionalThresholdAtBorder are No and Yes!')
+    end
+    
+    % If user does not want a separtate size filter at border (now: default; in
+    % past: not default), set minimal area at border to same value as minimal
+    % area away from from border region (and thus center of image site)
+    if useAdditionalThresholdAtBorder == false
+        MinAreaSizeBorder = MinAreaSize;
+        BorderSize = 50;
+    end
     
     % Determine object centroids that are close to the border of the image
     positionofobject=handles.Measurements.Nuclei.Location{handles.Current.SetBeingAnalyzed};
