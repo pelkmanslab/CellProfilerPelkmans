@@ -51,11 +51,11 @@ OutputName = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 DoMeanStdSmoothing = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 %inputtypeVAR03 = popupmenu
 
-%textVAR04 = Smoothing is done by a Gaussian filter to both illumination functions. Enter the size of the filter.
+%textVAR04 = If yes, enter the size of the Gaussian filter used for smoothing.
 %defaultVAR04 = 50
 SmoothingSize = str2double(handles.Settings.VariableValues{CurrentModuleNum,4});
 
-%textVAR05 = Enter the factor 'x' for the sigma calculation of the Gaussian filter. where sigma = x*size.
+%textVAR05 = If yes, enter the factor 'x' for computing the sigma of the Gaussian filter, where sigma = x*size.
 %defaultVAR05 = 0.5
 SmoothingSigma = str2double(handles.Settings.VariableValues{CurrentModuleNum,5});
 
