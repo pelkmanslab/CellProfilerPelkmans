@@ -139,7 +139,7 @@ ImageName = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 %inputtypeVAR02 = popupmenu
 
 %textVAR03 = Intensity thresholding: Threshold correction factor
-%defaultVAR03 = 1.02
+%defaultVAR03 = 0.98
 ThresholdCorrection = str2num(char(handles.Settings.VariableValues{CurrentModuleNum,3}));
 
 %textVAR04 = Intensity thresholding: Lower and upper bounds on threshold, in the range [0,1]
