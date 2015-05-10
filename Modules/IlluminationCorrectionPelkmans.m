@@ -1,5 +1,5 @@
-function handles = IlluminationCorrectionZScoring(handles)
-% Help for the "ILLUMINATIONCORRECTIONZSCORING" module:
+function handles = IlluminationCorrectionPelkmans(handles)
+% Help for the "ILLUMINATIONCORRECTIONPELKMANS" module:
 % Category: Image Processing
 %
 % SHORT DESCRIPTION:
