@@ -1,6 +1,6 @@
-function handles = BorderNeighbourAnalysis(handles)
+function handles = MeasureObjectNeighborsPelkmans(handles)
 
-% Help for the Neighbours module:
+% Help for the MeasureObjectNeighborsPelkmans module:
 %
 % Category: Measurement
 %
