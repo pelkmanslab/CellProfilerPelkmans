@@ -1,6 +1,6 @@
-function handles = LoadSegmentedCells(handles)
+function handles = LoadSegmentedObjects(handles)
 
-% Help for the LoadSegmentedCells module:
+% Help for the LoadSegmentedObjects module:
 % Category: Other
 %
 % SHORT DESCRIPTION:
