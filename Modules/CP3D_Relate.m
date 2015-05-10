@@ -1,6 +1,6 @@
-function handles = RelateCP3D(handles)
+function handles = CP3D_Relate(handles)
 
-% Help for the RelateCP3D module:
+% Help for the CP3D_Relate module:
 % Category: Other
 %
 % SHORT DESCRIPTION:

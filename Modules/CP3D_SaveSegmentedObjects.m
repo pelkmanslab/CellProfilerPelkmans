@@ -1,6 +1,6 @@
-function handles = SaveSegmentedObjectsCP3D(handles)
+function handles = CP3D_SaveSegmentedObjects(handles)
 
-% Help for the SaveSegmentedObjectsCP3D module:
+% Help for the CP3D_SaveSegmentedObjects module:
 % Category: Other
 %
 % SHORT DESCRIPTION:

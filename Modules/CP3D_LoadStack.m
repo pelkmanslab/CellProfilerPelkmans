@@ -1,6 +1,6 @@
-function handles = LoadCP3DStack(handles)
+function handles = CP3D_LoadStack(handles)
 
-% Help for the LoadCP3D module:
+% Help for the CP3D_LoadStack module:
 % Category: Other
 %
 % SHORT DESCRIPTION:

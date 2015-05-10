@@ -1,6 +1,6 @@
-function handles = LoadSegmentedObjectsCP3D(handles)
+function handles = CP3D_LoadSegmentedObjects(handles)
 
-% Help for the LoadSegmentedCells module:
+% Help for the CP3D_LoadSegmentedObjects module:
 % Category: Other
 %
 % SHORT DESCRIPTION:

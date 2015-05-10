@@ -1,5 +1,5 @@
-function handles = ProjectSegmentationCP3D(handles)
-% Help for the ProjectSegmentationCP3D module:
+function handles = CP3D_ProjectSegmentation(handles)
+% Help for the CP3D_ProjectSegmentation module:
 % Category: Other
 %
 % SHORT DESCRIPTION:

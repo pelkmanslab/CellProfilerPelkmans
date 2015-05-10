@@ -1,6 +1,6 @@
-function handles = VolumeObjectToImageCP3D(handles)
+function handles = CP3D_VolumeObjectToImage(handles)
 
-% Help for VolumeObjectToImageCP3D:
+% Help for CP3D_VolumeObjectToImage:
 % Category: Other
 %
 % SHORT DESCRIPTION:

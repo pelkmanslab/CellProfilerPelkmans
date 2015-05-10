@@ -1,5 +1,5 @@
-function handles = IdentifySpotsCP3D(handles)
-% Help for the IdentifySpotsCP3D module:
+function handles = CP3D_IdentifySpots(handles)
+% Help for the CP3D_IdentifySpots module:
 % Category: Other
 %
 

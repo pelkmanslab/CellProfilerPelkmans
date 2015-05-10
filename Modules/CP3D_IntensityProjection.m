@@ -1,6 +1,6 @@
-function handles = IntensityProjectionCP3D(handles)
+function handles = CP3D_IntensityProjection(handles)
 
-% Help for the IntensityProjectionCP3D
+% Help for the CP3D_IntensityProjection
 % Category: Other
 %
 % SHORT DESCRIPTION:

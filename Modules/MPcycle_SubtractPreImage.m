@@ -1,6 +1,6 @@
-function handles = SubtractPreImage_MPcycle(handles)
+function handles = MPcycle_SubtractPreImage(handles)
 
-% Help for the SUBTRACTPREIMAGE_MPCYCLE module:
+% Help for the MPcycle_SubtractPreImage module:
 % Category: Others (MPcycle)
 %
 % SHORT DESCRIPTION: 

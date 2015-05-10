@@ -1,6 +1,6 @@
-function handles = LoadSegmentedObjects_MPcycle(handles)
+function handles = MPcycle_LoadSegmentedObjects(handles)
 
-% Help for the LOADSEGMENTEDOBJECTS_MPCYCLE module:
+% Help for the MPcycle_LoadSegmentedObjects module:
 % Category: Others (MPcycle)
 %
 % SHORT DESCRIPTION:

@@ -1,6 +1,6 @@
-function handles = AlignObjects_MPcycle(handles)
+function handles = MPcycle_AlignObjects(handles)
 
-% Help for the ALIGNOBJECTS_MPCYCLE module:
+% Help for the MPcycle_AlignObjects module:
 % Category: Others (MPcycle)
 %
 % SHORT DESCRIPTION: 

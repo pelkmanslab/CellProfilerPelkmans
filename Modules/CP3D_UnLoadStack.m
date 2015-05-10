@@ -1,6 +1,6 @@
-function handles = UnLoadCP3DStack(handles)
+function handles = CP3D_UnLoadStack(handles)
 
-% Help for the UnLoadCP3D module:
+% Help for the CP3D_UnLoadStack module:
 % Category: Other
 %
 % SHORT DESCRIPTION:

@@ -1,6 +1,6 @@
-function handles = AddVolumeToSegmentationCP3D(handles)
+function handles = CP3D_AddVolumeToSegmentation(handles)
 
-% Help for the AddVolumeToSegmentationCP3D module:
+% Help for the CP3D_AddVolumeToSegmentation module:
 % Category: Other
 %
 % SHORT DESCRIPTION:

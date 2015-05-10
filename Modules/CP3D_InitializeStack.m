@@ -1,5 +1,5 @@
-function handles = InitializeCP3DStack(handles)
-% Help for the InitializeCP3DStack module:
+function handles = CP3D_InitializeStack(handles)
+% Help for the CP3D_InitializeStack module:
 % Category: Other
 %
 %

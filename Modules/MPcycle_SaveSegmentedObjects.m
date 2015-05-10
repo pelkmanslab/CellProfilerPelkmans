@@ -1,6 +1,6 @@
-function handles = SaveSegmentedObjects_MPcycle(handles)
+function handles = MPcycle_SaveSegmentedObjects(handles)
 
-% Help for the SaveSegmentedObjects_MPcycle module:
+% Help for the MPcycle_SaveSegmentedObjects module:
 % Category: Others (MPcycle)
 %
 % SHORT DESCRIPTION:
