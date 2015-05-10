@@ -5,9 +5,9 @@ function handles = LoadSegmentedCells(handles)
 %
 % SHORT DESCRIPTION:
 % Loads object segmentation from iBRAIN's SEGMENTATION directory
-% The channel, which forms the base of the file name of the segmentation 
+% The channel, which forms the base of the file name of the segmentation
 % can be specified (in case objects are from different pipelines) - by
-% default the first channel as specified in the 
+% default the first channel as specified in the
 % *************************************************************************
 %
 % Website: http://www.cellprofiler.org
@@ -78,15 +78,17 @@ drawnow
 
 ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
 if any(findobj == ThisModuleFigureNumber)
-    %%% Activates the appropriate figure window.
-    CPfigure(handles,'Image',ThisModuleFigureNumber);
-
-    % RGB color
-    ColoredLabelMatrixImage = CPlabel2rgb(handles,matSegmentationImage);
-    CPimagesc(ColoredLabelMatrixImage,handles);
-    %imagesc(ColoredLabelMatrixImage);
-    
-    title(sprintf('Loaded %s segmentation , cycle # %d',ObjectName,handles.Current.SetBeingAnalyzed));
+    if CPisHeadless == false
+        %%% Activates the appropriate figure window.
+        CPfigure(handles,'Image',ThisModuleFigureNumber);
+        
+        % RGB color
+        ColoredLabelMatrixImage = CPlabel2rgb(handles,matSegmentationImage);
+        CPimagesc(ColoredLabelMatrixImage,handles);
+        %imagesc(ColoredLabelMatrixImage);
+        
+        title(sprintf('Loaded %s segmentation , cycle # %d',ObjectName,handles.Current.SetBeingAnalyzed));
+    end
 end
 
 
