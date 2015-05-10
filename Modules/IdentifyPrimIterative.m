@@ -1,6 +1,6 @@
-function handles = IdentifyPrimaryIterative(handles)
+function handles = IdentifyPrimIterative(handles)
 
-% Help for IdentifyPrimaryIterative
+% Help for IdentifyPrimIterative
 % Category: Object Processing
 %
 %
