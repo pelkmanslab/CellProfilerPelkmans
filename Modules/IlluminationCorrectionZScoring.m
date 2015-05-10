@@ -82,7 +82,7 @@ drawnow
 intZstackNumber = 0;
 fprintf('Applying illumination correction on channel number: %d\n', intChannelNumber)
 
-% Store the stat in the Measurement field, with channel and szstack
+% Store the stat in the Measurement field, with channel and zstack-
 % specific fieldnames.
 if strcmp(AlternativeIllCorrFolder,'Pre')
     strStatFieldName = sprintf('illcor_ch%03dz%03d_Pre',intChannelNumber,intZstackNumber);
@@ -150,11 +150,9 @@ end
 %%%%%%%%%%%%%%%%%%
 %%% LOAD IMAGE %%%
 %%%%%%%%%%%%%%%%%%
-strImageToImport = fullfile( ...
-    handles.Pipeline.(strcat('Pathname',InputName)), ...
-    handles.Pipeline.(strcat('FileList',InputName)){handles.Current.SetBeingAnalyzed});
-OrigImage = double(imread(strImageToImport));
 
+OrigImage = double(CPretrieveimage(handles,InputName,ModuleName));
+OrigImage = OrigImage .* 65535;
 
 %%%%%%%%%%%%%%%%%%
 %%% CORRECTION %%%
