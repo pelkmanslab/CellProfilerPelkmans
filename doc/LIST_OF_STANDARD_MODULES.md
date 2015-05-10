@@ -24,10 +24,9 @@ Below you find a list of available standard Cell Profiler (CP) modules.
 * ExandOrShrink
 * FilterByObjectMeasurement
 * IdentifyPrimAutomatic
-* IdentifyPrimLoG
 * IdentifyPrimManual
 * IdentifySecondary
-* IdentifyTertiarySubregion
+* IdentifyTertiarySubregion (+)
 * Relate
 * MergeAndRelateChildren
 
@@ -41,8 +40,6 @@ Below you find a list of available standard Cell Profiler (CP) modules.
 * MeasureObjectNeighbors
 * MeasureRadialDistribution
 * MeasureTexture
-* MeasureGPperSingleCell
-* MeasureObjectColocalisation
 
 
 ##### Other #####
