@@ -577,7 +577,7 @@ if strcmp(TestMode2,'Yes')
     end
 end
 
-% [TS - Monkeypatch on 150509: if there is no background pixel: remove all
+% [TS if there is no background pixel: remove all
 % objects - otherwise one widespread assumption of CP is broken, leading to
 % various errors and problems in later modules]
 if ~any(imFinalObjects(:) == 0)
