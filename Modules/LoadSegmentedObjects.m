@@ -1,7 +1,7 @@
 function handles = LoadSegmentedObjects(handles)
 
 % Help for the LoadSegmentedObjects module:
-% Category: Other
+% Category: Object Processing
 %
 % SHORT DESCRIPTION:
 % Loads object segmentation from iBRAIN's SEGMENTATION directory
