@@ -333,9 +333,9 @@ end
 Threshold = mean(Threshold(:));       % Use average threshold downstreams
 
 for IdentChoiceNumber = 1:length(IdentChoiceList)
-
+    
     IdentChoice = IdentChoiceList{IdentChoiceNumber};
-
+    
     if strncmp(IdentChoice,'Distance',8)
         if strcmp(IdentChoice(12),'N')
             %%% Creates the structuring element using the user-specified size.
@@ -367,9 +367,9 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
             labels_out((PrelimPrimaryLabelMatrixImage > 0)) = PrelimPrimaryLabelMatrixImage((PrelimPrimaryLabelMatrixImage > 0));
             RelabeledDilatedPrelimSecObjectImage = labels_out;
         end
-
+        
         EditedPrimaryBinaryImage = im2bw(EditedPrimaryLabelMatrixImage,.5);
-
+        
         %%% Removes objects that are not in the edited EditedPrimaryLabelMatrixImage.
         LookUpTable = sortrows(unique([PrelimPrimaryLabelMatrixImage(:) EditedPrimaryLabelMatrixImage(:)],'rows'),1);
         b=zeros(max(LookUpTable(:,1)+1),2);
@@ -378,7 +378,7 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         b(:,1) = 0:size(b,1)-1;
         LookUpColumn = b(:,2);
         FinalLabelMatrixImage = LookUpColumn(RelabeledDilatedPrelimSecObjectImage+1);
-
+        
     elseif strcmp(IdentChoice,'Propagation')
         %%% STEP 2: Starting from the identified primary objects, the secondary
         %%% objects are identified using the propagate function, written by Thouis
@@ -388,7 +388,7 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         %%% code that has been compiled to run quickly within Matlab.
         PropagatedImage = IdentifySecPropagateSubfunction(PrelimPrimaryLabelMatrixImage,OrigImage,ThresholdedOrigImage,RegularizationFactor);
         drawnow
-
+        
         %%% STEP 3: Remove objects that are not desired, edited objects.  The
         %%% edited primary object image is used rather than the preliminary one, so
         %%% that objects whose nuclei are on the edge of the image and who are
@@ -440,9 +440,9 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         ZeroRegionImage = Remap(ZeroRegionImage + 1);
         %%% Now all surrounded zeroregions should have been remapped to their
         %%% new value, or zero if not surrounded.
-        PrelimLabelMatrixImage = max(HoleyPrelimLabelMatrixImage, ZeroRegionImage);        
+        PrelimLabelMatrixImage = max(HoleyPrelimLabelMatrixImage, ZeroRegionImage);
         drawnow
-
+        
         %%% STEP 4: Relabels the final objects so that their numbers
         %%% correspond to the numbers used for nuclei.
         %%% For each object, one label and one label location is acquired and
@@ -460,12 +460,12 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         %%% previously run image analysis module.   This forces the secondary
         %%% object's outline to extend at least as far as the edge of the primary
         %%% objects.
-
+        
         %%% Inverts the image.
         InvertedThresholdedOrigImage = imcomplement(ThresholdedOrigImage);
         %%% [NB] hack. save memory.
         clear ThresholdedOrigImage;
-
+        
         %%% NOTE: There are two other ways to mark the background prior to
         %%% watershedding; I think the method used above is best, but I have
         %%% included the ideas for two alternate methods.
@@ -493,7 +493,7 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         %%% background lines on top of actual objects.
         %%% This method is based on Gonzalez, et al. Digital Image Processing using
         %%% Matlab, page 422-425.
-
+        
         %%% STEP 2: Identify the outlines of each primary object, so that each
         %%% primary object can be definitely separated from the background.  This
         %%% solves the problem of some primary objects running
@@ -512,7 +512,7 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         %%% Subtracts the PrelimPrimaryBinaryImage from the DilatedPrimaryBinaryImage,
         %%% which leaves the PrimaryObjectOutlines.
         PrimaryObjectOutlines = DilatedPrimaryBinaryImage - PrelimPrimaryBinaryImage;
-
+        
         %%% STEP 3: Produce the marker image which will be used for the first
         %%% watershed.
         drawnow
@@ -524,7 +524,7 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         %%% [NB] hack. save memory.
         clear BinaryMarkerImagePre;
         BinaryMarkerImage(PrimaryObjectOutlines == 1) = 0;
-
+        
         %%% STEP 4: Calculate the Sobel image, which reflects gradients, which will
         %%% be used for the watershedding function.
         drawnow
@@ -542,10 +542,10 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         AbsSobeledImage = abs(I1) + abs(I2);
         %%% [NB] hack. save memory
         clear I1; clear I2;
-
+        
         %%% STEP 5: Perform the first watershed.
         drawnow
-
+        
         %%% Overlays the foreground and background markers onto the
         %%% absolute value of the Sobel Image, so there are black nuclei on top of
         %%% each dark object, with black background.
@@ -588,20 +588,20 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         %%% [NB] hack. save memory.
         clear SecondaryObjects1;
         drawnow
-
+        
         %%% STEP 7: Discarding background "objects".  The first watershed function
         %%% simply divides up the image into regions.  Most of these regions
         %%% correspond to actual objects, but there are big blocks of background
         %%% that are recognized as objects. These can be distinguished from actual
         %%% objects because they do not overlap a primary object.
-
+        
         %%% The following changes all the labels in LabelMatrixImage1 to match the
         %%% centers they enclose (from PrelimPrimaryBinaryImage), and marks as background
         %%% any labeled regions that don't overlap a center. This function assumes
         %%% that every center is entirely contained in one labeled area.  The
         %%% results if otherwise may not be well-defined. The non-background labels
         %%% will be renumbered according to the center they enclose.
-
+        
         %%% Finds the locations and labels for different regions.
         area_locations = find(LabelMatrixImage1);
         area_labels = LabelMatrixImage1(area_locations);
@@ -627,7 +627,7 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         %%% secondary objects are used as markers for a second round of
         %%% watershedding, this time based on the original (intensity) image rather
         %%% than the gradient image.
-
+        
         %%% Creates the structuring element that will be used for dilation.
         StructuringElement = strel('square',3);
         %%% Dilates the Primary Binary Image by one pixel (8 neighborhood).
@@ -649,9 +649,9 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         BinaryMarkerImage2 = BinaryMarkerImagePre2;
         %%% [NB] hack. save memory.
         clear BinaryMarkerImagePre2;
-                
+        
         BinaryMarkerImage2(ActualObjectOutlines == 1) = 0;
-
+        
         %%% STEP 9: Perform the second watershed.
         %%% As described above, the second watershed is performed on the original
         %%% intensity image rather than on a gradient (Sobel) image.
@@ -695,13 +695,13 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         %%% [NB] hack.save memory
         clear SecondWatershedPre;
         drawnow
-
+        
         %%% STEP 10: As in step 7, remove objects that are actually background
         %%% objects.  See step 7 for description. This time, the edited primary object image is
         %%% used rather than the preliminary one, so that objects whose nuclei are
         %%% on the edge of the image and who are larger or smaller than the
         %%% specified size are discarded.
-
+        
         %%% Converts the EditedPrimaryBinaryImage to binary.
         EditedPrimaryBinaryImage = im2bw(EditedPrimaryLabelMatrixImage,.5);
         %%% Finds the locations and labels for different regions.
@@ -755,7 +755,7 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         clear FinalLabelMatrixImagePre;
         FinalLabelMatrixImage(EditedPrimaryLabelMatrixImage ~= 0) = EditedPrimaryLabelMatrixImage(EditedPrimaryLabelMatrixImage ~= 0);
     end
-
+    
     %%% Calculates the ColoredLabelMatrixImage for displaying in the figure
     %%% window in subplot(2,2,2).
     ColoredLabelMatrixImage = CPlabel2rgb(handles,FinalLabelMatrixImage);
@@ -812,16 +812,16 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         CPimagesc(ObjectOutlinesOnOrigImage,handles);
         title(IdentChoiceList(IdentChoiceNumber));
     end
-
+    
     if strcmp(OriginalIdentChoice,IdentChoice)
         if ~isfield(handles.Measurements,SecondaryObjectName)
             handles.Measurements.(SecondaryObjectName) = {};
         end
-
+        
         if ~isfield(handles.Measurements,PrimaryObjectName)
             handles.Measurements.(PrimaryObjectName) = {};
         end
-
+        
         handles = CPrelateobjects(handles,SecondaryObjectName,PrimaryObjectName,FinalLabelMatrixImage,EditedPrimaryLabelMatrixImage,ModuleName);
         %%% [NB] hack. save memory
         clear EditedPrimaryLabelMatrixImage;
@@ -831,52 +831,54 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
         %%% DISPLAY RESULTS %%%
         %%%%%%%%%%%%%%%%%%%%%%%
         drawnow
-
+        
         ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
         if any(findobj == ThisModuleFigureNumber)
-            %%% Activates the appropriate figure window.
-            CPfigure(handles,'Image',ThisModuleFigureNumber);
-            if handles.Current.SetBeingAnalyzed == handles.Current.StartingImageSet
-                CPresizefigure(OrigImage,'TwoByTwo',ThisModuleFigureNumber);
+            if CPisHeadless == false
+                %%% Activates the appropriate figure window.
+                CPfigure(handles,'Image',ThisModuleFigureNumber);
+                if handles.Current.SetBeingAnalyzed == handles.Current.StartingImageSet
+                    CPresizefigure(OrigImage,'TwoByTwo',ThisModuleFigureNumber);
+                end
+                ObjectCoverage = 100*sum(sum(FinalLabelMatrixImage > 0))/numel(FinalLabelMatrixImage);
+                uicontrol(ThisModuleFigureNumber,'Style','Text','Units','Normalized','Position',[0.25 0.01 .6 0.04],...
+                    'BackgroundColor',[.7 .7 .9],'HorizontalAlignment','Left','String',sprintf('Threshold:  %0.6f               %0.1f%% of image consists of objects',Threshold,ObjectCoverage),'FontSize',handles.Preferences.FontSize);
+                %%% A subplot of the figure window is set to display the original image.
+                subplot(2,2,1);
+                CPimagesc(OrigImage,handles);
+                title(['Input Image, cycle # ',num2str(handles.Current.SetBeingAnalyzed)]);
+                %%% A subplot of the figure window is set to display the colored label
+                %%% matrix image.
+                subplot(2,2,2);
+                CPimagesc(ColoredLabelMatrixImage,handles);
+                clear ColoredLabelMatrixImage
+                title(['Outlined ',SecondaryObjectName]);
+                %%% A subplot of the figure window is set to display the original image
+                %%% with secondary object outlines drawn on top.
+                subplot(2,2,3);
+                CPimagesc(ObjectOutlinesOnOrigImage,handles);
+                clear ObjectOutlinesOnOrigImage
+                title([SecondaryObjectName, ' Outlines on Input Image']);
+                %%% A subplot of the figure window is set to display the original
+                %%% image with outlines drawn for both the primary and secondary
+                %%% objects.
+                subplot(2,2,4);
+                CPimagesc(BothOutlinesOnOrigImage,handles);
+                clear BothOutlinesOnOrigImage;
+                title(['Outlines of ', PrimaryObjectName, ' and ', SecondaryObjectName, ' on Input Image']);
             end
-            ObjectCoverage = 100*sum(sum(FinalLabelMatrixImage > 0))/numel(FinalLabelMatrixImage);
-            uicontrol(ThisModuleFigureNumber,'Style','Text','Units','Normalized','Position',[0.25 0.01 .6 0.04],...
-                'BackgroundColor',[.7 .7 .9],'HorizontalAlignment','Left','String',sprintf('Threshold:  %0.6f               %0.1f%% of image consists of objects',Threshold,ObjectCoverage),'FontSize',handles.Preferences.FontSize);
-            %%% A subplot of the figure window is set to display the original image.
-            subplot(2,2,1);
-            CPimagesc(OrigImage,handles);
-            title(['Input Image, cycle # ',num2str(handles.Current.SetBeingAnalyzed)]);
-            %%% A subplot of the figure window is set to display the colored label
-            %%% matrix image.
-            subplot(2,2,2);
-            CPimagesc(ColoredLabelMatrixImage,handles);
-            clear ColoredLabelMatrixImage
-            title(['Outlined ',SecondaryObjectName]);
-            %%% A subplot of the figure window is set to display the original image
-            %%% with secondary object outlines drawn on top.
-            subplot(2,2,3);
-            CPimagesc(ObjectOutlinesOnOrigImage,handles);
-            clear ObjectOutlinesOnOrigImage
-            title([SecondaryObjectName, ' Outlines on Input Image']);
-            %%% A subplot of the figure window is set to display the original
-            %%% image with outlines drawn for both the primary and secondary
-            %%% objects.
-            subplot(2,2,4);
-            CPimagesc(BothOutlinesOnOrigImage,handles);
-            clear BothOutlinesOnOrigImage;
-            title(['Outlines of ', PrimaryObjectName, ' and ', SecondaryObjectName, ' on Input Image']);
         end
-
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%% SAVE DATA TO HANDLES STRUCTURE %%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         drawnow
-
+        
         %%% Saves the final, segmented label matrix image of secondary objects to
         %%% the handles structure so it can be used by subsequent modules.
         fieldname = ['Segmented',SecondaryObjectName];
         handles.Pipeline.(fieldname) = FinalLabelMatrixImage;
-
+        
         if strcmp(IdentChoice,'Propagation')
             %%% Saves the Threshold value to the handles structure.
             %%% Storing the threshold is a little more complicated than storing other measurements
@@ -898,7 +900,7 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
             end
             handles.Measurements.Image.Threshold{handles.Current.SetBeingAnalyzed}(1,column) = Threshold;
         end
-
+        
         %%% Saves the ObjectCount, i.e. the number of segmented objects.
         if ~isfield(handles.Measurements.Image,'ObjectCountFeatures')
             handles.Measurements.Image.ObjectCountFeatures = {};
@@ -910,7 +912,7 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
             column = length(handles.Measurements.Image.ObjectCountFeatures);
         end
         handles.Measurements.Image.ObjectCount{handles.Current.SetBeingAnalyzed}(1,column) = max(FinalLabelMatrixImage(:));
-
+        
         %%% Saves the location of each segmented object
         handles.Measurements.(SecondaryObjectName).LocationFeatures = {'CenterX','CenterY'};
         tmp = regionprops(FinalLabelMatrixImage,'Centroid');
@@ -921,14 +923,14 @@ for IdentChoiceNumber = 1:length(IdentChoiceList)
             Centroid = [0 0];
         end
         handles.Measurements.(SecondaryObjectName).Location(handles.Current.SetBeingAnalyzed) = {Centroid};
-
+        
         %%% Saves images to the handles structure so they can be saved to the hard
         %%% drive, if the user requested.
         try
             if ~strcmpi(SaveOutlines,'Do not save')
                 handles.Pipeline.(SaveOutlines) = LogicalOutlines;
             end
-        catch 
+        catch
             error(['The object outlines were not calculated by the ', ModuleName, ' module, so these images were not saved to the handles structure. The Save Images module will therefore not function on these images. This is just for your information - image processing is still in progress, but the Save Images module will fail if you attempted to save these images.'])
         end
     end
