@@ -28,7 +28,6 @@ Below you find a list of available standard Cell Profiler (CP) modules.
 * IdentifySecondary
 * IdentifyTertiarySubregion (+)
 * Relate
-* MergeAndRelateChildren
 
 ##### Measurements #####
 
