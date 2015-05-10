@@ -226,7 +226,7 @@ switch ProjectionMethod
         CombinedImage = quantile(cat(3,Images{:}),0.95,3);
     case 'Quantile_99'
         CombinedImage = quantile(cat(3,Images{:}),0.99,3);
-    case 'Sum'    
+    case 'Sum'
         CombinedImage = sum(cat(3,Images{:}),3);
         
     otherwise
@@ -245,22 +245,24 @@ matSubPlotIX = [4,8,9,10,11,12];
 
 ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
 if any(findobj == ThisModuleFigureNumber)
-    %%% Activates the appropriate figure window.
-    CPfigure(handles,'Image',ThisModuleFigureNumber);
-    if handles.Current.SetBeingAnalyzed == handles.Current.StartingImageSet
-        CPresizefigure(CombinedImage,'TwoByTwo',ThisModuleFigureNumber);
-    end
-    %%% A subplot of the figure window is set to display the Combined Image
-    %%% image.  Using CPimagesc or image instead of imshow doesn't work when
-    %%% some of the pixels are saturated.
-    subplot(3,4,[1,2,3,5,6,7]);
-    CPimagesc(CombinedImage,handles);
-    title(sprintf('''%s'', %s projection, cycle #%d',ProjectionImageName,ProjectionMethod,num2str(handles.Current.SetBeingAnalyzed)));
-    %%% A subplot of the figure window is set to display Image 1.
-    for i = 1:(min(length(Images),length(matSubPlotIX)))
-        subplot(3,4,matSubPlotIX(i))
-        CPimagesc(Images{i},handles);
-        title(sprintf('Image %d: %s',i,ImageNames{i}));
+    if CPisHeadless == false
+        %%% Activates the appropriate figure window.
+        CPfigure(handles,'Image',ThisModuleFigureNumber);
+        if handles.Current.SetBeingAnalyzed == handles.Current.StartingImageSet
+            CPresizefigure(CombinedImage,'TwoByTwo',ThisModuleFigureNumber);
+        end
+        %%% A subplot of the figure window is set to display the Combined Image
+        %%% image.  Using CPimagesc or image instead of imshow doesn't work when
+        %%% some of the pixels are saturated.
+        subplot(3,4,[1,2,3,5,6,7]);
+        CPimagesc(CombinedImage,handles);
+        title(sprintf('''%s'', %s projection, cycle #%d',ProjectionImageName,ProjectionMethod,num2str(handles.Current.SetBeingAnalyzed)));
+        %%% A subplot of the figure window is set to display Image 1.
+        for i = 1:(min(length(Images),length(matSubPlotIX)))
+            subplot(3,4,matSubPlotIX(i))
+            CPimagesc(Images{i},handles);
+            title(sprintf('Image %d: %s',i,ImageNames{i}));
+        end
     end
 end
 

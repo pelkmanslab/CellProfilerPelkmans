@@ -202,7 +202,7 @@ elseif strcmp(ShrinkOrExpand,'Expand')
             fooindex = find(OriginalLabel);                    % Find index to a nonzero element, i.e. to the original label number
             FinalShrunkenUneditedSegmentedImage(index) = OriginalLabel(fooindex(1)); % Put new label on expanded object
         end
-
+        
         [L,num] = bwlabel(ShrunkenSmallRemovedSegmentedImage);
         FinalShrunkenSmallRemovedSegmentedImage = zeros(size(ShrunkenSmallRemovedSegmentedImage));
         for k = 1:num
@@ -229,24 +229,26 @@ drawnow
 
 ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
 if any(findobj == ThisModuleFigureNumber)
-    %%% Calculates the OriginalColoredLabelMatrixImage for displaying in the figure
-    %%% window in subplot(2,1,1).
-    OriginalColoredLabelMatrixImage = CPlabel2rgb(handles,OrigSegmentedImage);
-    %%% Calculates the ShrunkenColoredLabelMatrixImage for displaying in the figure
-    %%% window in subplot(2,1,2).
-    ShrunkenColoredLabelMatrixImage = CPlabel2rgb(handles,FinalShrunkenSegmentedImage);
-
-    %%% Activates the appropriate figure window.
-    CPfigure(handles,'Image',ThisModuleFigureNumber);
-    if handles.Current.SetBeingAnalyzed == handles.Current.StartingImageSet
-        CPresizefigure(OriginalColoredLabelMatrixImage,'TwoByOne',ThisModuleFigureNumber)
-    end%%% A subplot of the figure window is set to display the original image.
-    subplot(2,1,1);
-    CPimagesc(OriginalColoredLabelMatrixImage,handles);
-    title([ObjectName, ' cycle # ',num2str(handles.Current.SetBeingAnalyzed)]);
-    subplot(2,1,2);
-    CPimagesc(ShrunkenColoredLabelMatrixImage,handles);
-    title(ShrunkenObjectName);
+    if CPisHeadless == false
+        %%% Calculates the OriginalColoredLabelMatrixImage for displaying in the figure
+        %%% window in subplot(2,1,1).
+        OriginalColoredLabelMatrixImage = CPlabel2rgb(handles,OrigSegmentedImage);
+        %%% Calculates the ShrunkenColoredLabelMatrixImage for displaying in the figure
+        %%% window in subplot(2,1,2).
+        ShrunkenColoredLabelMatrixImage = CPlabel2rgb(handles,FinalShrunkenSegmentedImage);
+        
+        %%% Activates the appropriate figure window.
+        CPfigure(handles,'Image',ThisModuleFigureNumber);
+        if handles.Current.SetBeingAnalyzed == handles.Current.StartingImageSet
+            CPresizefigure(OriginalColoredLabelMatrixImage,'TwoByOne',ThisModuleFigureNumber)
+        end%%% A subplot of the figure window is set to display the original image.
+        subplot(2,1,1);
+        CPimagesc(OriginalColoredLabelMatrixImage,handles);
+        title([ObjectName, ' cycle # ',num2str(handles.Current.SetBeingAnalyzed)]);
+        subplot(2,1,2);
+        CPimagesc(ShrunkenColoredLabelMatrixImage,handles);
+        title(ShrunkenObjectName);
+    end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -259,7 +261,7 @@ if strcmp(ObjectChoice,'Primary')
     %%% for size, to the handles structure.
     fieldname = ['UneditedSegmented',ShrunkenObjectName];
     handles.Pipeline.(fieldname) = FinalShrunkenUneditedSegmentedImage;
-
+    
     %%% Saves the segmented image, only edited for small objects, to the
     %%% handles structure.
     fieldname = ['SmallRemovedSegmented',ShrunkenObjectName];
@@ -299,4 +301,7 @@ handles.Measurements.Image.ObjectCount{handles.Current.SetBeingAnalyzed}(1,colum
 handles.Measurements.(ShrunkenObjectName).LocationFeatures = {'CenterX','CenterY'};
 tmp = regionprops(FinalShrunkenSegmentedImage,'Centroid');
 Centroid = cat(1,tmp.Centroid);
+if isempty(Centroid)
+    Centroid = [0 0];   % follow CP's convention to save 0s if no object
+end
 handles.Measurements.(ShrunkenObjectName).Location(handles.Current.SetBeingAnalyzed) = {Centroid};

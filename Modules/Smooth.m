@@ -204,19 +204,21 @@ drawnow
 
 ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
 if any(findobj == ThisModuleFigureNumber)
-    %%% Activates the appropriate figure window.
-    CPfigure(handles,'Image',ThisModuleFigureNumber);
-    if handles.Current.SetBeingAnalyzed == handles.Current.StartingImageSet
-        CPresizefigure(OrigImage,'TwoByOne',ThisModuleFigureNumber)
+    if CPisHeadless == false
+        %%% Activates the appropriate figure window.
+        CPfigure(handles,'Image',ThisModuleFigureNumber);
+        if handles.Current.SetBeingAnalyzed == handles.Current.StartingImageSet
+            CPresizefigure(OrigImage,'TwoByOne',ThisModuleFigureNumber)
+        end
+        %%% A subplot of the figure window is set to display the original
+        %%% image and the smoothed image.
+        subplot(2,1,1);
+        CPimagesc(OrigImage,handles);
+        title(['Input Image, cycle # ',num2str(handles.Current.SetBeingAnalyzed)]);
+        subplot(2,1,2);
+        CPimagesc(SmoothedImage,handles);
+        title('Smoothed Image');
     end
-    %%% A subplot of the figure window is set to display the original
-    %%% image and the smoothed image.
-    subplot(2,1,1);
-    CPimagesc(OrigImage,handles);
-    title(['Input Image, cycle # ',num2str(handles.Current.SetBeingAnalyzed)]);
-    subplot(2,1,2);
-    CPimagesc(SmoothedImage,handles);
-    title('Smoothed Image');
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
