@@ -160,9 +160,9 @@ if shallEnforceUnambiguity == true
     
     if ~isequal(objectsInSubregion, objectsInSecondayImage)
         
-        % correct objects, which have been lsot in subregion
+        % correct objects, which have been lost in subregion
         missingObjects = objectsInSecondayImage(~ismember(objectsInSecondayImage, objectsInSubregion));
-        belongsToMissingObject = ismember(objectsInSecondayImage, missingObjects);
+        belongsToMissingObject = ismember(SecondaryObjectImage, missingObjects);
         
         % use outermost pixels of "larger" object as "subregion" (which
         % original CP tried to achieve with an erode)
@@ -171,7 +171,7 @@ if shallEnforceUnambiguity == true
         SubregionObjectImage(f) = SecondaryObjectImage(f);
         
         if ~isequal(getObjectIDs(SubregionObjectImage), getObjectIDs(SecondaryObjectImage)) % add one final sanity check
-            error('Unexpected behavior. The ojects should be identical. Check that no-one messed around in the code');
+            error(['Image processing was canceled in the ',ModuleName,' module due to an error because ojects should be identical']);
         end
         
     end
@@ -309,7 +309,7 @@ if numObjects >= 1  % if objects present
         miniImage = LabelMatrix(N(k):S(k),W(k):E(k));
         
         expMiniImage = padarray(miniImage, padSize);
-        bwminiImage = expMiniImage>0;
+        bwminiImage = expMiniImage == k;
         
         nonObject = ~bwminiImage;
         expNonObject = bwmorph(nonObject, 'dilate', amountOfOutermostPixels);
