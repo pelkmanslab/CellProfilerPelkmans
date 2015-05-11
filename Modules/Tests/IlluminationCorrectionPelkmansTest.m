@@ -1,4 +1,4 @@
-classdef IlluminationCorrectionPelkmans < matlab.unittest.TestCase
+classdef IlluminationCorrectionPelkmansTest < matlab.unittest.TestCase
     
     properties
         A1_HandlesIn
