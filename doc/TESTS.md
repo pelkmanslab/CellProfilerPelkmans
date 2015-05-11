@@ -12,7 +12,7 @@
 The test-data folder is structured as follows:
 
 ### *Input/*
-Raw-inputs for pipelines (images, illumination correction files etc.). Sub-directories $A, B, C, etc.$ each represent different sets of raw-inputs.
+Raw-inputs for pipelines (images, illumination correction files etc.). Sub-directories *A, B, C, etc.* each represent different sets of raw-inputs.
 
 ### *State/*
 Snapshots of execution state (e.g. serialized *handles* files) from matlab. They are grouped:
