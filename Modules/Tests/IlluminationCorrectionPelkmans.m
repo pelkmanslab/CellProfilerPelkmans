@@ -1,4 +1,4 @@
-classdef IlluminationCorrectionZScoringTest < matlab.unittest.TestCase
+classdef IlluminationCorrectionPelkmans < matlab.unittest.TestCase
     
     properties
         A1_HandlesIn
@@ -26,7 +26,7 @@ classdef IlluminationCorrectionZScoringTest < matlab.unittest.TestCase
     
     methods(Test)
         function handlesMatchA(testCase)
-            testResult = IlluminationCorrectionZScoring( testCase.A1_HandlesIn );
+            testResult = IlluminationCorrectionPelkmans( testCase.A1_HandlesIn );
             testCase.verifyTrue( isequal(testResult, testCase.A1_HandlesOut) );
         end
     end
