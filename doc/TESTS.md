@@ -16,6 +16,7 @@ Raw-inputs for pipelines (images, illumination correction files etc.). Sub-direc
 
 ### *State/*
 Snapshots of execution state (e.g. serialized *handles* files) from matlab. They are grouped:
+
 1. The purpose of the test (e.g. a module name)
 2. Then by *A, B, C, etc.* referring to the associated input data
 3. Then by a number in the filename *1_handles_in.mat*, as there might be several cases. Please preserve the filename pattern.
