@@ -107,13 +107,13 @@ drawnow
 [CurrentModule, CurrentModuleNum, ModuleName] = CPwhichmodule(handles);
 
 %textVAR01 = Is your cluster using the MATLAB version or the compiled version of CPCluster?
-%choiceVAR01 = MATLAB
 %choiceVAR01 = Compiled
+%choiceVAR01 = MATLAB
 FileChoice = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 %inputtypeVAR01 = popupmenu
 
 %textVAR02 = How many cycles should be in each batch?
-%defaultVAR02 = 100
+%defaultVAR02 = 5
 BatchSize = str2double(char(handles.Settings.VariableValues{CurrentModuleNum,2}));
 
 %textVAR03 = What prefix should be used to name the batch files?
