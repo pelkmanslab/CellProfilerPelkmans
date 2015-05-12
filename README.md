@@ -28,7 +28,7 @@ CellProfiler
 This will start the CellProfiler program and open the GUI window. 
 
 
-## Modules ##
+## Reference Documentation ##
 
 Reference documentation is found in several locations:
 * [Modules API Documentation](http://jenkins.pelkmanslab.org/job/CellProfilerPelkmans_Master/CellProfilerPelkmans_API_Documentation/workspace/Modules/index.html). It is updated automatically daily, and contails all modules.
