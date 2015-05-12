@@ -248,7 +248,7 @@ if strcmp(LoadChoice(1),'T')
 end
 
 %textVAR02 = Type the text that one type of image has in common (for TEXT options), or their position in each group (for ORDER option):
-%defaultVAR02 = DAPI
+%defaultVAR02 = C01.
 TextToFind{1} = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 
 %textVAR03 = What do you want to call these images within CellProfiler?
