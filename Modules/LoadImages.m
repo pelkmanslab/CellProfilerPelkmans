@@ -529,7 +529,7 @@ if SetBeingAnalyzed == 1
             %%% Determines the number of cycles to be analyzed.
             NumberOfImageSets = length(FileNames)/ImagesPerSet;
             if rem(NumberOfImageSets,1) ~= 0
-                error(['Image processing was canceled in the ', ModuleName,' module becauses the number of image files (',length(FileNames),') found in the specified directory is not a multiple of the number of images per set (',ImagesPerSet,').'])
+                error(['Image processing was canceled in the ', ModuleName,' module becauses the number of image files (',length(FileNames),') found in the specified directory is not a multiple of the number of images per set (',ImagesPerSet,'). One frequent origin of this problem are ambiguous filter names, e.g.: C03 might refer to channel and wellname.'])
             end
             handles.Current.NumberOfImageSets = NumberOfImageSets;
 
