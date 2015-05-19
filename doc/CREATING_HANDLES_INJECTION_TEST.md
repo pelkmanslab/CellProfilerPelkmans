@@ -29,11 +29,15 @@ So the **recording-path** is saved with the in-state and out-state. Paths are th
 ## Step 2: Record handles-state
 
 1. Find the module-function (e.g. IlluminationCorrectionPelkmans.m).
-2. Put a breakpoint at very start of the function (before *handles* can be modified).
-* Put a breakpoint at very end of the function (after *handles* is last modified).
-* Run *CellProfiler* and wait until the first break-point is reached.
-* At first break-point, execute
-> save( 'handles_in.mat', 'handles' );
+2. Put breakpoints
+	* at very start of the function (before *handles* can be modified).
+	* at very end of the function (after *handles* is last modified).
+3. Run *CellProfiler* and wait until the first break-point is reached.
+	* At first break-point, execute
+		> save( 'handles_in.mat', 'handles' );
+ 
+	* Resume, and at second break-point, execute
 
-6. Resume, and at second break-point, execute
-> save( 'handles_out.mat', 'handles' );
+		> save( 'handles_out.mat', 'handles' );
+
+4.
