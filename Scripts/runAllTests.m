@@ -13,7 +13,7 @@ import matlab.unittest.plugins.ToFile
 % An environmental variable CELLPROFILER_PELKMANS_TESTS_DIR must be set
 %   with location of test data
 %
-topLevelMatlabFolder = '../Modules/Tests';
+topLevelMatlabFolder = '../ModuleTests';
 outFilePathRelative = '../testsOutput.tap';
 
 
