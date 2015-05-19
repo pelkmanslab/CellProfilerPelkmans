@@ -78,7 +78,7 @@ This test-data can be reused for testing multiple modules.
 	* It will vary by operating-system.
 	* Do not include a trailing /
 	
-### Step 3: Write a verification test
+## Step 3: Write a verification test
 
 1. Add a new test in *ModuleTests* following the *ModuleName*Test.m filename pattern.
 2. Copy an existing-test and update the functions and paths accordingly. Choose a suitable template test, as explained in the subsequent section.
@@ -95,6 +95,6 @@ Modules modify the *handles* structure-array. But they vary in their file I/O:
 
 Choose the correct case based upon knowledge of the module. Or trial and error, in the above order.
 
-Path-rewriting needs to occur in case 2 and 3.
+Path-rewriting needs to occur in Case 2 and 3.
 
-We consider the test-data as read-only: explicitly so in Jenkins. Accordingly for test 3, a local copy of the test-data is first-made, and deleted afterwards. These tests also need a *TemporaryFolderFixture* in Matlab.
+We consider the test-data as read-only: explicitly so in Jenkins. Accordingly for Case 3, a local copy of the test-data is first-made, and deleted afterwards. These tests also need a *TemporaryFolderFixture* in Matlab.
