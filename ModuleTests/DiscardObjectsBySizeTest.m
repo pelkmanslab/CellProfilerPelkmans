@@ -1,8 +1,8 @@
 classdef DiscardObjectsBySizeTest < matlab.unittest.TestCase
     
     properties
-        A1_HandlesIn
-        A1_HandlesOut
+        C1_HandlesIn
+        C1_HandlesOut
     end
  
     methods(TestMethodSetup)
@@ -21,9 +21,9 @@ classdef DiscardObjectsBySizeTest < matlab.unittest.TestCase
     end
     
     methods(Test)
-        function handlesMatchA(testCase)
-            testResult = DiscardObjectsBySize( testCase.A1_HandlesIn );
-            testCase.verifyTrue( isequal(testResult, testCase.A1_HandlesOut) );
+        function handlesMatchC(testCase)
+            testResult = DiscardObjectsBySize( testCase.C1_HandlesIn );
+            testCase.verifyTrue( isequal(testResult, testCase.C1_HandlesOut) );
         end
     end
 end
