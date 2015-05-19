@@ -1,9 +1,4 @@
 classdef IlluminationCorrectionPelkmansTest < matlab.unittest.TestCase
-    
-    properties
-        handlesIn
-        handlesOut
-    end
  
     methods(TestMethodSetup)
     end
