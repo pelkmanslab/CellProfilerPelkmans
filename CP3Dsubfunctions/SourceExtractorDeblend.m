@@ -109,7 +109,7 @@ fprintf('%s: Calculating all thresholded images. Total Number %d. ',mfilename,Op
 
 
 fprintf('%s: Deblending Images, please wait. ',mfilename)
-tic
+%tic
 %go via all images
 for i = 1:length(structSegCC)
     
@@ -206,7 +206,7 @@ for i = 1:length(structSegCC)
     end
     
 end
-toc
+%toc
 
 % Reformat output
 if BaseImageCC.NumObjects > 0
