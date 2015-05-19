@@ -10,8 +10,8 @@ classdef IdentifySecondaryIterativeTest < matlab.unittest.TestCase
         function handlesMatchC(testCase)
             
             dirTestsSub = 'State/IdentifySecondaryIterative';
-            handlesIn = getTestHandlesUnchanged(dirTestsSub,'C/handles_in');
-            handlesOut = getTestHandlesUnchanged(dirTestsSub,'C/handles_out');
+            handlesIn = testHandlesUnchanged(dirTestsSub,'C/handles_in');
+            handlesOut = testHandlesUnchanged(dirTestsSub,'C/handles_out');
             
             testResult = IdentifySecondaryIterative( handlesIn );
             testCase.verifyTrue( isequal(testResult, handlesOut) );

@@ -1,4 +1,4 @@
-function [ handlesOut ] = getTestHandlesUnchanged( subFolderPath, handlesName )
+function [ handlesOut ] = testHandlesUnchanged( subFolderPath, handlesName )
 % getTestSavedObject loads handles that have been serialized
 %
 %   loads a file from the test directory, using
