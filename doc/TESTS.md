@@ -11,14 +11,9 @@
 
 ### Handles-Injection 
 
-CellProfiler modules accept a cell-array *handles* as an argument. Some processing is performed which alters *handles* and it is returned.
+CellProfiler modules accept a structure-array *handles* as an argument. Some processing is performed which alters *handles* and it is returned.
 
 One approach is to *record* examples of this in-state and out-state. Then, in the future, run the module again on this in-state. The out-state should be identical to previously. 
-
-In practice, some rewriting of paths needs to occur, as filesystem paths will differ in the *handles* cell-array between environments:
-
-* **recording environment** - where in-state and out-state are recorded (one particular personal computer)
-* **testing environment** - for testing in the future (on Jenkins server, varying personal computers) 
 
 The value of the test:
 
