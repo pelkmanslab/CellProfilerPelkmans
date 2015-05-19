@@ -19,8 +19,8 @@ classdef IlluminationCorrectionPelkmansTest < matlab.unittest.TestCase
             pathOld = 'S:\Data\Users\Owen\TestDatasets\Dataset 3';
             pathNew = absolutePathFromRelative('Input/A');
             
-            handlesIn = getRewrittenTestHandles(dirTestsSub,'A/1_handles_in', pathOld, pathNew);
-            handlesOut = getRewrittenTestHandles(dirTestsSub,'A/1_handles_out', pathOld, pathNew);
+            handlesIn = getRewrittenTestHandles(dirTestsSub,'A/handles_in', pathOld, pathNew);
+            handlesOut = getRewrittenTestHandles(dirTestsSub,'A/handles_out', pathOld, pathNew);
             
             testResult = IlluminationCorrectionPelkmans( handlesIn );
             testCase.verifyTrue( isequal(testResult, handlesOut) );
