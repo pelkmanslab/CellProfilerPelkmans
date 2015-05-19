@@ -1,4 +1,5 @@
-classdef SaveSegmentedObjectsTest < matlab.unittest.TestCase
+classdef (SharedTestFixtures={matlab.unittest.fixtures.TemporaryFolderFixture}) ...
+    SaveSegmentedObjectsTest < matlab.unittest.TestCase
  
     methods(TestMethodSetup)
     end
@@ -14,8 +15,8 @@ classdef SaveSegmentedObjectsTest < matlab.unittest.TestCase
             pathOld = 'S:\Data\Users\Owen\TestDatasets\Dataset 5';
             pathNew = absolutePathFromRelative('Input/C');
             
-            handlesIn = getRewrittenTestHandles(dirTestsSub,'C/handles_in', pathOld, pathNew);
-            handlesOut = getRewrittenTestHandles(dirTestsSub,'C/handles_out', pathOld, pathNew);
+            handlesIn = getTestHandlesCopiedFolder(dirTestsSub,'C/handles_in', pathOld, pathNew, testCase);
+            handlesOut = getTestHandlesCopiedFolder(dirTestsSub,'C/handles_out', pathOld, pathNew, testCase);
             
             testResult = SaveSegmentedObjects( handlesIn );
             testCase.verifyTrue( isequal(testResult, handlesOut) );            
