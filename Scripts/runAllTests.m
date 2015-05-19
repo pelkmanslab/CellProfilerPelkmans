@@ -29,4 +29,4 @@ suites = matlab.unittest.TestSuite.fromFolder(topLevelMatlabFolder, 'IncludingSu
 result = runner.run(suites);
 
 % Display TAP file
-disp(fileread(outFileResolved))
+disp(fileread(outFilePathRelative))

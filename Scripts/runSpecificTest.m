@@ -28,4 +28,4 @@ suite = matlab.unittest.TestSuite.fromFile(testFilePathRelative);
 result = runner.run(suite);
 
 % Display TAP file
-disp(fileread(outFileResolved))
+disp(fileread(outFilePathRelative))
