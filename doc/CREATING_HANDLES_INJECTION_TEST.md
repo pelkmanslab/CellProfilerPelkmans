@@ -65,9 +65,8 @@ This test-data can be reused for testing multiple modules.
 	> **camelot-share-3**/Data/Datasets/GitHubTests/CellProfilerPelkmans/State
 
 	Folders are grouped:
-	
 	1. The purpose of the test (e.g. a module name)
-	2. Then by *A, B, C, etc.* referring to the associated input data
-	3. Then by a number in the filename *1\_handles\_in.mat*, as there might be several cases. Please preserve the filename pattern.
+	2. Then by *A, B, C, etc.* referring to the associated input data (From Step 1)
+	3. Then by *handles\_in.mat* or *handles\_out.mat*.
 
 6. Each of these folder has a file *pathOld.txt* that records the images-directory used when the snapshops were made. This will be recorded within the *handles* data structures. It is used for search-and-replace operations during the unit tests, to update the paths to a new location.
