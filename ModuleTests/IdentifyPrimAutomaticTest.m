@@ -10,8 +10,8 @@ classdef IdentifyPrimAutomaticTest < matlab.unittest.TestCase
         function handlesMatchC(testCase)
             
             dirTestsSub = 'State/IdentifyPrimAutomatic';
-            handlesIn = getTestHandles(dirTestsSub,'C/handles_in');
-            handlesOut = getTestHandles(dirTestsSub,'C/handles_out');
+            handlesIn = getTestHandlesUnchanged(dirTestsSub,'C/handles_in');
+            handlesOut = getTestHandlesUnchanged(dirTestsSub,'C/handles_out');
             
             testResult = IdentifyPrimAutomatic( handlesIn );
             testCase.verifyTrue( isequal(testResult, handlesOut) );

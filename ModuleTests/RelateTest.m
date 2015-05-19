@@ -14,8 +14,8 @@ classdef RelateTest < matlab.unittest.TestCase
             pathOld = 'S:\Data\Users\Owen\TestDatasets\Dataset 5';
             pathNew = absolutePathFromRelative('Input/C');
             
-            handlesIn = getRewrittenTestHandles(dirTestsSub,'C/handles_in', pathOld, pathNew);
-            handlesOut = getRewrittenTestHandles(dirTestsSub,'C/handles_out', pathOld, pathNew);
+            handlesIn = getTestHandlesRewrite(dirTestsSub,'C/handles_in', pathOld, pathNew);
+            handlesOut = getTestHandlesRewrite(dirTestsSub,'C/handles_out', pathOld, pathNew);
             
             testResult = IdentifySpots2D( handlesIn );
             testCase.verifyTrue( isequal(testResult, handlesOut) );            

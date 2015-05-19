@@ -12,7 +12,7 @@ import matlab.unittest.TestSuite
 %
 % Results are outputted in TAP format to outFilePathRelative
 %
-testFilePathRelative = '../ModuleTests/LoadImagesTest.m';
+testFilePathRelative = '../ModuleTests/SaveSegmentedObjectsTest.m';
 outFilePathRelative = '../testsOutput.tap';
 
 % Adds the CellProfilerPelkmans base dir, and all sub-folders to the current path

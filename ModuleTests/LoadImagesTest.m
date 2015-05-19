@@ -12,9 +12,8 @@ classdef LoadImagesTest < matlab.unittest.TestCase
             pathOld = 'S:\Data\Users\Owen\TestDatasets\Dataset 3\TIFF';
             pathNew = absolutePathFromRelative('Input/A/TIFF');
             
-            testCase.A1_HandlesIn = getRewrittenTestHandles(dirTestsSub,'A/handles_in', pathOld, pathNew);
-            
-            testCase.A1_HandlesOut = getRewrittenTestHandles(dirTestsSub,'A/handles_out', pathOld, pathNew);
+            testCase.A1_HandlesIn = getTestHandlesRewrite(dirTestsSub,'A/handles_in', pathOld, pathNew);
+            testCase.A1_HandlesOut = getTestHandlesRewrite(dirTestsSub,'A/handles_out', pathOld, pathNew);
 
         end
     end

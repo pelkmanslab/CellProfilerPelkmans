@@ -81,16 +81,20 @@ This test-data can be reused for testing multiple modules.
 ### Step 3: Write a verification test
 
 1. Add a new test in *ModuleTests* following the *ModuleName*Test.m filename pattern.
-2. Copy an existing-test and update the functions and paths accordingly:
-	* Some modules **do not** operate on file-paths:
-		* We can skip any rewriting of paths within *handles*.
-		* We use the *getTestHandles* function.
-		* This should be our *first-try*.
-		* As an example, see *DiscardObjectsBySizeTest.m*.
-	* Some modules **do** operate on file-paths.
-		* We must rewrite paths within *handles*.
-		* We use the *getRewrittenTestHandles* function.
-		* This should be our *second-try*.
-		* As an example, see *IlluminationCorrectionPelkmansTest.m*.
+2. Copy an existing-test and update the functions and paths accordingly. Choose a suitable template test, as explained in the subsequent section.
 3. Check that the test works locally, by running *runSpecificTest.m* or *runAllTests.m* with *Scripts/* as your current working directory.
 4. Commit and sync with GitHub. Jenkins will run the test remotely. You will get an email if any tests fail.
+
+## Choosing a template test
+
+Modules modify the *handles* structure-array. But they vary in their file I/O:
+
+1. **Some don't do any file I/O.** Use *getTestHandlesUnchanged* function. See  *DiscardObjectsBySizeTest.m*
+2. **Some read files.** Use *getTestHandlesRewrite* function. See  *IlluminationCorrectionPelkmansTest.m*
+3. **Some read/write files.** Use *getTestHandlesCopy* function. See  *SaveSegmentedObjectsTest.m*
+
+Choose the correct case based upon knowledge of the module. Or trial and error, in the above order.
+
+Path-rewriting needs to occur in case 2 and 3.
+
+We consider the test-data as read-only: explicitly so in Jenkins. Accordingly for test 3, a local copy of the test-data is first-made, and deleted afterwards. These tests also need a *TemporaryFolderFixture* in Matlab.
