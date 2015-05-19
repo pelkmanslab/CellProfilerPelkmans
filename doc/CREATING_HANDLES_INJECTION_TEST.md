@@ -92,5 +92,5 @@ This test-data can be reused for testing multiple modules.
 		* We use the *getRewrittenTestHandles* function.
 		* This should be our *second-try*.
 		* As an example, see *IlluminationCorrectionPelkmansTest.m*.
-3. Check that the test works locally, by running *runAllTests.m* with *Scripts/* as your current working directory.
+3. Check that the test works locally, by running *runSpecificTest.m* or *runAllTests.m* with *Scripts/* as your current working directory.
 4. Commit and sync with GitHub. Jenkins will run the test remotely. You will get an email if any tests fail.
