@@ -18,7 +18,7 @@ function [handles] = captureHandles( handles )
 %   3. Rename the DelgateTemp call to DiscardObjectsBySizeTemp
 %
 %   4. Run CellProfiler, and each time the function is called, it will
-%   write
+%   write handles_in_001.mat etc. to the current working directory.
 %
 %   5. When finished, delete DiscardObjectsBySize.m and restore
 %   DiscardObjectsBySizeTemp.m to its original name
@@ -32,10 +32,10 @@ function [handles] = captureHandles( handles )
        indexNum = indexNum + 1;
     end
 
-    save( sprintf('handles_in_%d.mat',indexNum), handles );
+    save( sprintf('handles_in_%03d.mat',indexNum), handles );
     
     handles = DelegateTemp( handles );
 
-    save( sprintf('handles_out_%d.mat',indexNum), handles );
+    save( sprintf('handles_out_%03d.mat',indexNum), handles );
 end
 
