@@ -21,7 +21,7 @@ function [handles] = captureHandles( handles )
 %   write handles_in_001.mat etc. to the current working directory.
 %
 %   5. When finished, delete DiscardObjectsBySize.m and restore
-%   DiscardObjectsBySizeTemp.m to its original name
+%   DiscardObjectsBySizeTemp.m to its original name. Update function name.
 %      DiscardObjectsBySizeTemp.m -> DiscardObjectsBySize
 %
     persistent indexNum;
