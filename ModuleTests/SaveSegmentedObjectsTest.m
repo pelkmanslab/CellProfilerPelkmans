@@ -1,4 +1,4 @@
-classdef RelateTest < matlab.unittest.TestCase
+classdef SaveSegmentedObjectsTest < matlab.unittest.TestCase
  
     methods(TestMethodSetup)
     end
@@ -9,7 +9,7 @@ classdef RelateTest < matlab.unittest.TestCase
     methods(Test)
         function handlesMatchC(testCase)
       
-            dirTestsSub = 'State/Relate';
+            dirTestsSub = 'State/SaveSegmentedObjects';
             
             pathOld = 'S:\Data\Users\Owen\TestDatasets\Dataset 5';
             pathNew = absolutePathFromRelative('Input/C');
@@ -17,7 +17,7 @@ classdef RelateTest < matlab.unittest.TestCase
             handlesIn = getRewrittenTestHandles(dirTestsSub,'C/handles_in', pathOld, pathNew);
             handlesOut = getRewrittenTestHandles(dirTestsSub,'C/handles_out', pathOld, pathNew);
             
-            testResult = IdentifySpots2D( handlesIn );
+            testResult = SaveSegmentedObjects( handlesIn );
             testCase.verifyTrue( isequal(testResult, handlesOut) );            
         end
     end
