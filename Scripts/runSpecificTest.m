@@ -1,6 +1,6 @@
 import matlab.unittest.TestSuite
 %
-% Script to execute ALL matlab tests in the project
+% Script to execute a specific matlab test from a XXXXXTest.m
 %
 % See:
 % http://ch.mathworks.com/help/matlab/ref/matlab.unittest.plugins.tapplugin-class.html
@@ -12,7 +12,7 @@ import matlab.unittest.TestSuite
 %
 % Results are outputted in TAP format to outFilePathRelative
 %
-topLevelMatlabFolder = '../ModuleTests';
+testFilePathRelative = '../ModuleTests/LoadImagesTest.m';
 outFilePathRelative = '../testsOutput.tap';
 
 % Adds the CellProfilerPelkmans base dir, and all sub-folders to the current path
@@ -24,9 +24,8 @@ checkTestInit();
 
 runner = createTestRunner(outFilePathRelative);
 
-% All tests from the main library folder (recursively)
-suites = matlab.unittest.TestSuite.fromFolder(topLevelMatlabFolder, 'IncludingSubfolders', true);
-result = runner.run(suites);
+suite = matlab.unittest.TestSuite.fromFile(testFilePathRelative);
+result = runner.run(suite);
 
 % Display TAP file
 disp(fileread(outFileResolved))
