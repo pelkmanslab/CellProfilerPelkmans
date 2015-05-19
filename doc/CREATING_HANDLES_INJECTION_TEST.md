@@ -69,4 +69,28 @@ This test-data can be reused for testing multiple modules.
 	2. Then by *A, B, C, etc.* referring to the associated input data (From Step 1)
 	3. Then by *handles\_in.mat* or *handles\_out.mat*.
 
-6. Each of these folder has a file *pathOld.txt* that records the images-directory used when the snapshops were made. This will be recorded within the *handles* data structures. It is used for search-and-replace operations during the unit tests, to update the paths to a new location.
+6. Store the *recording-path* in a file *pathOld.txt* that records the images-directory used when the snapshots were made. This is:
+	* **NB: This step is important.**
+	* The exact path used when the state was recorded e.g.
+		> S:\Data\Users\Owen\TestDatasets\Dataset 5
+		
+	* It is the folder where the pipeline resides (e.g. parent folder of *TIFF/*)
+	* It will vary by operating-system.
+	* Do not include a trailing /
+	
+### Step 3: Write a verification test
+
+1. Add a new test in *ModuleTests* following the *ModuleName*Test.m filename pattern.
+2. Copy an existing-test and update the functions and paths accordingly:
+	* Some modules **do not** operate on file-paths:
+		* We can skip any rewriting of paths within *handles*.
+		* We use the *getTestHandles* function.
+		* This should be our *first-try*.
+		* As an example, see *DiscardObjectsBySizeTest.m*.
+	* Some modules **do** operate on file-paths.
+		* We must rewrite paths within *handles*.
+		* We use the *getRewrittenTestHandles* function.
+		* This should be our *second-try*.
+		* As an example, see *IlluminationCorrectionPelkmansTest.m*.
+3. Check that the test works locally, by running *runAllTests.m* with *Scripts/* as your current working directory.
+4. Commit and sync with GitHub. Jenkins will run the test remotely. You will get an email if any tests fail.
