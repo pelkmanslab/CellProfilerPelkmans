@@ -16,14 +16,7 @@ function handles = CreateBatchFiles(handles)
 % Batch Processing. That help file also will instruct you on how to
 % actually run the batch files that are created by this module.
 %
-% Settings:
-% MATLAB or Compiled: If your cluster has MATLAB licenses for every node,
-% you can use either the full MATLAB source code (i.e. the Developer's
-% version) or the CPCluster MATLAB source code. If you do not have MATLAB
-% licenses for every node of your cluster, you can use the Compiled version
-% of CPCluster. These versions are available at www.cellprofiler.org. For
-% more information, please read Help -> Getting Started -> Batch
-% Processing.
+% We always use "Compiled" mode and it is not a setting anymore.
 %
 % Batch Size: This determines how many images will be analyzed in each set.
 % Under normal use, you do not want your batch size to be too large. If one
@@ -97,7 +90,7 @@ function handles = CreateBatchFiles(handles)
 %
 % Website: http://www.cellprofiler.org
 %
-% $Revision: 3417 $
+% $Revision: 3418 $
 
 %%%%%%%%%%%%%%%%%
 %%% VARIABLES %%%
@@ -106,51 +99,45 @@ drawnow
 
 [CurrentModule, CurrentModuleNum, ModuleName] = CPwhichmodule(handles);
 
-%textVAR01 = Is your cluster using the MATLAB version or the compiled version of CPCluster?
-%choiceVAR01 = Compiled
-%choiceVAR01 = MATLAB
-FileChoice = char(handles.Settings.VariableValues{CurrentModuleNum,1});
-%inputtypeVAR01 = popupmenu
-
-%textVAR02 = How many cycles should be in each batch?
-%defaultVAR02 = 5
+%textVAR01 = How many cycles should be in each batch?
+%defaultVAR01 = 5
 BatchSize = str2double(char(handles.Settings.VariableValues{CurrentModuleNum,2}));
 
-%textVAR03 = What prefix should be used to name the batch files?
-%defaultVAR03 = Batch_
+%textVAR02 = What prefix should be used to name the batch files?
+%defaultVAR02 = Batch_
 BatchFilePrefix = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 
-%pathnametextVAR04 = If you chose the MATLAB option, what is the path to the CellProfiler folder on the cluster machines?  Leave a period (.) to use the parent of the default module folder.
-%defaultVAR04 = .
+%pathnametextVAR03 = If you chose the MATLAB option, what is the path to the CellProfiler folder on the cluster machines?  Leave a period (.) to use the parent of the default module folder.
+%defaultVAR03 = .
 BatchCellProfilerPath = char(handles.Settings.VariableValues{CurrentModuleNum,4});
 
-%pathnametextVAR05 = What is the path to the image folder on the cluster machines? Leave a period (.) to use the default image folder.
-%defaultVAR05 = .
+%pathnametextVAR04 = What is the path to the image folder on the cluster machines? Leave a period (.) to use the default image folder.
+%defaultVAR04 = .
 BatchImagePath = char(handles.Settings.VariableValues{CurrentModuleNum,5});
 
-%pathnametextVAR06 = What is the path to the folder where batch output should be written on the cluster machines? Leave a period (.) to use the default output folder.
-%defaultVAR06 = .
+%pathnametextVAR05 = What is the path to the folder where batch output should be written on the cluster machines? Leave a period (.) to use the default output folder.
+%defaultVAR05 = .
 BatchOutputPath = char(handles.Settings.VariableValues{CurrentModuleNum,6});
 
-%pathnametextVAR07 = What is the path to the folder where you want to save the batch files? Leave a period (.) to use the default output directory.
-%defaultVAR07 = .
+%pathnametextVAR06 = What is the path to the folder where you want to save the batch files? Leave a period (.) to use the default output directory.
+%defaultVAR06 = .
 BatchSavePath = char(handles.Settings.VariableValues{CurrentModuleNum,7});
 
-%pathnametextVAR08 = What is the path to the folder where the batch data file will be saved on the cluster machines? Leave a period (.) to use the default output folder.
-%defaultVAR08 = .
+%pathnametextVAR07 = What is the path to the folder where the batch data file will be saved on the cluster machines? Leave a period (.) to use the default output folder.
+%defaultVAR07 = .
 BatchRemotePath = char(handles.Settings.VariableValues{CurrentModuleNum,8});
 
-%pathnametextVAR09 = If pathnames are specified differently between the local and cluster machines, enter that part of the pathname from the local machine's perspective, omitting trailing slashes. Otherwise, leave a period (.)
-%defaultVAR09 = .
+%pathnametextVAR08 = If pathnames are specified differently between the local and cluster machines, enter that part of the pathname from the local machine's perspective, omitting trailing slashes. Otherwise, leave a period (.)
+%defaultVAR08 = .
 OldPathname = char(handles.Settings.VariableValues{CurrentModuleNum,9});
 
-%pathnametextVAR10 = If pathnames are specified differently between the local and cluster machines, enter that part of the pathname from the cluster machines' perspective, omitting trailing slashes. Otherwise, leave a period (.)
-%defaultVAR10 = .
+%pathnametextVAR09 = If pathnames are specified differently between the local and cluster machines, enter that part of the pathname from the cluster machines' perspective, omitting trailing slashes. Otherwise, leave a period (.)
+%defaultVAR09 = .
 NewPathname = char(handles.Settings.VariableValues{CurrentModuleNum,10});
 
-%textVAR11 = Note: This module must be the last one in the analysis pipeline.
+%textVAR10 = Note: This module must be the last one in the analysis pipeline.
 
-%%%VariableRevisionNumber = 7
+%%%VariableRevisionNumber = 8
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PRELIMINARY CALCULATIONS & FILE HANDLING %%%
@@ -317,62 +304,28 @@ end
 for n = 2:BatchSize:handles.Current.NumberOfImageSets,
     StartImage = n;
     EndImage = min(StartImage + BatchSize - 1, handles.Current.NumberOfImageSets);
-    if strcmpi(FileChoice,'MATLAB')
-        BatchFileName = sprintf('%s%d_to_%d.m', BatchFilePrefix, StartImage, EndImage);
-        BatchFile = fopen(fullfile(BatchSavePath, BatchFileName), 'wt');
-        fprintf(BatchFile, 'addpath(genpath(''%s''));\n', BatchCellProfilerPath);
-        fprintf(BatchFile, 'BatchFilePrefix = ''%s'';\n', BatchFilePrefix);
-        fprintf(BatchFile, 'StartImage = %d;\n', StartImage);
-        fprintf(BatchFile, 'EndImage = %d;\n', EndImage);
-        fprintf(BatchFile, 'tic;\n');
-        fprintf(BatchFile, 'load([''%s/'' BatchFilePrefix ''data.mat'']);\n', BatchRemotePath);
-        fprintf(BatchFile, 'handles.Current.BatchInfo.Start = StartImage;\n');
-        fprintf(BatchFile, 'handles.Current.BatchInfo.End = EndImage;\n');
-        fprintf(BatchFile, 'for BatchSetBeingAnalyzed = StartImage:EndImage,\n');
-        fprintf(BatchFile, '    disp(sprintf(''Analyzing set %%d'', BatchSetBeingAnalyzed));\n');
-        fprintf(BatchFile, '    toc;\n');
-        fprintf(BatchFile, '    handles.Current.SetBeingAnalyzed = BatchSetBeingAnalyzed;\n');
-        fprintf(BatchFile, '    for SlotNumber = 1:handles.Current.NumberOfModules,\n');
-        fprintf(BatchFile, '        ModuleNumberAsString = sprintf(''%%02d'', SlotNumber);\n');
-        fprintf(BatchFile, '        ModuleName = char(handles.Settings.ModuleNames(SlotNumber));\n');
-        fprintf(BatchFile, '        handles.Current.CurrentModuleNumber = ModuleNumberAsString;\n');
-        fprintf(BatchFile, '        try\n');
-        fprintf(BatchFile, '            handles = feval(ModuleName,handles);\n');
-        fprintf(BatchFile, '        catch\n');
-        fprintf(BatchFile, '            handles.BatchError = [ModuleName '' '' lasterr];\n');
-        fprintf(BatchFile, '            disp([''Batch Error: '' ModuleName '' '' lasterr]);\n');
-        fprintf(BatchFile, '            rethrow(lasterror);\n');
-        fprintf(BatchFile, '            quit;\n');
-        fprintf(BatchFile, '        end\n');
-        fprintf(BatchFile, '    end\n');
-        fprintf(BatchFile, 'end\n');
-        fprintf(BatchFile, 'cd(''%s'');\n', BatchOutputPath);
-        fprintf(BatchFile, 'handles.Pipeline = [];');
-        fprintf(BatchFile, 'eval([''save '',sprintf(''%%s%%d_to_%%d_OUT'', BatchFilePrefix, StartImage, EndImage), '' handles;'']);\n');
-        fclose(BatchFile);
-    elseif strcmpi(FileChoice,'Compiled')
-        BatchFileName = sprintf('%s%d_to_%d.mat', BatchFilePrefix, StartImage, EndImage);
-        cluster.StartImage = StartImage;
-        cluster.EndImage = EndImage;
-        cluster.BatchFilePrefix = BatchFilePrefix;
-        cluster.OutputFolder = BatchOutputPath;
-        save(fullfile(BatchSavePath, BatchFileName),'cluster','-v6');
-
+    
+    % Note: we always use the following = "Compiled" version
+    BatchFileName = sprintf('%s%d_to_%d.mat', BatchFilePrefix, StartImage, EndImage);
+    cluster.StartImage = StartImage;
+    cluster.EndImage = EndImage;
+    cluster.BatchFilePrefix = BatchFilePrefix;
+    cluster.OutputFolder = BatchOutputPath;
+    save(fullfile(BatchSavePath, BatchFileName),'cluster','-v6');
 %[BS] included for our cluster analysis: output a textfile that stores the
 %exact image names and input/ouput locations
-        BatchTextFileName = sprintf('%s%d_to_%d.txt', BatchFilePrefix, StartImage, EndImage);
-        BatchTextFile = fopen(fullfile(BatchSavePath, BatchTextFileName), 'wt');        
-        %include all channel images
-        PipelineFieldNames = fieldnames(handles.Pipeline);
-        FileListMatchIndexes = find(~cellfun('isempty',strfind(PipelineFieldNames,'FileList')));
-        for FileList = FileListMatchIndexes'
-            for nn = StartImage:EndImage
-                fprintf(BatchTextFile, '%s\n', char(handles.Pipeline.(char(PipelineFieldNames{FileList})){nn}));
-            end
+    BatchTextFileName = sprintf('%s%d_to_%d.txt', BatchFilePrefix, StartImage, EndImage);
+    BatchTextFile = fopen(fullfile(BatchSavePath, BatchTextFileName), 'wt');        
+    %include all channel images
+    PipelineFieldNames = fieldnames(handles.Pipeline);
+    FileListMatchIndexes = find(~cellfun('isempty',strfind(PipelineFieldNames,'FileList')));
+    for FileList = FileListMatchIndexes'
+        for nn = StartImage:EndImage
+            fprintf(BatchTextFile, '%s\n', char(handles.Pipeline.(char(PipelineFieldNames{FileList})){nn}));
         end
-        fclose(BatchTextFile);
-        
     end
+    fclose(BatchTextFile);        
+    
 end
 
 CPhelpdlg('[BS] Batch files have been written.  This analysis pipeline will now stop.  You should submit the batch files for processing on your cluster. See Help > General Help > BatchProcessing for more information.', 'BatchFilesDialog');
