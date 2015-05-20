@@ -87,7 +87,7 @@ This test-data can be reused for testing multiple modules.
 
 ## Choosing a template test
 
-Modules modify the *handles* structure-array. But they vary in their file I/O:
+Modules modify the *handles* structure-array. But they vary in their file I/O, with three cases:
 
 1. **Some don't do any file I/O.** Use *getTestHandlesUnchanged* function. See  *DiscardObjectsBySizeTest.m*
 2. **Some read files.** Use *getTestHandlesRewrite* function. See  *IlluminationCorrectionPelkmansTest.m*
@@ -97,4 +97,4 @@ Choose the correct case based upon knowledge of the module. Or trial and error, 
 
 Path-rewriting needs to occur in Case 2 and 3.
 
-We consider the test-data as read-only: explicitly so in Jenkins. Accordingly for Case 3, a local copy of the test-data is first-made, and deleted afterwards. These tests also need a *TemporaryFolderFixture* in Matlab.
+We consider the test-data as read-only; Jenkins explicitly mounts test-data as read-only. Accordingly for Case 3, a local copy of the test-data is first-made, and deleted afterwards. These tests also need a *TemporaryFolderFixture* in Matlab.
