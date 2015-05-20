@@ -152,7 +152,7 @@ iDoBiasCorrection = char(handles.Settings.VariableValues{CurrentModuleNum,10});
 iCorrectionName = char(handles.Settings.VariableValues{CurrentModuleNum,11});
 %inputtypeVAR11 = popupmenu
 
-%%VariableRevisionNumber = 5
+%%%VariableRevisionNumber = 5
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
