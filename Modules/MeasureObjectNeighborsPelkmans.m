@@ -49,11 +49,11 @@ ObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 %inputtypeVAR01 = popupmenu
 
 %textVAR02 = How many pixels do you maximally expand away from object?
-%defaultVAR02 = 2
+%defaultVAR02 = 10
 distanceToObjectMax = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 
 %textVAR03 = How many pixels do you minimally expand away from object?
-%defaultVAR03 = 2
+%defaultVAR03 = 5
 distanceToObjectMin = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 
 %%%VariableRevisionNumber = 4
