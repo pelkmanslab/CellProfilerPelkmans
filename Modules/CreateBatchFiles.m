@@ -108,7 +108,6 @@ drawnow
 
 %textVAR01 = Is your cluster using the MATLAB version or the compiled version of CPCluster?
 %choiceVAR01 = Compiled
-%choiceVAR01 = MATLAB
 FileChoice = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 %inputtypeVAR01 = popupmenu
 
