@@ -34,10 +34,4 @@ Within each folder, follow a typical pipeline structure:
 * Store pipelines in root folder.
 
 ### *State/*
-Snapshots of execution state (e.g. serialized *handles* files) from matlab. They are grouped:
-
-1. The purpose of the test (e.g. a module name)
-2. Then by *A, B, C, etc.* referring to the associated input data
-3. Then by a number in the filename *1\_handles\_in.mat*, as there might be several cases. Please preserve the filename pattern.
-
-Each of these folder has a file *pathOld.txt* that records the images-directory used when the snapshops were made. This will be recorded within the *handles* data structures. It is used for search-and-replace operations during the unit tests, to update the paths to a new location.
+Snapshots of execution state (e.g. serialized *handles* files) from matlab.
