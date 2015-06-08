@@ -17,7 +17,7 @@ classdef RelateTest < matlab.unittest.TestCase
             handlesIn = testHandlesRewrite(dirTestsSub,'C/handles_in', pathOld, pathNew);
             handlesOut = testHandlesRewrite(dirTestsSub,'C/handles_out', pathOld, pathNew);
             
-            testResult = IdentifySpots2D( handlesIn );
+            testResult = Relate( handlesIn );
             testCase.verifyTrue( isequal(testResult, handlesOut) );            
         end
     end
