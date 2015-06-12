@@ -19,7 +19,7 @@ classdef (SharedTestFixtures={matlab.unittest.fixtures.TemporaryFolderFixture}) 
             handlesOut = testHandlesCopy(dirTestsSub,'C/handles_out', pathOld, pathNew, testCase);
             
             testResult = SaveSegmentedObjects( handlesIn );
-            testCase.verifyTrue( isequal(testResult, handlesOut) );            
+            testHandlesVerifyEqual(testCase, testResult, handlesOut);
         end
     end
 end

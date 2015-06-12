@@ -14,7 +14,7 @@ classdef MeasureObjectNeighborsPelkmansTest < matlab.unittest.TestCase
             handlesOut = testHandlesUnchanged(dirTestsSub,'C/handles_out');
             
             testResult = MeasureObjectNeighborsPelkmans( handlesIn );
-            testCase.verifyTrue( isequal(testResult, handlesOut) );
+            testHandlesVerifyEqual(testCase, testResult, handlesOut);
         end
     end
 end

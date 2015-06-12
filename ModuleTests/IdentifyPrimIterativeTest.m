@@ -18,7 +18,7 @@ classdef IdentifyPrimIterativeTest < matlab.unittest.TestCase
             handlesOut = testHandlesRewrite(dirTestsSub,'D/handles_out', pathOld, pathNew);
         
             testResult = IdentifyPrimIterative( handlesIn );
-            testCase.verifyTrue( isequal(testResult, handlesOut) );
+            testHandlesVerifyEqual(testCase, testResult, handlesOut);
         end
 
     end

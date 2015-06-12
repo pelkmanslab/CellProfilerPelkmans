@@ -28,7 +28,7 @@ classdef LoadImagesTest < matlab.unittest.TestCase
     methods(Test)
         function handlesMatchA(testCase)
             testResult = LoadImages( testCase.A1_HandlesIn );
-            testCase.verifyTrue( isequal(testResult, testCase.A1_HandlesOut) );
+            testHandlesVerifyEqual(testCase, testResult, handlesOut);
         end
     end
 
