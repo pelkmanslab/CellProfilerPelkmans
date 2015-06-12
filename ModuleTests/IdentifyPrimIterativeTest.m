@@ -10,6 +10,13 @@ classdef IdentifyPrimIterativeTest < matlab.unittest.TestCase
         function handlesMatchD(testCase)
             
             dirTestsSub = 'State/IdentifyPrimIterative';
+
+            pathOld = '/Users/mdh/jtui/expdata/150316-30min-PBS/150316-30min-PBS_03';
+            pathNew = absolutePathFromRelative('Input/D');
+            
+            handlesIn = testHandlesRewrite(dirTestsSub,'D/handles_in', pathOld, pathNew);
+            handlesOut = testHandlesRewrite(dirTestsSub,'D/handles_out', pathOld, pathNew);
+
             handlesIn = testHandlesUnchanged(dirTestsSub,'D/handles_in');
             handlesOut = testHandlesUnchanged(dirTestsSub,'D/handles_out');
             
