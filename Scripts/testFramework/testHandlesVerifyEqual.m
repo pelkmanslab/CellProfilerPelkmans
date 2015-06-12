@@ -5,7 +5,7 @@ function testHandlesVerifyEqual( testCase, testResult, handlesOut )
     match = isequal(testResult, handlesOut);
     
     if match==0 
-        disp('\n\nNot matching. Starting a diff of the two objects:');        
+        fprintf('\n\nNot matching. Starting a diff of the two objects:');        
         structcmp(testResult, handlesOut, 'Report', 'on')
     end
     
