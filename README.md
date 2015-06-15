@@ -1,22 +1,39 @@
-CellProfilerPelkmans -- "refactor_modules" branch
-=================================================
+CellProfilerPelkmans
+====================
 
-The purpose of this branch is to refactor modules in such a way that GUI and input/output handling is separated from the actual image processing.
+A customized-version of [CellProfiler1.0](http://cellprofiler.org/previousReleases.shtml) maintained by members of [Pelkmans Lab](https://www.pelkmanslab.org).
 
-To this end, each module will be separated into two parts:
-- A *main* function (the actual "module") which is concerned with reading input from the **handles** structure and writing output to the handles structure. It mustn't deal with image processing.
-- One or several *sub* functions, which receive input and return output in a **handles independent** way. They do the actual image processing.
+Major differences to the original version:
+* many additional custom modules
 
-The subfunctions are
-- bundled in a *library* (a location outside of the module files)
-- organized as [packages](http://ch.mathworks.com/help/matlab/matlab_oop/scoping-classes-with-packages.html)
-- [imported](http://ch.mathworks.com/help/matlab/ref/import.html) explicitly by modules
+## How to install?
 
-This structure will allow testing of code outside the GUI framework and reuse by other tools, such as [Jterator](https://github.com/pelkmanslab/JtLib).
+CellProfilerPelkmans is part of each [iBRAIN_UZH release](https://github.com/pelkmanslab/iBRAIN_UZH/releases) in *iBRAIN/tools/CellProfilerPelkmans*.
+
+Please follow the instructions in the [iBRAIN_UZH User Guide](https://github.com/pelkmanslab/iBRAIN_UZH/blob/master/doc/USER_GUIDE.md)
+
+## Dependencies ##
+
+Some CellProfilerPelkmans modules depend on Matlab code that resides outside of this repository - specifically in [PelkmansLibrary](https://github.com/pelkmanslab/PelkmansLibrary). This is also part of each iBRAIN_UZH release.
+
+## After installation
+
+Now you are ready to go.
+
+Open your Matlab application and type:
+```{matlab}
+CellProfiler
+```
+
+This will start the CellProfiler program and open the GUI window. 
 
 
-Modules to start with
----------------------
+## Reference Documentation ##
 
-- IdentifyPrimIterative
-- IdentifySecondaryIterative
+Reference documentation is found in several locations:
+* [Modules API Documentation](http://jenkins.pelkmanslab.org/job/CellProfilerPelkmans_Master/CellProfilerPelkmans_API_Documentation/workspace/Modules/index.html). It is updated automatically daily, and contails all modules.
+* [CellProfiler manual](http://cellprofiler.org/linked_files/Documentation/cp1_manual_9717.pdf). Standard modules only.
+* [CellProfilerPelkmans Wiki](https://github.com/pelkmanslab/CellProfilerPelkmans/wiki). Custom modules only.
+* [List of Standard Modules](doc/LIST_OF_STANDARD_MODULES.md). Standard modules only.
+
+Further documentation can be found in the actual Matlab functions (.m files). This information can also be queried from the GUI using the `?` button.
