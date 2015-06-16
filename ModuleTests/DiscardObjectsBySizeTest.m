@@ -14,7 +14,7 @@ classdef DiscardObjectsBySizeTest < matlab.unittest.TestCase
             handlesOut = testHandlesUnchanged(dirTestsSub,'C/handles_out');
             
             testResult = DiscardObjectsBySize( handlesIn );
-            testCase.verifyTrue( isequal(testResult, handlesOut) );
+            testHandlesVerifyEqual(testCase, testResult, handlesOut);
         end
     end
 end
