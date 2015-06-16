@@ -1,3 +1,6 @@
 [submodule "lib/PelkmansLibrary"]
 	path = lib/PelkmansLibrary
 	url = git@github.com:pelkmanslab/PelkmansLibrary
+[submodule "lib/PelkmansLibraryImageAnalysis"]
+	path = lib/PelkmansLibraryImageAnalysis
+	url = git@github.com:pelkmanslab/PelkmansLibraryImageAnalysis.git
