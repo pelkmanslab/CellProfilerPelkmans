@@ -99,6 +99,12 @@ if isfield(handles.Measurements.(SubObjectName),'Parent')
                 MeasurementFeatures=handles.Measurements.(SubObjectName).(FieldName);
                 handles.Measurements.(NewObjectName).(FieldName)=MeasurementFeatures;
                 
+                % Adding a safe-check to avoid copying of non-existing rows with measurements for related objects.
+                if handles.Current.SetBeingAnalyzed > numel(handles.Measurements.(SubObjectName).(FieldName(1:end-8)))
+                    disp(['Relate.m: Warning! Ignoring copying measurements of ' MeasurementFeatures{:} ' for ' SubObjectName '::' (FieldName(1:end-8)) '. Index of current analyzed set exceeds dimensions.']);
+                    continue
+                end
+                
                 Measurements=handles.Measurements.(SubObjectName).(FieldName(1:end-8)){handles.Current.SetBeingAnalyzed};
                 for i=1:length(MeasurementFeatures)
                     for j=1:max(max(ParentObjectLabelMatrix))
