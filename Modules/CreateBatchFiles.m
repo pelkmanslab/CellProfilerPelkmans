@@ -300,7 +300,7 @@ handles.Measurements.Image.ModuleError{handles.Current.SetBeingAnalyzed}(1,Curre
 %%% Saves the altered handles in a file which the user will feed to
 %%% the remote machines.
 PathAndFileName = fullfile(BatchSavePath, [BatchFilePrefix 'data.mat']);
-save(PathAndFileName, 'handles', '-v6');
+save(PathAndFileName, 'handles', '-v7.3');
 
 %%% Reverts to the preserved handles. This prevents errors from
 %%% occurring as a result of the fact that we have changed the default
@@ -355,7 +355,7 @@ for n = 2:BatchSize:handles.Current.NumberOfImageSets,
         cluster.EndImage = EndImage;
         cluster.BatchFilePrefix = BatchFilePrefix;
         cluster.OutputFolder = BatchOutputPath;
-        save(fullfile(BatchSavePath, BatchFileName),'cluster','-v6');
+        save(fullfile(BatchSavePath, BatchFileName),'cluster','-v7.3');
 
 %[BS] included for our cluster analysis: output a textfile that stores the
 %exact image names and input/ouput locations
