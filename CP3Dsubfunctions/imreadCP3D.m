@@ -37,8 +37,12 @@ end
 if nargin < 3
     doIllumCorrection = false;
 else
-    doIllumCorrection = true;
-    checkInputOfStatValues(illum_stat_values);
+    if isempty(illum_stat_values)
+        doIllumCorrection = false;
+    else
+        doIllumCorrection = true;
+        checkInputOfStatValues(illum_stat_values);
+    end
 end
 
 % Check if strFilenames are unambiguous
