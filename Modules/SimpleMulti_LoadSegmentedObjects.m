@@ -83,6 +83,7 @@ ObjectName_Primary = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 
 %textVAR02 = Which second objects do you want to import (optional)? (e.g.: Cells). Ignore by keeping /
 %defaultVAR02 = /
+%infotypeVAR02 = objectgroup indep
 ObjectName_Secondary = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 
 %pathnametextVAR03 = From which reference acquistion should objects be imported?
@@ -135,9 +136,12 @@ createShiftedSegmentation = true; % depending on results, this switch will possb
 [strCorrespondingImage_trans, couldFindSameSite_image, strCorrespondingSegmentation_trans, couldFindSameSite_segmentation, strCorrespondingSegmentationSecondary_trans, couldFindSameSite_segmentation_Secondary] = ...
     getFileNameViaReferenceFile(handles, ObjectName_Primary, OrigImageName, ObjectName_Secondary);
 
+% Get current image
+Image_Cis = CPretrieveimage(handles,OrigImageName,ModuleName);
+
+
 % Obtain coordinates of overalap of cis image (this acquisition) and trans image (reference acquistion)
 if couldFindSameSite_image == true;
-    Image_Cis = CPretrieveimage(handles,OrigImageName,ModuleName);
     readFun = @(x) double(imread(x)) ./ (2^16-1);
     Image_Trans = readFun(fullfile(TiffFolder_trans, strCorrespondingImage_trans));
     [NSWE_Cis, NSWE_Trans]  = getNSWEofOverlappingImageparts(Image_Cis, Image_Trans);
@@ -150,14 +154,14 @@ if couldFindSameSite_segmentation == true;
     OrigSegmentation = double(imread(fullfile(SegmentationFolder_trans, strCorrespondingSegmentation_trans)));
 else
     createShiftedSegmentation = false;
-    OrigSegmentation = zeros(size(Image_Trans));
+    OrigSegmentation = zeros(size(Image_Cis));
 end
 
 % Obtain Segmentation from secondaryObject
 if couldFindSameSite_segmentation_Secondary == true;
     OrigSegmentation_Secondary = double(imread(fullfile(SegmentationFolder_trans, strCorrespondingSegmentationSecondary_trans)));
 else
-    OrigSegmentation_Secondary = zeros(size(Image_Trans));
+    OrigSegmentation_Secondary = zeros(size(Image_Cis));
 end
 
 
@@ -881,5 +885,41 @@ kernc=exp((-i*2*pi/(nc*usfac))*( ifftshift([0:nc-1]).' - floor(nc/2) )*( [0:noc-
 kernr=exp((-i*2*pi/(nr*usfac))*( [0:nor-1].' - roff )*( ifftshift([0:nr-1]) - floor(nr/2)  ));
 out=kernr*in*kernc;
 return
+
+end
+
+
+
+function [CurrFileList, CurrDirectoryList] = getFilesAndDirectories(strInputDir,strFilter)
+CurrFileList = [];
+CurrDirectoryList = [];
+if nargin<2
+    doFilterStep = false;
+else
+    doFilterStep = true;
+end
+
+CurrFileListImport = CPdir(strInputDir);
+CurrFileListImport = struct2cell(CurrFileListImport);
+f = ~cell2mat(CurrFileListImport(2,:));
+if any(f)
+    CurrFileList = CurrFileListImport(1,f)';
+end
+if any(~f)
+    CurrDirectoryList = CurrFileListImport(1,~f);
+end
+
+if doFilterStep == true && ~isempty(CurrFileList)
+    f = cell2mat(cellfun(@(x) ~isempty(regexp(x,strFilter,'once')), CurrFileList,'UniformOutput',false));
+    CurrFileList = CurrFileList(f);
+        
+    f = cell2mat(cellfun(@(x) ~isempty(regexp(x,strFilter,'once')), CurrDirectoryList,'UniformOutput',false));
+    CurrDirectoryList = CurrDirectoryList(f);
+end
+
+f = ismember(CurrDirectoryList,{'.';'..';'.duc'});
+if any(f)
+    CurrDirectoryList = CurrDirectoryList(~f);
+end
 
 end
