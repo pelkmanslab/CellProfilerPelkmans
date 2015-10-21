@@ -9,8 +9,55 @@ function handles = SimpleMulti_LoadSegmentedObjects(handles)
 %
 % Since multiple acquisition usually have a slight shift, a image-channel 
 % (e.g.: DAPI) has to be specified for the current acquistion and the
-% reference acquistion. Note that this shift does not have to be
-% precomputed.
+% reference acquistion. 
+%
+% DIFFERENCES TO MPCYCLE MODULES:
+%
+% a) LABELLING OF OBJECTS CHANGES BETWEEN ACQUISTIONS. This is because 
+%    SimpleMulti_LoadSegmentedObjects uses continous labels for objects.
+%    This provides several mistakes in data output, which are introduced
+%    when this CP-default assumption of several modules is broken. This
+%    wrong data would be difficult to spot and only in rare occassions can
+%    results in a wrong number of objects (which will also cause
+%    computational error besides being indicative that measurments are
+%    allocated to wrong objects!). Data can still be combined via the 
+%    UnshiftedObjectId measuremnent created by this module. See below for
+%    detailed example.
+% b) Nothing has to be precomputed (e.g. no shiftdescriptor). 
+%    Simply adding this module suffices.
+% c) no later parts of iBrain has to be changed since every
+%    acquisition will be a normal ordinary acquistion that is not different
+%    from any ordinary acquistion. This also means that every function used
+%    for in-detail data exploration, after iBrain, will work as on any
+%    other ordinary experiment.
+% d) Acquistions do not have to be named a certain way. (allowing ad-hoc
+%    rescanning/combination of experiments)
+% e) Images are not cropped. This however does not affect the data output!
+% f) Acquistions do not have to be organised in hierarchical manner (e.g.:
+%    segmentation can be from first or last acquistion and there is no
+%    necessity to wait for other acquistions).
+% g) Only a single CellProfiler module is required.
+%
+%
+% If data from multiple different acquistions should be combined, please
+% use loading function (e.g.: getRawProbModelData2) separately. Fusion is
+% possible by using the Measurements_(whateverObject)_UnshiftedObjectId.mat
+% measurement created by this module. For each single object this contains
+% the object ID from the corresponding reference acquisition. e.g. along
+% the following pseudo-code, where Rows Columns ObjectID and UnshiftedIDs
+% refer to the numerical index of the columns that contain the
+% corresponding information
+% 
+% ID_within_reference_acquistion  = matMeta_reference(:,[Rows Columns ObjectID]);
+% ID_within_current_acquistion = [matMeta_current(:,[Rows Columns]) matData_current(:, UnshiftedIDs) ]     ;
+%
+% [is_also_in_reference_acquistion, pos_within_reference_acquistion] = ismember(ID_within_current_acquistion, ID_within_reference_acquistion, 'rows')
+% 
+% if any(~is_also_in_reference_acquistion)
+%   error('some data could not be matched. Please check code, possibly something is wrong in CP module')
+% else
+%   joinedData = [matData_current matData_reference(ID_within_reference_acquistion,:)];
+% end
 % *************************************************************************
 %
 % Authors:
@@ -28,7 +75,7 @@ drawnow
 
 
 %textVAR01 = Which objects do you want to import? (e.g.: Nuclei)
-%defaultVAR01 = Cells
+%defaultVAR01 = Nuclei
 %infotypeVAR01 = objectgroup indep
 ObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 
@@ -54,56 +101,30 @@ filterForImagesOfTrans = char(handles.Settings.VariableValues{CurrentModuleNum,4
 %%% INITIALIZATION   %%%
 %%%%%%%%%%%%%%%%%%%%%%%%
 
-
-% load('debug.mat')
-
-% ObjectName = 'Cell';
-% strTransPlate = npc('X:\Data\Users\Thomas\150920-Casp3FISH');
-% OrigImageName = 'OrigBlue';
-% filterForImagesOfTrans = 'C03.';
-% SetBeingAnalyzed = 100;
-% ImageName_cis = handles.Pipeline.FileListOrigBlue{100}; %%%%%%%%% DEV
-
-
-SetBeingAnalyzed = handles.Current.SetBeingAnalyzed;
-ImageName_cis = handles.Pipeline.(['Filename' OrigImageName]){SetBeingAnalyzed};
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% Input checking  %%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 strTransPlate = npc(Pathname);
 if ~any(fileattrib(strTransPlate))
     error('Could not find reference plate');
-end
-
-if any(strfind(strTransPlate, [filesep 'TIFF']))
-    error('Reference directory must refer to a plate folder, not the TIFF folder');
-end
-
-if any(strfind(strTransPlate, [filesep 'SEGMENTATION']))
-    error('Reference directory must refer to a plate folder, not the SEGMENTATION folder');
-end
-
-TiffFolder_trans = fullfile(strTransPlate, 'TIFF');
-if ~any(fileattrib(TiffFolder_trans))
-    error('Could not find TIFF folder of other plate');
-end
-
-SegmentationFolder_trans = fullfile(strTransPlate, 'SEGMENTATION');
-if ~any(fileattrib(SegmentationFolder_trans))
-    error('Could not find SEGMENTATION folder of other plate');
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% Computation  %%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-createShiftedSegmentation = true; % depending on results, this switch will possbily be changed.
 
-[strCorrespondingImage_trans, couldFindCorrespondingImage] = getFileNameFromTrans(ImageName_cis, TiffFolder_trans, filterForImagesOfTrans);
 
-if couldFindCorrespondingImage == true;
+%%%%%% FOR FIRST CYCLE %%%%%%%%%
+if handles.Current.SetBeingAnalyzed == 1
+      makeExternalBuffer(handles, strTransPlate, filterForImagesOfTrans, ObjectName);
+end
+
+%%%%%% FOR ALL CYCLES %%%%%%%%%%
+createShiftedSegmentation = true; % depending on results, this switch will possbily be turned (TS151021: creating a segmentation without objects).
+
+[TiffFolder_trans, SegmentationFolder_trans] = getSubFoldersFromTransPlate(strTransPlate);
+[strCorrespondingImage_trans, couldFindSameSite_image, strCorrespondingSegmentation_trans, couldFindSameSite_segmentation] = getFileNameViaReferenceFile(handles, ObjectName, OrigImageName);
+
+% Obtain coordinates of overalap of cis image (this acquisition) and trans image (reference acquistion)
+if couldFindSameSite_image == true;
     Image_Cis = CPretrieveimage(handles,OrigImageName,ModuleName);
     readFun = @(x) double(imread(x)) ./ (2^16-1);
     Image_Trans = readFun(fullfile(TiffFolder_trans, strCorrespondingImage_trans));
@@ -112,30 +133,23 @@ else
     createShiftedSegmentation = false;
 end
 
-if createShiftedSegmentation == true;
-    filterForSegmentationsOfTrans = ['Segmented' ObjectName '\.'];
-    
-    [strCorrespondingSegmentation_trans, couldFindCorrespondingSegmentation] = getFileNameFromTrans(ImageName_cis, SegmentationFolder_trans, filterForSegmentationsOfTrans);
-    if couldFindCorrespondingSegmentation == true;
-        OrigSegmentation = double(imread(fullfile(SegmentationFolder_trans, strCorrespondingSegmentation_trans)));
-    else
-        createShiftedSegmentation = false;
-        OrigSegmentation = zeros(size(Image_Trans));
-    end
+% Obtain Segmentation from reference acquisition
+if couldFindSameSite_segmentation == true;
+    OrigSegmentation = double(imread(fullfile(SegmentationFolder_trans, strCorrespondingSegmentation_trans)));
+else
+    createShiftedSegmentation = false;
+    OrigSegmentation = zeros(size(Image_Trans));
 end
 
 
-ShiftedSegmentationImage = zeros(size(Image_Cis),'double');
-if createShiftedSegmentation == true  % trivial case would be no segmentation
-    
+if createShiftedSegmentation == true  
+    ShiftedSegmentationImage = zeros(size(Image_Cis),'double');
+
+    % SHIFT ORIGINAL SEGMENTATION %
     ShiftedSegmentationImage(NSWE_Cis(1):NSWE_Cis(2), NSWE_Cis(3):NSWE_Cis(4)) = ...
         OrigSegmentation(NSWE_Trans(1):NSWE_Trans(2), NSWE_Trans(3):NSWE_Trans(4));
-    
-    
-    % %%%%%%%%%%%%%%%
-    % %%% RELABEL  %%
-    % %%%%%%%%%%%%%%%
-    
+        
+    % RELABEL  %
     
     % Since several CellProfiler modules will introduce error, if labelling
     % is not continous, make continuous labels;
@@ -244,7 +258,7 @@ if ~CPisHeadless()
         %%% A subplot of the figure window is set to display the colored label
         %%% matrix image.
         subplot(2,2,2);
-        if couldFindCorrespondingImage == true
+        if couldFindSameSite_image == true
             im = Image_Trans;
         else
             im = zeros(size(Image_Cis));
@@ -255,12 +269,12 @@ if ~CPisHeadless()
         subplot(2,2,3);
         ObjectOutlinesOnOrigImage = combineImageAndSegmentation(Image_Cis, relabelledSegmentation);
         CPimagesc(ObjectOutlinesOnOrigImage,handles);
-        colormap('jet')
         title([ObjectName, ' Outlines on Input Image']);
         
         
         subplot(2,2,4);
         CPimagesc(relabelledSegmentation,handles);
+        colormap('jet');
         clear ColoredLabelMatrixImage
         title(['Segmentation of ',ObjectName]);
         
@@ -272,20 +286,90 @@ end
 end
 
 
-function [strCorrespondingImage_trans, couldFindSameSite] = getFileNameFromTrans(ImageName_cis, Folder_trans, RegExp_trans)
+function makeExternalBuffer(handles, strTransPlate, filterForImagesOfTrans, ObjectName)
+% note that preferentially all data would be stored in pipeline. However
+% storing custom fields in handles.pipelines can lead to various errors.
+% While storing data in handles.measurements is technically possible there
+% would be various mistakes occuring if order of sites becomes rearranged
+% in batch files. Since there will always only be one segmentation of a
+% given name, there can be a buffer, that links to that name, and which is
+% overwritten, if a new pipeline is made
+
+
+[TiffFolder_trans, SegmentationFolder_trans] = getSubFoldersFromTransPlate(strTransPlate);
+
+
+
+% Images
+eB.strImages_trans = getFilesAndDirectories(TiffFolder_trans, filterForImagesOfTrans);
+[eB.Row_image_trans, eB.intColumn_image_trans, eB.intImagePosition_image_trans] = cellfun(@(x) MetaFromImageName(x), eB.strImages_trans, 'UniformOutput', true);
+
+% Segmentations 
+filterForSegmentationsOfTrans = ['Segmented' ObjectName '\.'];
+eB.strSegmentations_trans = getFilesAndDirectories(SegmentationFolder_trans, filterForSegmentationsOfTrans);
+[eB.Row_segmentations_trans, eB.intColumn_segmentations_trans, eB.intImagePosition_segmentations_trans] = cellfun(@(x) MetaFromImageName(x), eB.strSegmentations_trans, 'UniformOutput', true);
+
+
+strBufferFile = getFileNameOfBuffer(handles, ObjectName);
+
+if any(fileattrib(strBufferFile))
+    [~, ex] = fileparts(strBufferFile);
+    fprintf([ex ' already exists. It will be overwritten with current one.\n']);
+end
+
+save(strBufferFile, 'eB');
+end
+
+function strBufferFile = getFileNameOfBuffer(handles, ObjectName)
+
+outDir = handles.Current.DefaultOutputDirectory;
+ex = ['SimpleMulti_' ObjectName '.mat'];
+strBufferFile = fullfile(outDir, ex );
+
+end
+
+
+
+
+function [strCorrespondingImage_trans, couldFindSameSite_image, strCorrespondingSegmentation_trans, couldFindSameSite_segmentation] = getFileNameViaReferenceFile(handles, ObjectName, OrigImageName)
+% Avoid repeated, independent access to buffer file by reading segmentation
+% and images after same loading event. Note that the code thus becomes more
+% ugly and less readable.
+
+
+SetBeingAnalyzed = handles.Current.SetBeingAnalyzed;
+ImageName_cis = handles.Pipeline.(['Filename' OrigImageName]){SetBeingAnalyzed};
+
+strBufferFile = getFileNameOfBuffer(handles, ObjectName);
+
+if ~any(fileattrib(strBufferFile))
+   error('Could not find buffer file for object, that should be created during first cycle');    
+else
+   load(strBufferFile); 
+end
 
 [Row_cis, intColumn_cis, intImagePosition_cis] = MetaFromImageName(ImageName_cis);
 
-strImages_trans = getFilesAndDirectories(Folder_trans, RegExp_trans);
-[Row_trans, intColumn_trans, intImagePosition_trans] = cellfun(@(x) MetaFromImageName(x), strImages_trans, 'UniformOutput', true);
-correspondsToSameSite = Row_trans == Row_cis & intColumn_trans == intColumn_cis & intImagePosition_trans == intImagePosition_cis;
-
-if sum(correspondsToSameSite) == 0
-    couldFindSameSite = false;
+% get corresponding image from trans
+correspondsToSameSite_image = eB.Row_image_trans == Row_cis & eB.intColumn_image_trans == intColumn_cis & eB.intImagePosition_image_trans == intImagePosition_cis;
+if sum(correspondsToSameSite_image) == 0
+    couldFindSameSite_image = false;
     strCorrespondingImage_trans = '';
-elseif sum(correspondsToSameSite) == 1;
-    couldFindSameSite = true;
-    strCorrespondingImage_trans = strImages_trans{correspondsToSameSite};
+elseif sum(correspondsToSameSite_image) == 1;
+    couldFindSameSite_image = true;
+    strCorrespondingImage_trans = eB.strImages_trans{correspondsToSameSite_image};
+else
+    error('Could not unambiguously find corresponding image of other dataset. Please set more stringent filters.');
+end
+
+% get corresponding segmentation from trans
+correspondsToSameSite_segmentation = eB.Row_segmentations_trans == Row_cis & eB.intColumn_segmentations_trans == intColumn_cis & eB.intImagePosition_segmentations_trans == intImagePosition_cis;
+if sum(correspondsToSameSite_segmentation) == 0
+    couldFindSameSite_segmentation = false;
+    strCorrespondingSegmentation_trans = '';
+elseif sum(correspondsToSameSite_segmentation) == 1;
+    couldFindSameSite_segmentation = true;
+    strCorrespondingSegmentation_trans = eB.strSegmentations_trans{correspondsToSameSite_segmentation};
 else
     error('Could not unambiguously find corresponding image of other dataset. Please set more stringent filters.');
 end
@@ -293,6 +377,30 @@ end
 end
 
 
+
+function [TiffFolder_trans, SegmentationFolder_trans] = getSubFoldersFromTransPlate(strTransPlate)
+
+
+if any(strfind(strTransPlate, [filesep 'TIFF']))
+    error('Reference directory must refer to a plate folder, not the TIFF folder');
+end
+
+if any(strfind(strTransPlate, [filesep 'SEGMENTATION']))
+    error('Reference directory must refer to a plate folder, not the SEGMENTATION folder');
+end
+
+TiffFolder_trans = fullfile(strTransPlate, 'TIFF');
+if ~any(fileattrib(TiffFolder_trans))
+    error('Could not find TIFF folder of other plate');
+end
+
+SegmentationFolder_trans = fullfile(strTransPlate, 'SEGMENTATION');
+if ~any(fileattrib(SegmentationFolder_trans))
+    error('Could not find SEGMENTATION folder of other plate');
+end
+
+
+end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -651,12 +759,3 @@ out=kernr*in*kernc;
 return
 
 end
-
-
-
-
-
-
-
-
-
