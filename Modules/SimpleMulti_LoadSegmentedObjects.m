@@ -595,7 +595,7 @@ elseif SurplusRows == 0
     W_trans = 1;
     E_trans = imageWidth;
     
-elseif SurplusRows < 0
+elseif SurplusColumns < 0
     
     W_cis = -SurplusColumns + 1;
     E_cis = imageWidth;
