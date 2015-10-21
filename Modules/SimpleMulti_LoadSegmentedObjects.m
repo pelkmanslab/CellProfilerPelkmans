@@ -5,9 +5,9 @@ function handles = SimpleMulti_LoadSegmentedObjects(handles)
 %
 % SHORT DESCRIPTION:
 % Module, which loads the segmentation of an arbitrary different reference
-% acquisition (second user input). 
+% acquisition (second user input).
 %
-% Since multiple acquisition usually have a slight shift, a image-channel 
+% Since multiple acquisition usually have a slight shift, a image-channel
 % (e.g.: DAPI) has to be specified for the current acquistion and the
 % reference acquistion. Note that the alignment is very robust against
 % illumination artifacts and thus can be done with images that are not
@@ -15,18 +15,18 @@ function handles = SimpleMulti_LoadSegmentedObjects(handles)
 %
 % DIFFERENCES TO MPCYCLE MODULES:
 %
-% a) LABELLING OF OBJECTS CHANGES BETWEEN ACQUISITIONS. This is because 
+% a) LABELLING OF OBJECTS CHANGES BETWEEN ACQUISITIONS. This is because
 %    SimpleMulti_LoadSegmentedObjects uses continous labels for objects.
 %    This prevents several mistakes in data output, which would be introduced
 %    when this CP-default assumption of several modules is broken. This
 %    wrong data would be difficult to spot and only in rare occassions can
 %    results in a wrong number of objects (which will also cause
 %    computational error besides being indicative that measurments are
-%    allocated to wrong objects!). Data can still be combined via the 
+%    allocated to wrong objects!). Data can still be combined via the
 %    UnshiftedObjectId measuremnent created by this module. See below for
 %    detailed example.
 % b) Only a single CellProfiler module is required.
-% c) Nothing has to be precomputed (e.g. no shiftdescriptor). 
+% c) Nothing has to be precomputed (e.g. no shiftdescriptor).
 %    Simply adding this module suffices.
 % d) no later parts of iBrain has to be changed since every
 %    acquisition will be a normal ordinary acquistion that is not different
@@ -49,12 +49,12 @@ function handles = SimpleMulti_LoadSegmentedObjects(handles)
 % the following pseudo-code, where Rows Columns ObjectID and UnshiftedIDs
 % refer to the numerical index of the columns that contain the
 % corresponding information
-% 
+%
 % ID_within_reference_acquistion  = matMeta_reference(:,[Rows Columns ObjectID]);
 % ID_within_current_acquistion = [matMeta_current(:,[Rows Columns]) matData_current(:, UnshiftedIDs) ]     ;
 %
 % [is_also_in_reference_acquistion, pos_within_reference_acquistion] = ismember(ID_within_current_acquistion, ID_within_reference_acquistion, 'rows')
-% 
+%
 % if any(~is_also_in_reference_acquistion)
 %   error('some data could not be matched. Please check code, possibly something is wrong in CP module')
 % else
@@ -76,23 +76,27 @@ drawnow
 [CurrentModule, CurrentModuleNum, ModuleName] = CPwhichmodule(handles);
 
 
-%textVAR01 = Which objects do you want to import? (e.g.: Nuclei)
+%textVAR01 = Which objects do you want to import (required)? (e.g.: Nuclei)
 %defaultVAR01 = Nuclei
 %infotypeVAR01 = objectgroup indep
-ObjectName = char(handles.Settings.VariableValues{CurrentModuleNum,1});
+ObjectName_Primary = char(handles.Settings.VariableValues{CurrentModuleNum,1});
 
-%pathnametextVAR02 = From which reference acquistion should objects be imported?
-%defaultVAR02 = /BIOL/sonas/biol_uzh_pelkmans_s5/Data/Users/Thomas/151020-AribitraryPlate/
-Pathname = char(handles.Settings.VariableValues{CurrentModuleNum,2});
+%textVAR02 = Which second objects do you want to import (optional)? (e.g.: Cells). Ignore by keeping /
+%defaultVAR02 = /
+ObjectName_Secondary = char(handles.Settings.VariableValues{CurrentModuleNum,2});
 
-%textVAR03 = Which images of the current pipeline should be used for aligning the acquisitions?
-%infotypeVAR03 = imagegroup
-OrigImageName = char(handles.Settings.VariableValues{CurrentModuleNum,3});
-%inputtypeVAR03 = popupmenu
+%pathnametextVAR03 = From which reference acquistion should objects be imported?
+%defaultVAR03 = /BIOL/sonas/biol_uzh_pelkmans_s5/Data/Users/Thomas/151020-AribitraryPlate/
+Pathname = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 
-%textVAR04 = Which filter describes the images of the reference acquisition that should be used for aligning the acquisitions?
-%defaultVAR04 = C01.
-filterForImagesOfTrans = char(handles.Settings.VariableValues{CurrentModuleNum,4});
+%textVAR04 = Which images of the current pipeline should be used for aligning the acquisitions?
+%infotypeVAR04 = imagegroup
+OrigImageName = char(handles.Settings.VariableValues{CurrentModuleNum,4});
+%inputtypeVAR04 = popupmenu
+
+%textVAR05 = Which filter describes the images of the reference acquisition that should be used for aligning the acquisitions?
+%defaultVAR05 = C01.
+filterForImagesOfTrans = char(handles.Settings.VariableValues{CurrentModuleNum,5});
 
 
 %%%VariableRevisionNumber = 12
@@ -108,6 +112,11 @@ if ~any(fileattrib(strTransPlate))
     error('Could not find reference plate');
 end
 
+if hasSecondaryObjectBeenDefined(ObjectName_Secondary) == false    % TS: ad hoc patch for including two objects: just do cheap computation twice rather than changing code
+    ObjectName_Secondary = ObjectName_Primary;
+end
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% Computation  %%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -116,14 +125,15 @@ end
 
 %%%%%% FOR FIRST CYCLE %%%%%%%%%
 if handles.Current.SetBeingAnalyzed == 1
-      makeExternalBuffer(handles, strTransPlate, filterForImagesOfTrans, ObjectName);
+    makeExternalBuffer(handles, strTransPlate, filterForImagesOfTrans, ObjectName_Primary, ObjectName_Secondary);
 end
 
 %%%%%% FOR ALL CYCLES %%%%%%%%%%
 createShiftedSegmentation = true; % depending on results, this switch will possbily be turned (TS151021: creating a segmentation without objects).
 
 [TiffFolder_trans, SegmentationFolder_trans] = getSubFoldersFromTransPlate(strTransPlate);
-[strCorrespondingImage_trans, couldFindSameSite_image, strCorrespondingSegmentation_trans, couldFindSameSite_segmentation] = getFileNameViaReferenceFile(handles, ObjectName, OrigImageName);
+[strCorrespondingImage_trans, couldFindSameSite_image, strCorrespondingSegmentation_trans, couldFindSameSite_segmentation, strCorrespondingSegmentationSecondary_trans, couldFindSameSite_segmentation_Secondary] = ...
+    getFileNameViaReferenceFile(handles, ObjectName_Primary, OrigImageName, ObjectName_Secondary);
 
 % Obtain coordinates of overalap of cis image (this acquisition) and trans image (reference acquistion)
 if couldFindSameSite_image == true;
@@ -143,54 +153,91 @@ else
     OrigSegmentation = zeros(size(Image_Trans));
 end
 
+% Obtain Segmentation from secondaryObject
+if couldFindSameSite_segmentation_Secondary == true;
+    OrigSegmentation_Secondary = double(imread(fullfile(SegmentationFolder_trans, strCorrespondingSegmentationSecondary_trans)));
+else
+    OrigSegmentation_Secondary = zeros(size(Image_Trans));
+end
 
-if createShiftedSegmentation == true  
-    ShiftedSegmentationImage = zeros(size(Image_Cis),'double');
 
+if createShiftedSegmentation == true
+    ShiftedSegmentation_Primary = zeros(size(Image_Cis),'double');
+    ShiftedSegmentation_Secondary = zeros(size(Image_Cis),'double');
+    
     % SHIFT ORIGINAL SEGMENTATION %
-    ShiftedSegmentationImage(NSWE_Cis(1):NSWE_Cis(2), NSWE_Cis(3):NSWE_Cis(4)) = ...
+    ShiftedSegmentation_Primary(NSWE_Cis(1):NSWE_Cis(2), NSWE_Cis(3):NSWE_Cis(4)) = ...
         OrigSegmentation(NSWE_Trans(1):NSWE_Trans(2), NSWE_Trans(3):NSWE_Trans(4));
-        
+    
+    ShiftedSegmentation_Secondary(NSWE_Cis(1):NSWE_Cis(2), NSWE_Cis(3):NSWE_Cis(4)) = ...
+        OrigSegmentation_Secondary(NSWE_Trans(1):NSWE_Trans(2), NSWE_Trans(3):NSWE_Trans(4));
+    
     % RELABEL  %
     
     % Since several CellProfiler modules will introduce error, if labelling
     % is not continous, make continuous labels;
     
-    uOrigLabel  = unique(OrigSegmentation);
-    uShiftedLabel = unique(ShiftedSegmentationImage);
+    uOrigLabel_Primary  = unique(OrigSegmentation);
+    uShiftedLabel_Primary = unique(ShiftedSegmentation_Primary);
     
-    if ~(any(uOrigLabel>0) && any(uShiftedLabel>0))  % in case that at least one segmentation is empty
+    uOrigLabel_Secondary  = unique(OrigSegmentation_Secondary);
+    uShiftedLabel_Secondary = unique(ShiftedSegmentation_Secondary);
+    
+    
+    if ~(any(uOrigLabel_Primary>0) && any(uShiftedLabel_Primary>0) && any(uOrigLabel_Secondary>0) && any(uShiftedLabel_Secondary>0))  % in case that at least one segmentation is empty
         createShiftedSegmentation = false;
     else
-        uOrigLabel = uOrigLabel(uOrigLabel~=0);   % ignore background
+        uOrigLabel_Primary    = uOrigLabel_Primary(uOrigLabel_Primary~=0);   % ignore background
+        uOrigLabel_Secondary  = uOrigLabel_Secondary(uOrigLabel_Secondary~=0);
+        
         
         lFun = @(x) x(:);
-        if ~isequal(lFun(uOrigLabel), lFun(unique(1:length(uOrigLabel)))) % check if labelling has been continous in original segmentation
+        % check if labelling has been continous in original segmentation
+        if (~isequal(lFun(uOrigLabel_Primary), lFun(unique(1:length(uOrigLabel_Primary))))) || (~isequal(lFun(uOrigLabel_Secondary), lFun(unique(1:length(uOrigLabel_Secondary)))))
             error('Labelling within original segmentation is not continuous. This will cause wrong data (but no compuational errors) in several standard modules of CellProfiler, and is therefore strongly advised not to do! Please reconsider your full analysis, instead of making your pipeline of ignore this discontinuous labelling!');
         else
-            uShiftedLabel = uShiftedLabel(uShiftedLabel~=0); % ignore background
-            elementsInShiftedLabel = length(uShiftedLabel);
+            uShiftedLabel_Primary = uShiftedLabel_Primary(uShiftedLabel_Primary~=0); % ignore background
+            uShiftedLabel_Secondary = uShiftedLabel_Secondary(uShiftedLabel_Secondary~=0);
             
-            uShiftedLabel = sort(uShiftedLabel,'ascend'); % do relabelling
-            relabelledSegmentation = zeros(size(ShiftedSegmentationImage));
+            commonUniqueElementsOfPrimaryAndSecondary = intersect(uShiftedLabel_Primary, uShiftedLabel_Secondary);
+            
+            
+            elementsInShiftedLabel = length(commonUniqueElementsOfPrimaryAndSecondary);
+            
+            uShiftedLabel_Shared = sort(commonUniqueElementsOfPrimaryAndSecondary,'ascend'); % do relabelling
+            relabelledSegmentation_Primary = zeros(size(ShiftedSegmentation_Primary));
             for j=1:elementsInShiftedLabel
-                c = uShiftedLabel(j);
-                f = ShiftedSegmentationImage == c;
-                relabelledSegmentation(f) = j;
+                c = uShiftedLabel_Shared(j);
+                f = ShiftedSegmentation_Primary == c;
+                relabelledSegmentation_Primary(f) = j;
             end
-            correspondingOrigLabelForShifted = uShiftedLabel;
+            
+            relabelledSegmentation_Secondary = zeros(size(ShiftedSegmentation_Primary));
+            for j=1:elementsInShiftedLabel
+                c = uShiftedLabel_Shared(j);
+                f = ShiftedSegmentation_Secondary == c;
+                relabelledSegmentation_Secondary(f) = j;
+            end
+            
+            correspondingOrigLabelForShifted = uShiftedLabel_Shared;
         end
     end
     
 end
 
 if createShiftedSegmentation == false  % create blank image (e.g.: if no object has been present, or some reference could not be found)
-    relabelledSegmentation = zeros(size(Image_Cis),'double'); % default values
+    relabelledSegmentation_Primary = zeros(size(Image_Cis),'double'); % default values
+    relabelledSegmentation_Secondary = zeros(size(Image_Cis),'double');
+    
     correspondingOrigLabelForShifted = 0;
-    Centroid = [0 0];
+    Centroid_Primary = [0 0];
+    Centroid_Secondary = [0 0];
 else % create further measurements, if valid objects are present
-    tmp = regionprops(relabelledSegmentation,'Centroid');
-    Centroid = cat(1,tmp.Centroid);
+    tmp = regionprops(relabelledSegmentation_Primary,'Centroid');
+    Centroid_Primary = cat(1,tmp.Centroid);
+    
+    tmp = regionprops(relabelledSegmentation_Secondary,'Centroid');
+    Centroid_Secondary = cat(1,tmp.Centroid);
 end
 
 
@@ -200,17 +247,32 @@ end
 
 %% Saves the segmented image, not edited for objects along the edges or
 %%% for size, to the handles structure.
-fieldname = ['UneditedSegmented',ObjectName];
-handles.Pipeline.(fieldname) = relabelledSegmentation;
+fieldname = ['UneditedSegmented',ObjectName_Primary];
+handles.Pipeline.(fieldname) = relabelledSegmentation_Primary;
 
 %%% Saves the segmented image, only edited for small objects, to the
 %%% handles structure.
-fieldname = ['SmallRemovedSegmented',ObjectName];
-handles.Pipeline.(fieldname) = relabelledSegmentation;
+fieldname = ['SmallRemovedSegmented',ObjectName_Primary];
+handles.Pipeline.(fieldname) = relabelledSegmentation_Primary;
 
 %%% Saves the final segmented label matrix image to the handles structure.
-fieldname = ['Segmented',ObjectName];
-handles.Pipeline.(fieldname) = relabelledSegmentation;
+fieldname = ['Segmented',ObjectName_Primary];
+handles.Pipeline.(fieldname) = relabelledSegmentation_Primary;
+
+fieldname = ['UneditedSegmented',ObjectName_Secondary];
+handles.Pipeline.(fieldname) = relabelledSegmentation_Secondary;
+
+%%% Saves the segmented image, only edited for small objects, to the
+%%% handles structure.
+fieldname = ['SmallRemovedSegmented',ObjectName_Secondary];
+handles.Pipeline.(fieldname) = relabelledSegmentation_Secondary;
+
+%%% Saves the final segmented label matrix image to the handles structure.
+fieldname = ['Segmented',ObjectName_Secondary];
+handles.Pipeline.(fieldname) = relabelledSegmentation_Secondary;
+
+
+
 
 
 %%% Saves the ObjectCount, i.e., the number of segmented objects.
@@ -219,24 +281,45 @@ if ~isfield(handles.Measurements.Image,'ObjectCountFeatures')
     handles.Measurements.Image.ObjectCountFeatures = {};
     handles.Measurements.Image.ObjectCount = {};
 end
-column = find(strcmp(handles.Measurements.Image.ObjectCountFeatures,ObjectName));
+
+% primary
+column = find(strcmp(handles.Measurements.Image.ObjectCountFeatures,ObjectName_Primary));
 if isempty(column)
-    handles.Measurements.Image.ObjectCountFeatures(end+1) = {ObjectName};
+    handles.Measurements.Image.ObjectCountFeatures(end+1) = {ObjectName_Primary};
     column = length(handles.Measurements.Image.ObjectCountFeatures);
 end
-ObjCount = max(relabelledSegmentation(:));
+ObjCount = max(relabelledSegmentation_Primary(:));
+handles.Measurements.Image.ObjectCount{handles.Current.SetBeingAnalyzed}(1,column) = ObjCount;
+
+% secondary
+column = find(strcmp(handles.Measurements.Image.ObjectCountFeatures,ObjectName_Secondary));
+if isempty(column)
+    handles.Measurements.Image.ObjectCountFeatures(end+1) = {ObjectName_Secondary};
+    column = length(handles.Measurements.Image.ObjectCountFeatures);
+end
+ObjCount = max(relabelledSegmentation_Secondary(:));
 handles.Measurements.Image.ObjectCount{handles.Current.SetBeingAnalyzed}(1,column) = ObjCount;
 
 
 %%% Saves the location of each segmented object
 % Follow CP convention for empty images (e.g.: as in IdentifySecondary
 % module)
-handles.Measurements.(ObjectName).LocationFeatures = {'CenterX','CenterY'};
-handles.Measurements.(ObjectName).Location(handles.Current.SetBeingAnalyzed) = {Centroid};
+handles.Measurements.(ObjectName_Primary).LocationFeatures = {'CenterX','CenterY'};
+handles.Measurements.(ObjectName_Primary).Location(handles.Current.SetBeingAnalyzed) = {Centroid_Primary};
 
 %%% save relation to original object ID to handles
-handles.Measurements.(ObjectName).UnshiftedObjectIdFeatures{handles.Current.SetBeingAnalyzed} = 'UnshiftedObjectId';
-handles.Measurements.(ObjectName).UnshiftedObjectId{handles.Current.SetBeingAnalyzed} = correspondingOrigLabelForShifted;
+handles.Measurements.(ObjectName_Primary).UnshiftedObjectIdFeatures{handles.Current.SetBeingAnalyzed} = 'UnshiftedObjectId';
+handles.Measurements.(ObjectName_Primary).UnshiftedObjectId{handles.Current.SetBeingAnalyzed} = correspondingOrigLabelForShifted;
+
+
+% Follow CP convention for empty images (e.g.: as in IdentifySecondary
+% module)
+handles.Measurements.(ObjectName_Secondary).LocationFeatures = {'CenterX','CenterY'};
+handles.Measurements.(ObjectName_Secondary).Location(handles.Current.SetBeingAnalyzed) = {Centroid_Secondary};
+
+%%% save relation to original object ID to handles
+handles.Measurements.(ObjectName_Secondary).UnshiftedObjectIdFeatures{handles.Current.SetBeingAnalyzed} = 'UnshiftedObjectId';
+handles.Measurements.(ObjectName_Secondary).UnshiftedObjectId{handles.Current.SetBeingAnalyzed} = correspondingOrigLabelForShifted;
 
 
 
@@ -251,7 +334,7 @@ if ~CPisHeadless()
     ThisModuleFigureNumber = handles.Current.(['FigureNumberForModule',CurrentModule]);
     if any(findobj == ThisModuleFigureNumber)
         
-        CPfigure(handles,'Image',ThisModuleFigureNumber);        
+        CPfigure(handles,'Image',ThisModuleFigureNumber);
         
         %%% A subplot of the figure window is set to display the original image.
         subplot(2,2,1);
@@ -266,19 +349,22 @@ if ~CPisHeadless()
             im = zeros(size(Image_Cis));
         end
         CPimagesc(im,handles);
-        title('Image from reference plate');    
+        title('Image from reference plate');
         
         subplot(2,2,3);
-        ObjectOutlinesOnOrigImage = combineImageAndSegmentation(Image_Cis, relabelledSegmentation);
+        ObjectOutlinesOnOrigImage_Primary = combineImageAndSegmentation(Image_Cis, relabelledSegmentation_Primary);
+        ObjectOutlinesOnOrigImage_Secondary = combineImageAndSegmentation(Image_Cis, relabelledSegmentation_Secondary);
+        ObjectOutlinesOnOrigImage = max(cat(3,ObjectOutlinesOnOrigImage_Primary, ObjectOutlinesOnOrigImage_Secondary),[],3);
+        
         CPimagesc(ObjectOutlinesOnOrigImage,handles);
-        title([ObjectName, ' Outlines on Input Image']);
+        title([ObjectName_Primary, ' and'  ObjectName_Secondary 'Outlines on Input Image']);
         
         
         subplot(2,2,4);
-        CPimagesc(relabelledSegmentation,handles);
+        CPimagesc(relabelledSegmentation_Secondary,handles);
         colormap('jet');
         clear ColoredLabelMatrixImage
-        title(['Segmentation of ',ObjectName]);
+        title(['Segmentation of ',ObjectName_Secondary]);
         
         drawnow
     end
@@ -288,7 +374,7 @@ end
 end
 
 
-function makeExternalBuffer(handles, strTransPlate, filterForImagesOfTrans, ObjectName)
+function makeExternalBuffer(handles, strTransPlate, filterForImagesOfTrans, ObjectName_Primary, ObjectName_Secondary)
 % note that preferentially all data would be stored in pipeline. However
 % storing custom fields in handles.pipelines can lead to various errors.
 % While storing data in handles.measurements is technically possible there
@@ -306,13 +392,30 @@ function makeExternalBuffer(handles, strTransPlate, filterForImagesOfTrans, Obje
 eB.strImages_trans = getFilesAndDirectories(TiffFolder_trans, filterForImagesOfTrans);
 [eB.Row_image_trans, eB.intColumn_image_trans, eB.intImagePosition_image_trans] = cellfun(@(x) MetaFromImageName(x), eB.strImages_trans, 'UniformOutput', true);
 
-% Segmentations 
-filterForSegmentationsOfTrans = ['Segmented' ObjectName '\.'];
+% Segmentations (primary)
+filterForSegmentationsOfTrans = ['Segmented' ObjectName_Primary '\.'];
 eB.strSegmentations_trans = getFilesAndDirectories(SegmentationFolder_trans, filterForSegmentationsOfTrans);
+if isempty(eB.strSegmentations_trans)
+    error(['Could not find Segementations for ' ObjectName_Primary]);
+end
+
 [eB.Row_segmentations_trans, eB.intColumn_segmentations_trans, eB.intImagePosition_segmentations_trans] = cellfun(@(x) MetaFromImageName(x), eB.strSegmentations_trans, 'UniformOutput', true);
 
+% Segmentations (secondary)
+if hasSecondaryObjectBeenDefined(ObjectName_Secondary) == true
+    filterForSegmentationsOfTrans_Secondary = ['Segmented' ObjectName_Secondary '\.'];
+    eB.strSegmentationsSecondary_trans = getFilesAndDirectories(SegmentationFolder_trans, filterForSegmentationsOfTrans_Secondary);
+    [eB.Row_segmentationsSecondary_trans, eB.intColumn_segmentationsSecondary_trans, eB.intImagePosition_segmentationsSecondary_trans] = ...
+        cellfun(@(x) MetaFromImageName(x), eB.strSegmentationsSecondary_trans, 'UniformOutput', true);
+    
+    if isempty(eB.strSegmentationsSecondary_trans)
+        error(['Could not find Segementations for ' ObjectName_Secondary]);
+    end
+end
 
-strBufferFile = getFileNameOfBuffer(handles, ObjectName);
+
+
+strBufferFile = getFileNameOfBuffer(handles, ObjectName_Primary, ObjectName_Secondary);
 
 if any(fileattrib(strBufferFile))
     [~, ex] = fileparts(strBufferFile);
@@ -322,18 +425,22 @@ end
 save(strBufferFile, 'eB');
 end
 
-function strBufferFile = getFileNameOfBuffer(handles, ObjectName)
+function strBufferFile = getFileNameOfBuffer(handles, ObjectName_Primary, ObjectName_Secondary)
 
 outDir = handles.Current.DefaultOutputDirectory;
-ex = ['SimpleMulti_' ObjectName '.mat'];
+ex = ['SimpleMulti_' ObjectName_Primary ObjectName_Secondary '.mat'];
 strBufferFile = fullfile(outDir, ex );
 
 end
 
+function SecondaryIsDefined = hasSecondaryObjectBeenDefined(ObjectName_Secondary)
+SecondaryIsDefined = ~isequal(ObjectName_Secondary,'/'); % no secondary specified;
+
+end
 
 
-
-function [strCorrespondingImage_trans, couldFindSameSite_image, strCorrespondingSegmentation_trans, couldFindSameSite_segmentation] = getFileNameViaReferenceFile(handles, ObjectName, OrigImageName)
+function [strCorrespondingImage_trans, couldFindSameSite_image, strCorrespondingSegmentation_trans, couldFindSameSite_segmentation, strCorrespondingSegmentationSecondary_trans, couldFindSameSite_segmentation_Secondary] = ...
+    getFileNameViaReferenceFile(handles, ObjectName_Primary, OrigImageName, ObjectName_Secondary)
 % Avoid repeated, independent access to buffer file by reading segmentation
 % and images after same loading event. Note that the code thus becomes more
 % ugly and less readable.
@@ -342,12 +449,12 @@ function [strCorrespondingImage_trans, couldFindSameSite_image, strCorresponding
 SetBeingAnalyzed = handles.Current.SetBeingAnalyzed;
 ImageName_cis = handles.Pipeline.(['Filename' OrigImageName]){SetBeingAnalyzed};
 
-strBufferFile = getFileNameOfBuffer(handles, ObjectName);
+strBufferFile = getFileNameOfBuffer(handles, ObjectName_Primary, ObjectName_Secondary);
 
 if ~any(fileattrib(strBufferFile))
-   error('Could not find buffer file for object, that should be created during first cycle');    
+    error('Could not find buffer file for object, that should be created during first cycle');
 else
-   load(strBufferFile); 
+    load(strBufferFile);
 end
 
 [Row_cis, intColumn_cis, intImagePosition_cis] = MetaFromImageName(ImageName_cis);
@@ -364,7 +471,7 @@ else
     error('Could not unambiguously find corresponding image of other dataset. Please set more stringent filters.');
 end
 
-% get corresponding segmentation from trans
+% get corresponding segmentation from trans (primary)
 correspondsToSameSite_segmentation = eB.Row_segmentations_trans == Row_cis & eB.intColumn_segmentations_trans == intColumn_cis & eB.intImagePosition_segmentations_trans == intImagePosition_cis;
 if sum(correspondsToSameSite_segmentation) == 0
     couldFindSameSite_segmentation = false;
@@ -373,10 +480,25 @@ elseif sum(correspondsToSameSite_segmentation) == 1;
     couldFindSameSite_segmentation = true;
     strCorrespondingSegmentation_trans = eB.strSegmentations_trans{correspondsToSameSite_segmentation};
 else
-    error('Could not unambiguously find corresponding image of other dataset. Please set more stringent filters.');
+    error(['Could not unambiguously find '  ObjectName_Primary ' of other dataset. Please set more stringent filters.']);
 end
 
+
+
+% get corresponding segmentation from trans (secodnary)
+correspondsToSameSite_segmentation_Secondary = eB.Row_segmentationsSecondary_trans == Row_cis & eB.intColumn_segmentationsSecondary_trans == intColumn_cis & eB.intImagePosition_segmentationsSecondary_trans == intImagePosition_cis;
+if sum(correspondsToSameSite_segmentation_Secondary) == 0
+    couldFindSameSite_segmentation_Secondary = false;
+    strCorrespondingSegmentationSecondary_trans = '';
+elseif sum(correspondsToSameSite_segmentation_Secondary) == 1;
+    couldFindSameSite_segmentation_Secondary = true;
+    strCorrespondingSegmentationSecondary_trans = eB.strSegmentationsSecondary_trans{correspondsToSameSite_segmentation_Secondary};
+else
+    error(['Could not unambiguously find '  ObjectName_Secondary ' of other dataset. Please set more stringent filters.']);
 end
+end
+
+
 
 
 
