@@ -17,7 +17,7 @@ function handles = SimpleMulti_LoadSegmentedObjects(handles)
 %
 % a) LABELLING OF OBJECTS CHANGES BETWEEN ACQUISITIONS. This is because 
 %    SimpleMulti_LoadSegmentedObjects uses continous labels for objects.
-%    This provides several mistakes in data output, which are introduced
+%    This prevents several mistakes in data output, which would be introduced
 %    when this CP-default assumption of several modules is broken. This
 %    wrong data would be difficult to spot and only in rare occassions can
 %    results in a wrong number of objects (which will also cause
