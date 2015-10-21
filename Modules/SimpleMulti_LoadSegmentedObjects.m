@@ -9,11 +9,13 @@ function handles = SimpleMulti_LoadSegmentedObjects(handles)
 %
 % Since multiple acquisition usually have a slight shift, a image-channel 
 % (e.g.: DAPI) has to be specified for the current acquistion and the
-% reference acquistion. 
+% reference acquistion. Note that the alignment is very robust against
+% illumination artifacts and thus can be done with images that are not
+% illumination corrected.
 %
 % DIFFERENCES TO MPCYCLE MODULES:
 %
-% a) LABELLING OF OBJECTS CHANGES BETWEEN ACQUISTIONS. This is because 
+% a) LABELLING OF OBJECTS CHANGES BETWEEN ACQUISITIONS. This is because 
 %    SimpleMulti_LoadSegmentedObjects uses continous labels for objects.
 %    This provides several mistakes in data output, which are introduced
 %    when this CP-default assumption of several modules is broken. This
@@ -23,20 +25,20 @@ function handles = SimpleMulti_LoadSegmentedObjects(handles)
 %    allocated to wrong objects!). Data can still be combined via the 
 %    UnshiftedObjectId measuremnent created by this module. See below for
 %    detailed example.
-% b) Nothing has to be precomputed (e.g. no shiftdescriptor). 
+% b) Only a single CellProfiler module is required.
+% c) Nothing has to be precomputed (e.g. no shiftdescriptor). 
 %    Simply adding this module suffices.
-% c) no later parts of iBrain has to be changed since every
+% d) no later parts of iBrain has to be changed since every
 %    acquisition will be a normal ordinary acquistion that is not different
 %    from any ordinary acquistion. This also means that every function used
 %    for in-detail data exploration, after iBrain, will work as on any
 %    other ordinary experiment.
-% d) Acquistions do not have to be named a certain way. (allowing ad-hoc
+% e) Acquistions do not have to be named a certain way. (allowing ad-hoc
 %    rescanning/combination of experiments)
-% e) Images are not cropped. This however does not affect the data output!
-% f) Acquistions do not have to be organised in hierarchical manner (e.g.:
+% f) Images are not cropped. This however does not affect the data output!
+% g) Acquistions do not have to be organised in hierarchical manner (e.g.:
 %    segmentation can be from first or last acquistion and there is no
 %    necessity to wait for other acquistions).
-% g) Only a single CellProfiler module is required.
 %
 %
 % If data from multiple different acquistions should be combined, please
