@@ -108,7 +108,7 @@ fprintf('%s: Calculating all thresholded images. Total Number %d. ',mfilename,Op
 % toc
 
 
-fprintf('%s: Deblending Images, please wait. ',mfilename)
+fprintf('%s: Deblending Images, please wait. \n ',mfilename)
 %tic
 %go via all images
 for i = 1:length(structSegCC)
