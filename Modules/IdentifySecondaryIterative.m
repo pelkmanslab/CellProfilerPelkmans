@@ -867,13 +867,25 @@ if any(findobj == ThisModuleFigureNumber)
         % Determines the grayscale intensity to use for the cell outlines.
         %[PLab-HACK] so that images are not so dim!!!!
         ObjectOutlinesOnOrigImage = OrigImage;
-        ObjectOutlinesOnOrigImage=ObjectOutlinesOnOrigImage-quantile(OrigImage(:), 0.025);
-        ObjectOutlinesOnOrigImage(ObjectOutlinesOnOrigImage<0)=0;
-        ObjectOutlinesOnOrigImage(ObjectOutlinesOnOrigImage>quantile(ObjectOutlinesOnOrigImage(:), 0.95))=quantile(ObjectOutlinesOnOrigImage(:), 0.95);
-        LineIntensity = quantile(ObjectOutlinesOnOrigImage(:), 0.99);
         
+        % [TS150825: deactivated rescaling, which is not working fine, and
+        % missleading on compressed cells, e.g.: cytoo chips]
+        %         ObjectOutlinesOnOrigImage=ObjectOutlinesOnOrigImage-quantile(OrigImage(:), 0.025);
+        %         ObjectOutlinesOnOrigImage(ObjectOutlinesOnOrigImage<0)=0;
+        %         ObjectOutlinesOnOrigImage(ObjectOutlinesOnOrigImage>quantile(ObjectOutlinesOnOrigImage(:), 0.95))=quantile(ObjectOutlinesOnOrigImage(:), 0.95);
+        %         LineIntensity = quantile(ObjectOutlinesOnOrigImage(:), 0.99);
+        %         ObjectOutlinesOnOrigImage(LogicalOutlines) = LineIntensity;
         
-        ObjectOutlinesOnOrigImage(LogicalOutlines) = LineIntensity;
+        qmin = quantile(ObjectOutlinesOnOrigImage(:),0.01); % [TS] Keep intention of original code by rescaling without outliers
+        qmax = quantile(ObjectOutlinesOnOrigImage(:),0.99);
+        ObjectOutlinesOnOrigImage(ObjectOutlinesOnOrigImage < qmin) = qmin;
+        ObjectOutlinesOnOrigImage(ObjectOutlinesOnOrigImage > qmax) = qmax;
+        ObjectOutlinesOnOrigImage = (ObjectOutlinesOnOrigImage-qmin) ./ (qmax-qmin);
+        
+        % [TS] Display outlines in red rather than white (useful for cytoo chips);
+        ObjectOutlinesOnOrigImage = insertRedLine(ObjectOutlinesOnOrigImage, LogicalOutlines);        
+
+        
         %%% Calculates BothOutlinesOnOrigImage for displaying in the figure
         %%% window in subplot(2,2,4).
         %%% Creates the structuring element that will be used for dilation.
@@ -885,8 +897,12 @@ if any(findobj == ThisModuleFigureNumber)
         PrimaryObjectOutlines = DilatedPrimaryBinaryImage - EditedPrimaryBinaryImage;
         %%% [PLab] hack. save memory.
         clear DilatedPrimaryBinaryImage EditedPrimaryBinaryImage;
-        BothOutlinesOnOrigImage = ObjectOutlinesOnOrigImage;
-        BothOutlinesOnOrigImage(PrimaryObjectOutlines == 1) = LineIntensity;
+        %         BothOutlinesOnOrigImage = ObjectOutlinesOnOrigImage;
+        %       BothOutlinesOnOrigImage(PrimaryObjectOutlines == 1) = LineIntensity;
+        
+        % [TS] Display outlines in red rather than white (useful for cytoo chips);
+        BothOutlinesOnOrigImage = insertRedLine(ObjectOutlinesOnOrigImage, PrimaryObjectOutlines == 1);        
+        
         %%% [PLab] hack. save memory.
         clear PrimaryObjectOutlines LineIntensity;
         
@@ -939,4 +955,22 @@ if any(findobj == ThisModuleFigureNumber)
 end
 
 
+end
+
+
+function RGBimage = insertRedLine(image, bwLineImage)
+
+if size(image,3) == 1
+    image = repmat(image,[1 1 3]);    
+end
+
+r = image(:,:,1);
+g = image(:,:,2);
+b = image(:,:,3);
+
+r(bwLineImage) = 1;
+g(bwLineImage) = 0;
+b(bwLineImage) = 0;
+
+RGBimage = cat(3, r, g, b);
 end

@@ -187,7 +187,7 @@ TestMode2 = char(handles.Settings.VariableValues{CurrentModuleNum,12});
 WindowSize = str2double(char(handles.Settings.VariableValues{CurrentModuleNum,13}));
 
 %textVAR14 = Perimeter analysis: FILTER SIZE for smoothing objects
-%defaultVAR14 = 1
+%defaultVAR14 = 15
 smoothingDiskSize = str2double(char(handles.Settings.VariableValues{CurrentModuleNum,14}));
 
 %textVAR15 = Perimeter analysis: Maximum concave region equivalent RADIUS
