@@ -18,7 +18,7 @@ classdef IlluminationCorrectionPelkmansTest < matlab.unittest.TestCase
             handlesOut = testHandlesRewrite(dirTestsSub,'A/handles_out', pathOld, pathNew);
             
             testResult = IlluminationCorrectionPelkmans( handlesIn );
-            testCase.verifyTrue( isequal(testResult, handlesOut) );
+            testHandlesVerifyEqual(testCase, testResult, handlesOut);
         end
     end
 

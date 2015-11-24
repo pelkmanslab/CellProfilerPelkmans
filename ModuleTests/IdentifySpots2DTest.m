@@ -8,15 +8,7 @@ classdef IdentifySpots2DTest < matlab.unittest.TestCase
     
     methods(Test)
         function handlesMatchC(testCase)
-            
-%             dirTestsSub = 'State/IdentifySpots2D';
-%             handlesIn = getTestHandles(dirTestsSub,'C/handles_in');
-%             handlesOut = getTestHandles(dirTestsSub,'C/handles_out');
-%             
-%             testResult = IdentifySpots2D( handlesIn );
-%             testCase.verifyTrue( isequal(testResult, handlesOut) );
-            
-            
+           
             dirTestsSub = 'State/IdentifySpots2D';
             
             pathOld = 'S:\Data\Users\Owen\TestDatasets\Dataset 5';
@@ -26,7 +18,7 @@ classdef IdentifySpots2DTest < matlab.unittest.TestCase
             handlesOut = testHandlesRewrite(dirTestsSub,'C/handles_out', pathOld, pathNew);
             
             testResult = IdentifySpots2D( handlesIn );
-            testCase.verifyTrue( isequal(testResult, handlesOut) );
+            testHandlesVerifyEqual( testCase, testResult, handlesOut );
         end
     end
 end

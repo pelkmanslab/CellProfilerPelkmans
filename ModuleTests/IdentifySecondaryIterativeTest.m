@@ -14,7 +14,7 @@ classdef IdentifySecondaryIterativeTest < matlab.unittest.TestCase
             handlesOut = testHandlesUnchanged(dirTestsSub,'C/handles_out');
             
             testResult = IdentifySecondaryIterative( handlesIn );
-            testCase.verifyTrue( isequal(testResult, handlesOut) );
+            testHandlesVerifyEqual(testCase, testResult, handlesOut);
         end
     end
 end
