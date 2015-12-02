@@ -39,7 +39,7 @@ ThresholdMethod = char(handles.Settings.VariableValues{CurrentModuleNum,3});
 %defaultVAR04 = 500
 Iterations = str2double(handles.Settings.VariableValues{CurrentModuleNum,4});
 
-%textVAR05 = For the Otsu Global and Iterative Threshold methods select a correction factor.
+%textVAR05 = Define a correction factor (applies to all threshold methods).
 %defaultVAR05 = 1
 CorrectionFactor = str2double(handles.Settings.VariableValues{CurrentModuleNum,5});
 
@@ -66,7 +66,7 @@ Debleed = char(handles.Settings.VariableValues{CurrentModuleNum,9});
 CorrImageName = char(handles.Settings.VariableValues{CurrentModuleNum,10});
 %inputtypeVAR10 = popupmenu
 
-%textVAR11 = If yes. Enter the bleeding ration, which the image above will be multiplied to before subtracting.
+%textVAR11 = If yes. Enter the bleeding ratio, which the image above will be multiplied to before subtracting.
 %defaultVAR11 = 0.065
 BleedFactor = str2double(handles.Settings.VariableValues{CurrentModuleNum,11});
 
