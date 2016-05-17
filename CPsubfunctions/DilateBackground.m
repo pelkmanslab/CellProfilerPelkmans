@@ -35,6 +35,11 @@ FinalLabelMatrixImage = double(imLabelMask);
 props = regionprops(FinalLabelMatrixImage,'BoundingBox');
 BoxPerObj = cat(1,props.BoundingBox);
 
+if all(size(BoxPerObj)==0) % this can sometimes happen
+    imLabelMatrix  = zeros(size(FinalLabelMatrixImage));
+    return
+end
+
 % Calculate allowed coordinates per object (to reduce computational cost)
 %-> recalculating objects is necesary because of a background bug!
 LisOfObjects = unique(FinalLabelMatrixImage(:));
