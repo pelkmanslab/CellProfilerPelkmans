@@ -254,7 +254,7 @@ if ~isfield(handles.Measurements.Image,'ObjectCountFeatures')
 end
 column = find(~cellfun('isempty',strfind(handles.Measurements.Image.ObjectCountFeatures,TargetName)));
 if isempty(column)
-    handles.Measurements.Image.ObjectCountFeatures(end+1) = {['ObjectCount ' TargetName]};
+    handles.Measurements.Image.ObjectCountFeatures(end+1) = {[TargetName]};
     column = length(handles.Measurements.Image.ObjectCountFeatures);
 end
 handles.Measurements.Image.ObjectCount{handles.Current.SetBeingAnalyzed}(1,column) = max(FinalLabelMatrixImage(:));
